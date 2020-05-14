@@ -6,6 +6,7 @@ state("mgsi") {
   ushort Progress:    0x38D7CA;
   bool   InMenu:      0x31D180;
   bool   VsRex:       0x388630;
+  sbyte  Psg1Unlock:  0x38E815;
 }
 
 isLoading {
@@ -53,6 +54,7 @@ startup {
     settings.Add("p_78", true, "Ninja", "splits");
     settings.Add("p_126", false, "Stun Meryl", "splits");
     settings.Add("p_133", true, "Psycho Mantis", "splits");
+    settings.Add("p_150", false, "Collect PSG-1", "splits");
     settings.Add("p_151", true, "Sniper Wolf", "splits");
     settings.Add("p_158", true, "Enter Prison Cell", "splits");
     settings.Add("p_163", false, "Prison Escape", "splits");
@@ -82,6 +84,12 @@ update {
   vars.old = old;
   
   if (!vars.Initialised) {
+  
+    // PSG-1
+    Func<bool> WatPsg1 = delegate() {
+      return ( (current.Psg1Unlock != vars.old.Psg1Unlock) && (current.PsgUnlock == 0) );
+    };
+    vars.Watch.Add("p_150", WatPsg1);
   
     // Rex Phase 1
     Func<bool> WatRex1 = delegate() {
@@ -116,9 +124,9 @@ update {
 
 split {
   string ProgressCode = "p_" + current.Progress;
+  if ( (!settings.ContainsKey(ProgressCode)) || (!settings[ProgressCode]) ) return false;
   if (vars.Watch.ContainsKey(ProgressCode)) return vars.Watch[ProgressCode]();
   if (current.Progress == old.Progress) return false;
-  if ( (!settings.ContainsKey(ProgressCode)) || (!settings[ProgressCode]) ) return false;
   if (vars.Except.ContainsKey(ProgressCode)) return vars.Except[ProgressCode]();
   return true;
 }
