@@ -63,36 +63,36 @@ startup {
   D.InitVars = InitVars;
   
   D.Rooms = new Dictionary<sbyte, string> {
-		{ 0, "Dock" },
-		{ 1, "Heliport" },
-		{ 2, "Tank Hangar" },
-		{ 3, "Cell" },
-		{ 4, "Armory" },
-		{ 6, "Nuke Building 1" },
-		{ 7, "Nuke Building 1, B1" },
-		{ 8, "Nuke Building 1, B2" },
-		{ 9, "Cave" },
-		{ 10, "Communications Tower" },
-		{ 11, "Walkway" },
-		{ 12, "Snowfield" },
-		{ 13, "Blast Furnace" },
-		{ 14, "Cargo Elevator" },
-		{ 15, "Warehouse North" },
-		{ 16, "Underground Base" },
-		{ 20, "Medi Room" },
-		{ 33, "Armory South" },
-		{ 34, "Canyon" },
-		{ 35, "Lab" },
-		{ 36, "Commander's Room" },
-		{ 37, "Underground Passage" },
-		{ 38, "Torture Room" },
-		{ 39, "Comms Tower Outside" },
-		{ 40, "Warehouse" },
-		{ 41, "Supply Route" },
-		{ 42, "Supply Route" },
-		{ 43, "Escape Route" },
-		{ 44, "Comms Tower Roof" },
-		{ 45, "Nuke Building 1, B2 Corridor" },
+    { 0, "Dock" },
+    { 1, "Heliport" },
+    { 2, "Tank Hangar" },
+    { 3, "Cell" },
+    { 4, "Armory" },
+    { 6, "Nuke Building 1" },
+    { 7, "Nuke Building 1, B1" },
+    { 8, "Nuke Building 1, B2" },
+    { 9, "Cave" },
+    { 10, "Communications Tower" },
+    { 11, "Walkway" },
+    { 12, "Snowfield" },
+    { 13, "Blast Furnace" },
+    { 14, "Cargo Elevator" },
+    { 15, "Warehouse North" },
+    { 16, "Underground Base" },
+    { 20, "Medi Room" },
+    { 33, "Armory South" },
+    { 34, "Canyon" },
+    { 35, "Lab" },
+    { 36, "Commander's Room" },
+    { 37, "Underground Passage" },
+    { 38, "Torture Room" },
+    { 39, "Comms Tower Outside" },
+    { 40, "Warehouse" },
+    { 41, "Supply Route" },
+    { 42, "Supply Route" },
+    { 43, "Escape Route" },
+    { 44, "Comms Tower Roof" },
+    { 45, "Nuke Building 1, B2 Corridor" },
   };
   
   settings.Add("options", true, "Options");
@@ -422,10 +422,13 @@ update {
     
   
     // List possible progress values at essentially the same point in the game
-    D.SameProgressData = new Dictionary<ushort, ushort[]> {
-      { 52, new ushort[] { 52, 58 } },
-      { 58, new ushort[] { 52, 58 } }
+    var SameProgressData = new List<ushort[]> {
+      new ushort[] { 52, 58 }
     };
+    D.SameProgressData = new Dictionary<ushort, ushort[]>();
+    foreach (ushort[] i in SameProgressData) {
+      foreach (ushort j in i) D.SameProgressData.Add(j, i);
+    }
     Func<ushort, ushort[]> SameProgress = delegate(ushort Progress) {
       return (D.SameProgressData.ContainsKey(Progress)) ? D.SameProgressData[Progress] : new ushort[] { Progress };
     };
@@ -468,6 +471,26 @@ update {
     D.Watch.Add("a_p294", WatResults);
     
     
+    
+    // Convert frames to seconds
+    Func<int, string> FramesToSeconds = (int Frames) => string.Format("{0:F1}", (decimal) Frames / 60);
+    D.FramesToSeconds = FramesToSeconds;
+    
+    // Convert current/max to percentage (if that setting is enabled)
+    Func<int, int, string> FormatValue = delegate(int Current, int Max) {
+      if (settings["asl_info_percent"]) return string.Format("{0:P0}", (double) Current / Max);
+      if (settings["asl_info_max"]) {
+        int Len = (int) Math.Floor(Math.Log10(Max) + 1);
+        return string.Format("{0," + Len + "}/{1,-" + Len + "}", Current, Max);
+      }
+      return Current.ToString();
+    };
+    D.FormatValue = FormatValue;
+    
+    // Get boss name and health
+    //var BossMap = new Dictionary<ushort, 
+    
+    
     D.Initialised = true;
   }
   
@@ -475,7 +498,12 @@ update {
   if ( (settings["asl_info"]) && (!current.InMenu) ) {
     
     if (settings["asl_info_chaff"]) {
-      if (current.ChaffTime != -1) D.Info("Chaff: " + current.ChaffTime, 30);
+      if (old.ChaffTime > 0)
+        D.Info( string.Format(
+          "Chaff: {0} ({1,4} left)",
+          D.FormatValue(current.ChaffTime, 300),
+          D.FramesToSeconds(current.ChaffTime * 2)
+        ), 30);
     }
     
     if (current.RoomCode != old.RoomCode) {
@@ -520,8 +548,8 @@ split {
     }
   }
   
-  if ( (settings["advanced_loc"]) && (current.RoomCode != D.old.RoomCode) ) {
-    string LocationCode = "a_r" + D.old.RoomCode + "_r" + current.RoomCode;
+  if ( (settings["advanced_loc"]) && (current.RoomCode != old.RoomCode) ) {
+    string LocationCode = "a_r" + old.RoomCode + "_r" + current.RoomCode;
     string LocationAll = LocationCode + "_all";
     if ( (settings.ContainsKey(LocationAll)) && (settings[LocationAll]) ) return D.Split(LocationAll, "All visits for " + LocationAll);
     foreach ( ushort Progress in D.SameProgress(current.Progress) ) {
