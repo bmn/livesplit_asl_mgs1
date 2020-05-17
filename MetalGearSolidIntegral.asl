@@ -33,7 +33,7 @@ gameTime {
 
 reset {
   // Don't reset from the credits
-  if ( (current.InMenu) && (current.InMenu != old.InMenu) && (current.Progress != 294) ) {
+  if ( (current.InMenu) && (!old.InMenu) && (current.Progress != 294) ) {
     vars.D.InitVars();
     return true;
   }
@@ -41,7 +41,10 @@ reset {
 }
 
 start {
-  if ( (current.Progress == 1) && (current.Progress != old.Progress) ) {
+  if (
+    ( (settings["o_startonload"]) && (!current.InMenu) && (old.InMenu) ) ||
+    ( (current.Progress == 1) && (current.Progress != old.Progress) )
+  ) {
     vars.D.InitVars();
     return true;
   }
@@ -97,6 +100,7 @@ startup {
   
   settings.Add("options", true, "Options");
     settings.Add("debug_file", true, "Save debug information to LiveSplit program directory", "options");
+    settings.Add("o_startonload", false, "Start splits when loading game", "options");
     settings.Add("o_nomultisplit", true, "Suppress splitting on repeated actions", "options");
     settings.Add("o_nolocationclash", true, "Suppress location splits that clash with enabled major splits (TODO)", "options");
     
