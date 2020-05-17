@@ -421,6 +421,7 @@ update {
     string DebugPath = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + "\\mgsi.log";
     D.DebugTimer = 0;
     D.InfoTimer = 0;
+    D.InfoPriority = -1;
     D.DebugTimerStart = 120;
     D.PrevInfo = "";
     vars.DebugMessage = "";
@@ -452,6 +453,10 @@ update {
     
     // Confirm a split
     Func<string, string, bool> Split = delegate(string Code, string Reason) {
+      if ( (!settings["o_nolocationclash"]) || (D.LocationClash(Code)) ) {
+        Debug(Code + " clashes with an earlier split, not splitting");
+        return false;
+      }
       D.DebugTimer = D.DebugTimerStart;
       D.PrevDebug = vars.DebugMessage;
       Debug("Splitting now (" + Reason + ")");
@@ -474,6 +479,17 @@ update {
       return (D.SameProgressData.ContainsKey(Progress)) ? D.SameProgressData[Progress] : new ushort[] { Progress };
     };
     D.SameProgress = SameProgress;
+    
+    // Suppress locations that clash with a previous split
+    D.LocationClashData = new Dictionary<string, string> {
+      { "a_r0_r1_all", "a_p7" } // Dock > Heliport after reaching Dock elevator
+    };
+    Func<string, bool> LocationClash = delegate(string Code) {
+      if (!D.LocationClashData.ContainsKey(Code)) return false;
+      string Clash = D.LocationClashData[Code];
+      return (D.SplitTimes[Clash] > 0);
+    };
+    D.LocationClash = LocationClash;
     
     // Check if a weapon has just unlocked
     Func<sbyte> WeaponUnlocked = delegate() {
