@@ -182,7 +182,7 @@ startup {
       settings.Add("a_p257", true, "Rex Phase 2", "advanced_evt");
       settings.Add("a_p278", true, "Liquid Snake", "advanced_evt");
       settings.Add("a_p286", true, "Escape", "advanced_evt");
-      settings.Add("a_p294", true, "Results", "advanced_evt");
+      settings.Add("a_p294", true, "Score", "advanced_evt");
     settings.Add("advanced_minevt", false, "Split on minor events", "advanced");
       settings.Add("a_p7", false, "Dock Elevator", "advanced_minevt");
       settings.Add("a_p27", false, "Exit DARPA Chief's cell", "advanced_minevt");
@@ -310,7 +310,7 @@ startup {
           settings.Add("a_r36_r9_all", false, "always", "a_r36_r9");
       settings.Add("a_r9", true, "Cave", "advanced_loc");
         settings.Add("a_r9_r36", true, "to Commander's Room", "a_r9");
-          settings.Add("a_r9_r36_p149", true, "after Wolf ambushes Meryl", "a_r9_r36"); // maybe 150
+          settings.Add("a_r9_r36_p149", true, "after Wolf ambushes Meryl", "a_r9_r36");
           settings.Add("a_r9_r36_all", false, "always", "a_r9_r36");
         settings.Add("a_r9_r37", true, "to Underground Passage", "a_r9");
           settings.Add("a_r9_r37_p141", true, "after Psycho Mantis", "a_r9_r37"); // maybe 143
@@ -710,10 +710,16 @@ split {
     if ( (NewWeapon != -1) && (settings["a_w" + NewWeapon]) ) return D.Split("a_w" + NewWeapon, "Weapon " + NewWeapon + " unlocked");
   }
   
+  string ProgressCode = "a_p" + current.Progress;
+  string RoomCode = "a_r" + current.RoomCode;
+  string RoomProgressCode = RoomCode + "_p" + current.Progress;
+  bool WatchProgress = ( (D.Watch.ContainsKey(ProgressCode)) && (D.Watch[ProgressCode]()) );
+  bool WatchRoom = ( (D.Watch.ContainsKey(RoomCode)) && (D.Watch[RoomCode]()) );
+  bool WatchRoomProgress = ( (D.Watch.ContainsKey(RoomProgressCode)) && (D.Watch[RoomProgressCode]()) );
+  
   if ( (settings["advanced_evt"]) || (settings["advanced_minevt"]) ) {
-    string ProgressCode = "a_p" + current.Progress;
     if ( (settings.ContainsKey(ProgressCode)) && (settings[ProgressCode]) ) {
-      if ( (D.Watch.ContainsKey(ProgressCode)) && (D.Watch[ProgressCode]()) ) return D.Split(ProgressCode, "Watch for " + ProgressCode);
+      if (WatchProgress) return D.Split(ProgressCode, "Watch for " + ProgressCode);
       if (current.Progress != old.Progress) {
         if (D.Except.ContainsKey(ProgressCode)) {
           if (D.Except[ProgressCode]()) return D.Split(ProgressCode, "Except for " + ProgressCode);
