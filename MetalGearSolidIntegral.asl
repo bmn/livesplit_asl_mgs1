@@ -1,26 +1,44 @@
 /* Autosplitter for Metal Gear Solid: Integral (PC) */
 
 state("mgsi") {
-  bool      STATS:        0x000000;
-  ushort    Alerts:       0x38E87C;
-  ushort    Kills:        0x38E87E;
-  ushort    Rations:      0x38E88C;
-  ushort    Continues:    0x38E88E;
-  ushort    Saves:        0x38E890;
-  bool      OTHER_DATA_BELOW: 0x000000;
-  uint      GameTime:     0x595344;
-  sbyte     RoomCode:     0x28CE34;
-  ushort    Progress:     0x38D7CA;
-  ushort    Health:       0x000000;
-  ushort    O2Time:       0x595348;
-  short     ChaffTime:    0x391A28;
-  ushort    OcelotHp:     0x4FD2D4;
-  ushort    Wolf1Hp:      0x5059E0;
-  ushort    RexHp:        0x323906;
-  byte      LiquidHp:     0x50B978;
-  bool      InMenu:       0x31D180;
-  bool      VsRex:        0x388630;
-  byte20    WeaponData:   0x38E802;
+  bool      _STATS:         0x000000;
+  ushort    Alerts:         0x38E87C;
+  ushort    Kills:          0x38E87E;
+  ushort    RationsUsed:    0x38E88C;
+  ushort    Continues:      0x38E88E;
+  ushort    Saves:          0x38E890;
+  
+  bool      _GAME_PROGRESS: 0x000000;
+  uint      GameTime:       0x595344;
+  sbyte     RoomCode:       0x28CE34;
+  ushort    Progress:       0x38D7CA;
+  
+  bool      _BOSS_HEALTH:   0x000000;
+  short     OcelotHp:       0x594124, 0x830;
+  short     NinjaHp:        0x4EDDD4;
+  short     MantisHp:       0x3236C6;
+  short     MantisMaxHp:    0x283A58;
+  short     Wolf1Hp:        0x5059E0;
+  short     HindHp:         0x4E6E14;
+  short     Wolf2Hp:        0x502220;
+  short     RavenHp:        0x4E9A20;
+  short     RavenMaxHp:     0x4E97C8;
+  short     RexHp:          0x4F071C;
+  short     RexMaxHp:       0x4F0724;
+  short     LiquidHp:       0x50B978;
+  short     EscapeHp:       0x000000;
+  short     EscapeMaxHp:    0x000000;
+  
+  bool      _OTHER:         0x000000;
+  sbyte     Difficulty:     0x38E7E2;
+  ushort    Health:         0x000000;
+  ushort    O2Time:         0x595348;
+  short     ChaffTime:      0x391A28;
+  bool      InMenu:         0x31D180;
+  bool      VsRex:          0x388630;
+  byte20    WeaponData:     0x38E802;
+  byte20    ItemData:       0x000000;
+  ushort    DockTimer:      0x4F56AC;
 }
 
 isLoading {
@@ -52,12 +70,26 @@ start {
 } 
 
 startup {
+  vars._INFORMATION = "";
+  vars.Info = "";
+  vars.CurrentRoom = "";
+  vars.Difficulty = "";
+  vars._OTHER = "";
+  vars.DebugMessage = "";
+  
   vars.D = new ExpandoObject();
   dynamic D = vars.D;
   D.Except = new Dictionary< string, Func<bool> >();
   D.Watch = new Dictionary< string, Func<bool> >();
   D.Initialised = false;
   
+  D.Difficulties = new Dictionary<sbyte, string> {
+    { -1, "Very Easy" },
+    { 0, "Easy" },
+    { 1, "Normal" },
+    { 2, "Hard" },
+    { 3, "Extreme" }
+  };
   D.SplitTimes = new Dictionary<string, uint> {};
   Action InitVars = delegate() {
     var Keys = new List<string>(D.SplitTimes.Keys);
@@ -449,6 +481,13 @@ update {
     };
     D.WeaponUnlocked = WeaponUnlocked;
   
+    // Dock elevator timer
+    Func<bool> WatDock = delegate() {
+      if ( (settings["asl_info_dock"]) && (current.DockTimer < D.old.DockTimer) )
+        D.Info("Elevator appears in " + D.FramesToSeconds(current.DockTimer * 2), 15, 1);
+      return false;
+    };
+    D.Watch.Add("a_p6", WatDock);
   
     // Rex Phase 1
     Func<bool> WatRex1 = delegate() {
@@ -498,7 +537,7 @@ update {
     D.Initialised = true;
   }
   
-  
+  vars.CurrentRoom = "";
   if ( (settings["asl_info"]) && (!current.InMenu) ) {
     
     if (settings["asl_info_chaff"]) {
@@ -507,21 +546,41 @@ update {
           "Chaff: {0} ({1,4} left)",
           D.FormatValue(current.ChaffTime, 300),
           D.FramesToSeconds(current.ChaffTime * 2)
-        ), 30);
+        ), 15, 2);
     }
     
-    if (current.RoomCode != old.RoomCode) {
+    if (settings["asl_info_o2"]) {
+      if (old.O2Time < 1024)
+        D.Info( string.Format(
+          "O2: {0} ({1,4} left)",
+          D.FormatValue(current.O2Time, 1024),
+          D.FramesToSeconds(current.O2Time * 4)
+        ), 15, 3);
+    }
+    
+    if ( (current.RoomCode != old.RoomCode) || (vars.CurrentRoom == "") ) {
+      D.PrevInfo = "";
       string CurrentRoom;
       D.Rooms.TryGetValue(current.RoomCode, out CurrentRoom);
-      if (CurrentRoom != "") {
-        vars.CurrentRoom = CurrentRoom;
-        if (settings["asl_info_room"]) D.Info(vars.CurrentRoom, -1);
-      }
+      if (CurrentRoom != "") vars.CurrentRoom = CurrentRoom;
+      if (D.InfoTimer == -1) D.InfoTimer = 60;
+    }
+    
+    if ( (current.Difficulty != old.Difficulty) || (vars.Difficulty == "") ) {
+      vars.Difficulty = ( (current.Difficulty >= -1) && (current.Difficulty <= 3) ) ?
+        D.Difficulties[current.Difficulty] : "";
     }
     
     if (D.InfoTimer != -1) {
       D.InfoTimer--;
-      if (D.InfoTimer == -1) vars.Info = D.PrevInfo;
+      if (D.InfoTimer == -1) {
+        vars.Info = ( (settings["asl_info_room"]) && (D.PrevInfo == "") ) ? vars.CurrentRoom : D.PrevInfo;
+        D.InfoPriority = -1;
+      }
+    }
+    
+    if (settings["asl_info_codename"]) {
+      
     }
     
   }
