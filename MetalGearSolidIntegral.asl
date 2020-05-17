@@ -146,14 +146,15 @@ startup {
         settings.Add("asl_info_chaff", true, "Chaff", "asl_info_vars");
         settings.Add("asl_info_o2", true, "O2 (TODO)", "asl_info_vars");
           settings.Add("asl_info_o2health", false, "Also show the time remaining from Life", "asl_info_o2");
-        settings.Add("asl_info_boss", true, "Boss health (TODO)", "asl_info_vars");
+        settings.Add("asl_info_boss", true, "Boss health", "asl_info_vars");
           settings.Add("asl_info_boss_dmg_flurry", true, "Group hits done within a short time", "asl_info_boss");
           settings.SetToolTip("asl_info_boss_dmg_flurry", "Shows the sum damage for flurries of attacks");
           settings.Add("asl_info_boss_dmg_full", false, "Group all hits done during the battle", "asl_info_boss");
           settings.SetToolTip("asl_info_boss_dmg_full", "A simple damage increment that never resets");
           settings.Add("asl_info_boss_combo", true, "Add a combo counter", "asl_info_boss");
           settings.SetToolTip("asl_info_boss_combo", "This uses the same timing as grouped attacks above");
-        settings.Add("asl_info_choke", true, "Choke torture progress (TODO)", "asl_info_vars");
+        settings.Add("asl_info_dock", true, "Dock elevator countdown", "asl_info_vars");
+        settings.Add("asl_info_torture", true, "Torture progress (TODO)", "asl_info_vars");
       settings.Add("asl_info_max", true, "Also show the maximum value for raw values", "asl_info");
       settings.Add("asl_info_percent", true, "Show percentages instead of raw values", "asl_info");
     settings.Add("asl_codename", true, "CodeNameStatus (Perfect Stats attempt tracking) (TODO)", "asl");
@@ -439,10 +440,13 @@ update {
     };
     D.Debug = Debug;
     
-    Action<string, int> Info = delegate(string Message, int Timer) {
-      if (Timer == -1) D.PrevInfo = Message;
-      vars.Info = Message;
-      D.InfoTimer = Timer;
+    Action<string, int, int> Info = delegate(string Message, int Timer, int Priority) {
+      if (Priority >= D.InfoPriority) {
+        if (Timer == -1) D.PrevInfo = Message;
+        vars.Info = Message;
+        D.InfoTimer = Timer;
+        D.InfoPriority = Priority;
+      }
     };
     D.Info = Info;
     
@@ -459,7 +463,8 @@ update {
   
     // List possible progress values at essentially the same point in the game
     var SameProgressData = new List<ushort[]> {
-      new ushort[] { 52, 58 }
+      new ushort[] { 52, 58 },
+      new ushort[] { 149, 150 }
     };
     D.SameProgressData = new Dictionary<ushort, ushort[]>();
     foreach (ushort[] i in SameProgressData) {
@@ -489,30 +494,125 @@ update {
     };
     D.Watch.Add("a_p6", WatDock);
   
+    
+    
+    // Results
+    Func<bool> WatResults = () => ( (vars.SplitTimes["Results"] > 0) || (current.RoomCode == -1) ) ? false : true;
+    D.Watch.Add("a_p294", WatResults);
+    
+    
+    // General boss watcher
+    D.BossCombo = 0;
+    D.BossComboTimer = 0;
+    D.BossRunningDmg = 0;
+    Func<string, int, int, int, bool, bool> BossHealth = delegate(string Name, int Hp, int PrevHp, int MaxHp, bool EndOnZero) {
+      if (!settings["asl_info_boss"]) return false;
+      
+      bool Return = false;
+      bool ClearData = false;
+      string StrDmg = "";
+      int DisplayHp = Hp;
+      // Boss has taken damage
+      if (Hp < PrevHp) {
+        // Handle boss dead situations
+        if (Hp <= 0) {
+          if (EndOnZero) ClearData = true;
+          DisplayHp = 0;
+        }
+        // Combo data
+        int HpDelta = PrevHp - Hp;
+        D.BossCombo++;
+        D.BossRunningDmg += HpDelta;
+        if (settings["asl_info_boss_dmg_flurry"]) D.BossComboTimer = 30;
+        else D.BossComboTimer = (settings["asl_info_boss_dmg_full"]) ? Int32.MaxValue : 0;
+        // Damage string
+        StrDmg = "-" + D.BossRunningDmg;
+        if ( (settings["asl_info_boss_combo"]) && (D.BossCombo > 1) )
+          StrDmg = D.BossCombo + " hits! " + StrDmg;
+      }
+      // Main info string      
+      if ( (Hp != PrevHp) && (Hp > 0) ) {
+        string StrInfo = " | " + D.FormatValue(DisplayHp, MaxHp) + " HP";
+        if (StrDmg == "") D.Info(Name + StrInfo, 180, 1);
+        else {
+          D.Info(StrDmg + StrInfo, 120, 1);
+          D.PrevInfo = Name + StrInfo;
+        }
+        Return = true;
+      }
+      // Reset data when the combo times out
+      if (D.BossComboTimer > 0) {
+        D.BossComboTimer--;
+        if (D.BossComboTimer == 0) {
+          D.BossCombo = 0;
+          D.BossRunningDmg = 0;
+        }
+      }
+      // Clean up when boss is ded
+      if (ClearData) {
+        D.Info("Boss defeated!", 120, 1);
+        D.PrevInfo = "";
+        D.BossCombo = 0;
+        D.BossComboTimer = 0;
+        D.BossRunningDmg = 0;
+        return true;
+      }
+      
+      return Return;
+    };
+    D.BossHealth = BossHealth;
+    
+    // Bosses
+    Func<bool> WatOcelot = () => (D.BossHealth("Revolver Ocelot", current.OcelotHp, D.old.OcelotHp, 1024, true) && false);
+    Func<bool> WatNinja = () => (D.BossHealth("Ninja", current.NinjaHp, D.old.NinjaHp, 255, true) && false);
+    Func<bool> WatMantis = () => (D.BossHealth("Psycho Mantis", current.MantisHp, D.old.MantisHp, current.MantisMaxHp, true) && false);
+    Func<bool> WatWolf1 = () => (D.BossHealth("Sniper Wolf", current.Wolf1Hp, D.old.Wolf1Hp, 1024, true) && false);
+    Func<bool> WatHind = () => (D.BossHealth("Hind D", current.HindHp, D.old.HindHp, 1024, false) && false);
+    Func<bool> WatWolf2 = () => (D.BossHealth("Sniper Wolf", current.Wolf2Hp, D.old.Wolf2Hp, 1024, true) && false);
+    Func<bool> WatRaven = () => (D.BossHealth("Vulcan Raven", current.RavenHp, D.old.RavenHp, current.RavenMaxHp, true) && false);
+    Func<bool> WatRex = () => (D.BossHealth("Metal Gear REX", current.RexHp, D.old.RexHp, current.RexMaxHp, true) && false);
+    D.WatRex = WatRex;
+    
+    Func<bool> WatLiquid = delegate() {
+      if (!D.BossHealth("Liquid Snake", current.LiquidHp, D.old.LiquidHp, 255, false)) return false;
+      int Phase = 1;
+      if (
+        ( (current.Difficulty < 2) && (current.LiquidHp < 56) ) ||
+        (current.LiquidHp < 58)
+      ) Phase = 3;
+      else if (current.LiquidHp < 170) Phase = 2;
+      string StrAdd = " (Phase " + Phase + ")";
+      vars.Info += StrAdd;
+      D.PrevInfo += StrAdd;
+      return false;
+    };
+    
+    //Func<bool> WatEscape = () => (D.BossHealth("Liquid Snake", current.EscapeHp, D.old.EscapeHp, D.EscapeMaxHp, false) && false);
+    
     // Rex Phase 1
     Func<bool> WatRex1 = delegate() {
-      if ( (vars.SplitTimes["Rex1"] > 0) || (current.VsRex) || (!vars.old.VsRex) ) return false;
-      vars.SplitTimes["Rex1"] = current.GameTime;
-      return true;
+      if (current.VsRex) D.WatRex();
+      return ( (vars.SplitTimes["Rex1"] > 0) || (current.VsRex) || (!vars.old.VsRex) ) ? false : true;
     };
-    D.Watch.Add("a_p255", WatRex1);
     
     // Rex Phase 2
     Func<bool> WatRex2 = delegate() {
-      if ( (vars.SplitTimes["Rex2"] > 0) || (current.VsRex) ) return false;
-      vars.SplitTimes["Rex2"] = current.GameTime;
-      return true;
+      if (current.VsRex) D.WatRex();
+      return ( (vars.SplitTimes["Rex2"] > 0) || (current.VsRex) ) ? false : true;
     };
+    
+    // Attach bosses
+    D.Watch.Add("a_p38", WatOcelot);
+    D.Watch.Add("a_p77", WatNinja);
+    D.Watch.Add("a_p129", WatMantis);
+    D.Watch.Add("a_r37_p150", WatWolf1);
+    D.Watch.Add("a_p186", WatHind); 
+    D.Watch.Add("a_p197", WatWolf2);
+    D.Watch.Add("a_p211", WatRaven);
+    D.Watch.Add("a_p255", WatRex1);
     D.Watch.Add("a_p257", WatRex2);
-    
-    // Results
-    Func<bool> WatResults = delegate() {
-      if ( (vars.SplitTimes["Results"] > 0) || (current.RoomCode == -1) ) return false;
-      vars.SplitTimes["Results"] = current.GameTime;
-      return true;
-    };
-    D.Watch.Add("a_p294", WatResults);
-    
+    D.Watch.Add("a_p277", WatLiquid);
+    // D.Watch.Add("a_p283", WatEscape);
     
     
     // Convert frames to seconds
@@ -529,10 +629,6 @@ update {
       return Current.ToString();
     };
     D.FormatValue = FormatValue;
-    
-    // Get boss name and health
-    //var BossMap = new Dictionary<ushort, 
-    
     
     D.Initialised = true;
   }
