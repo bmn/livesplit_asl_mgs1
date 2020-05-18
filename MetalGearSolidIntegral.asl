@@ -72,6 +72,7 @@ start {
 startup {
   vars._INFORMATION = "";
   vars.Info = "";
+  vars.Stats = "";
   vars.CurrentRoom = "";
   vars.Difficulty = "";
   vars._OTHER = "";
@@ -90,8 +91,26 @@ startup {
     { 2, "Hard" },
     { 3, "Extreme" }
   };
+  
+  D.CodeNames = new Dictionary<int, string[]> {
+    { 0, new string[] { "Hound", "Doberman", "Fox", "Big Boss" } },
+    { 1, new string[] { "Pigeon", "Falcon", "Hawk", "Eagle" } },
+    { 2, new string[] { "Piranha", "Shark", "Jaws", "Orca" } },
+    { 3, new string[] { "Chicken", "Mouse", "Rabbit", "Ostrich" } },
+    { 4, new string[] { "Pig", "Elephant", "Mammoth", "Whale" } },
+    { 5, new string[] { "Cat", "Deer", "Zebra", "Hippopotamus" } },
+    { 6, new string[] { "Koala", "Capybara", "Sloth", "Giant Panda" } },
+    { 7, new string[] { "Puma", "Leopard", "Panther", "Jaguar" } },
+    { 8, new string[] { "Komodo Dragon", "Iguana", "Alligator", "Crocodile" } },
+    { 9, new string[] { "Mongoose", "Hyena", "Jackal", "Tasmanian Devil" } },
+    { 10, new string[] { "Spider", "Tarantula", "Centipede", "Scorpion" } },
+    { 11, new string[] { "Flying Squirrel", "Bat", "Flying Fox", "Night Owl" } }
+  };
+  
+  D.CurrentRank = 0;
   D.SplitTimes = new Dictionary<string, uint> {};
   Action InitVars = delegate() {
+    D.CurrentRank = 0;
     var Keys = new List<string>(D.SplitTimes.Keys);
     foreach ( string Key in Keys ) D.SplitTimes[Key] = 0;
   };
@@ -505,6 +524,9 @@ update {
     };
     D.Split = Split;
     
+    Func<int, string, string, string> Plural = (Var, Singular, Pluralular) => (Var != 1) ? Pluralular : Singular;
+    D.Plural = Plural;
+    
   
     // List possible progress values at essentially the same point in the game
     var SameProgressData = new List<ushort[]> {
@@ -586,6 +608,7 @@ update {
         // Handle boss dead situations
         if (Hp <= 0) {
           if (EndOnZero) ClearData = true;
+          D.PrevInfo = "";
           DisplayHp = 0;
         }
         // Combo data
@@ -742,8 +765,84 @@ update {
       }
     }
     
-    if (settings["asl_info_codename"]) {
+    if ( (settings["asl_stats"]) || (settings["asl_info_codename"]) ) {
+     
+      if (current.Difficulty != -1) {
+        int OldRank = D.CurrentRank;
+        
+        // Rank 0 (Big Boss) (Alert<5, Kill<26, Ration<2, Continue=0, Time<3h)
+        if (D.CurrentRank == 0) {
+          if ( (current.Alerts >= 5) || (current.Kills >= 26) || (current.RationsUsed >= 2) ||
+            (current.Continues != 0) || (current.GameTime >= 648000) )
+            D.CurrentRank = 1;
+        }
+        
+        // Rank 1 (Eagle) (Time < 2.5h)
+        if ( (D.CurrentRank == 1) && (current.GameTime >= 540000) ) D.CurrentRank = 2;
+        
+        // Rank 2 (Orca) (Kills > 249)
+        if ( (D.CurrentRank == 2) && (current.Kills <= 249) ) D.CurrentRank = 3;
+        
+        // Rank 3 (Ostrich) (Rations > 129, Saves > 79, Time >= 18h)
+        if (D.CurrentRank == 3) {
+          bool Ration = (current.RationsUsed > 129);
+          bool Save = (current.Saves > 79);
+          bool Time = (current.GameTime >= 3888000);
+          if ( (!Ration) || (!Save) || (!Time) ) {
+            if (Ration) D.CurrentRank = 4; // Whale (Rations > 129)
+            else if (Save) D.CurrentRank = 5; // Hippopotamus (Saves > 79)
+            else if (Time) D.CurrentRank = 6; // Giant Panda (Time >= 18h)
+            else D.CurrentRank = 7;
+          }
+        }
+        
+        // Rank 7+ (Everything else)
+        if ( (D.CurrentRank >= 7) && 
+          ( (current.Kills != old.Kills) || (current.Alerts != old.Alerts) || (D.CurrentRank != OldRank) )
+        ) {
+          int AK = (current.Kills > 25) ? ( (current.Alerts * 10) / (current.Kills - 25) ) : 1000;
+          if (current.Alerts < 31) {
+            if (AK >= 17) D.CurrentRank = 10; // Scorpion
+            else if (AK >= 9) D.CurrentRank = 9; // TasDevil, otherwise Jaguar etc.
+          }
+          else if (current.Alerts < 56) {
+            if (AK >= 21) D.CurrentRank = 11; // Night Owl
+            else D.CurrentRank = (AK >= 5) ? 9 : 8; // TasDevil, otherwise Crocodile
+          }
+          else {
+            if (AK >= 17) D.CurrentRank = 11; // Night Owl
+            else D.CurrentRank = (AK >= 9) ? 9 : 8; // TasDevil, otherwise Crocodile
+          }
+        }
+        
+        if ( (D.CurrentRank != OldRank) && (settings["asl_info_codename"]) && (vars.Stats != "") )
+          D.Info("Codename changed to " + D.CodeNames[D.CurrentRank][current.Difficulty], 180, 4);
+      }
       
+      if ( (settings["asl_stats"]) && (
+        (current.Alerts != old.Alerts) || (current.Kills != old.Kills) || (current.Continues != old.Continues) ||
+        (current.RationsUsed != old.RationsUsed) || (current.Saves != old.Saves) || (current.InMenu != old.InMenu)
+      ) ) {
+        var Stats = new List<string>();
+        if (current.Alerts > 0) Stats.Add( current.Alerts +  
+          ((settings["asl_stats_short"]) ? "A" : D.Plural(current.Alerts, " Alert", " Alerts")) );
+        if (current.Kills > 0) Stats.Add( current.Kills + 
+          ((settings["asl_stats_short"]) ? "K" : D.Plural(current.Kills, " Kill", " Kills")) );
+        if (current.Continues > 0) Stats.Add( current.Continues +  
+          ((settings["asl_stats_short"]) ? "C" : D.Plural(current.Continues, " Continue", " Continues")) );
+        if (current.RationsUsed > 0) Stats.Add( current.RationsUsed + 
+          ((settings["asl_stats_short"]) ? "R" : D.Plural(current.RationsUsed, " Ration", " Rations")) );
+        if (current.Saves > 0) Stats.Add( current.Saves + 
+          ((settings["asl_stats_short"]) ? "S" : D.Plural(current.Saves, " Save", " Saves")) );
+        
+        string StringStats = string.Join( settings["asl_stats_short"] ? " " : ", ", Stats );
+        
+        if (current.Difficulty != -1)
+          StringStats += " [" + D.CodeNames[D.CurrentRank][current.Difficulty] + "]";
+        
+        vars.Stats = StringStats;
+      }
+
     }
     
   }
