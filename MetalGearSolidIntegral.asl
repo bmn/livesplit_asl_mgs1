@@ -15,7 +15,7 @@ state("mgsi") {
   
   bool      _BOSS_HEALTH:   0x000000;
   short     OcelotHp:       0x594124, 0x830;
-  short     NinjaHp:        0x4EDDD4;
+  short     NinjaHp:        0x2BBC7C, 0x6D4;
   short     MantisHp:       0x3236C6;
   short     MantisMaxHp:    0x283A58;
   short     Wolf1Hp:        0x5059E0;
@@ -37,7 +37,7 @@ state("mgsi") {
   bool      InMenu:         0x31D180;
   bool      VsRex:          0x388630;
   byte20    WeaponData:     0x38E802;
-  byte20    ItemData:       0x000000;
+  byte20    ItemData:       0x38E82A;
   ushort    DockTimer:      0x4F56AC;
 }
 
@@ -103,9 +103,9 @@ startup {
     { 2, "Tank Hangar" },
     { 3, "Cell" },
     { 4, "Armory" },
-    { 6, "Nuke Building 1" },
-    { 7, "Nuke Building 1, B1" },
-    { 8, "Nuke Building 1, B2" },
+    { 6, "Nuke Building" },
+    { 7, "Nuke Building B1" },
+    { 8, "Nuke Building B2" },
     { 9, "Cave" },
     { 10, "Communications Tower" },
     { 11, "Walkway" },
@@ -127,25 +127,24 @@ startup {
     { 42, "Supply Route" },
     { 43, "Escape Route" },
     { 44, "Comms Tower Roof" },
-    { 45, "Nuke Building 1, B2 Corridor" },
+    { 45, "Nuke Building B2 Corridor" },
   };
   
   settings.Add("options", true, "Options");
     settings.Add("debug_file", true, "Save debug information to LiveSplit program directory", "options");
-    settings.Add("o_startonload", false, "Start splits when loading game", "options");
+    settings.Add("o_startonload", false, "Start splits when loading a save", "options");
     settings.Add("o_nomultisplit", true, "Suppress splitting on repeated actions", "options");
-    settings.Add("o_nolocationclash", true, "Suppress location splits that clash with enabled major splits (TODO)", "options");
+    settings.Add("o_nolocationclash", true, "Suppress location splits that clash with event splits", "options");
     
   settings.Add("asl", true, "ASL Var Viewer integration");
   settings.SetToolTip("asl", "Disabling this may slightly improve performance");
     settings.Add("asl_info", true, "Info (contextual information)", "asl");
       settings.Add("asl_info_vars", true, "Display these values:", "asl_info");
-        settings.Add("asl_info_codename", true, "Codename changes (TODO)", "asl_info_vars");
+        settings.Add("asl_info_codename", true, "Codename changes", "asl_info_vars");
         settings.Add("asl_info_room", false, "Current location", "asl_info_vars");
         settings.SetToolTip("asl_info_room", "Use CurrentRoom if you only want the location");
         settings.Add("asl_info_chaff", true, "Chaff", "asl_info_vars");
-        settings.Add("asl_info_o2", true, "O2 (TODO)", "asl_info_vars");
-          settings.Add("asl_info_o2health", false, "Also show the time remaining from Life", "asl_info_o2");
+        settings.Add("asl_info_o2", true, "O2", "asl_info_vars");
         settings.Add("asl_info_boss", true, "Boss health", "asl_info_vars");
           settings.Add("asl_info_boss_dmg_flurry", true, "Group hits done within a short time", "asl_info_boss");
           settings.SetToolTip("asl_info_boss_dmg_flurry", "Shows the sum damage for flurries of attacks");
@@ -154,58 +153,95 @@ startup {
           settings.Add("asl_info_boss_combo", true, "Add a combo counter", "asl_info_boss");
           settings.SetToolTip("asl_info_boss_combo", "This uses the same timing as grouped attacks above");
         settings.Add("asl_info_dock", true, "Dock elevator countdown", "asl_info_vars");
-        settings.Add("asl_info_torture", true, "Torture progress (TODO)", "asl_info_vars");
       settings.Add("asl_info_max", true, "Also show the maximum value for raw values", "asl_info");
       settings.Add("asl_info_percent", true, "Show percentages instead of raw values", "asl_info");
-    settings.Add("asl_codename", true, "CodeNameStatus (Perfect Stats attempt tracking) (TODO)", "asl");
-      settings.Add("asl_codename_specific", true, "Also show the top-rank-specific stats if they are broken", "asl_codename");
-      settings.SetToolTip("asl_codename_specific", "Disable this if you're going for Perfect Stats rather than a top rank such as Big Boss");
-      settings.Add("asl_codename_short", false, "Show single letters for stats instead of full titles", "asl_codename");
-      settings.SetToolTip("asl_codename_short", "Enable this if the full stat names make the message too long");
+    settings.Add("asl_stats", true, "Stats (game stats and current codename)", "asl");
+      settings.Add("asl_stats_short", false, "Show single letters for stats instead of full titles", "asl_stats");
+      settings.SetToolTip("asl_stats_short", "Enable this if the full stat names make the message too long");
 
   settings.Add("advanced", true, "Split Points");
-    settings.Add("advanced_evt", true, "Split on major events", "advanced");
+    settings.Add("advanced_evt", true, "Boss Completion Splits", "advanced");
       settings.Add("a_p29", true, "Guard Encounter", "advanced_evt");
       settings.Add("a_p39", true, "Revolver Ocelot", "advanced_evt");
       settings.Add("a_p68", true, "M1 Tank", "advanced_evt");
       settings.Add("a_p78", true, "Ninja", "advanced_evt");
       settings.Add("a_p133", true, "Psycho Mantis", "advanced_evt");
       settings.Add("a_p151", true, "Sniper Wolf", "advanced_evt");
-      settings.Add("a_p174", true, "Communications Tower Chase", "advanced_evt");
-      settings.Add("a_p179", true, "Communications Tower Rappel", "advanced_evt");
       settings.Add("a_p188", true, "Hind D", "advanced_evt");
-      settings.Add("a_p195", true, "Comms Tower Elevator Ambush", "advanced_evt");
-      settings.Add("a_p198", true, "Sniper Wolf 2", "advanced_evt"); // test this with gme, switch to 200 if failed
-      settings.Add("a_p207", true, "Cargo Elevator Ambush", "advanced_evt");
+      settings.Add("a_p198", true, "Sniper Wolf 2", "advanced_evt");
       settings.Add("a_p212", true, "Vulcan Raven", "advanced_evt");
-      settings.Add("a_p255", true, "Rex Phase 1", "advanced_evt");
-      settings.Add("a_p257", true, "Rex Phase 2", "advanced_evt");
+      settings.Add("a_p257", true, "Metal Gear REX", "advanced_evt");
       settings.Add("a_p278", true, "Liquid Snake", "advanced_evt");
       settings.Add("a_p286", true, "Escape", "advanced_evt");
       settings.Add("a_p294", true, "Score", "advanced_evt");
-    settings.Add("advanced_minevt", false, "Split on minor events", "advanced");
-      settings.Add("a_p7", false, "Dock Elevator", "advanced_minevt");
-      settings.Add("a_p27", false, "Exit DARPA Chief's cell", "advanced_minevt");
-      settings.Add("a_p126", false, "Stun Meryl", "advanced_minevt");
-      settings.Add("a_p238", false, "Retrieved PAL Key", "advanced_minevt");
-      settings.Add("a_p239", false, "Normal PAL Key", "advanced_minevt");
-      settings.Add("a_p241", false, "Cold PAL Key", "advanced_minevt");
-      settings.Add("a_p247", false, "Hot PAL Key", "advanced_minevt");
-      settings.Add("a_p287", false, "Ending Codec (final split for Very Easy)", "advanced_minevt");
-    settings.Add("advanced_wep", false, "Split when collecting weapons for the first time", "advanced");
-      settings.Add("a_w0", true, "SOCOM", "advanced_wep");
-      settings.Add("a_w1", true, "FA-MAS", "advanced_wep");
-      settings.Add("a_w2", true, "Grenade", "advanced_wep");
-      settings.Add("a_w3", true, "Nikita", "advanced_wep");
-      settings.Add("a_w4", true, "Stinger", "advanced_wep");
-      settings.Add("a_w5", true, "Claymore", "advanced_wep");
-      settings.Add("a_w6", true, "C4", "advanced_wep");
-      settings.Add("a_w7", true, "Stun Grenade", "advanced_wep");
-      settings.Add("a_w8", true, "Chaff Grenade", "advanced_wep");
-      settings.Add("a_w9", true, "PSG-1", "advanced_wep");
-    settings.Add("advanced_loc", false, "Split when moving between areas", "advanced");
+      settings.SetToolTip("a_p294", "On Very Easy, this will split at the final codec instead");
+    settings.Add("advanced_minevt", false, "Other Event Splits", "advanced");
+    settings.SetToolTip("advanced_minevt", "For more options, see the Area Movement Splits section");
+      settings.Add("a_p7", false, "[Dock] Reached elevator", "advanced_minevt");
+      settings.Add("a_p19", false, "[Cell] Reached the DARPA Chief", "advanced_minevt");
+      settings.Add("a_p27", false, "[Cell] Reached Guard Encounter", "advanced_minevt");
+      settings.Add("a_p37", false, "[Armory South] Reached Revolver Ocelot", "advanced_minevt");
+      settings.Add("a_p50", false, "[Armory South] BRIBES", "advanced_minevt");
+      settings.SetToolTip("a_p50", "Don't enable this. Really.");
+      settings.Add("a_p65", false, "[Canyon] Reached M1 Tank", "advanced_minevt");
+      settings.Add("a_p76", false, "[Lab] Reached Ninja", "advanced_minevt");
+      settings.Add("a_p112", false, "[Nuke Building B1] Cornered Meryl", "advanced_minevt");
+      settings.Add("a_p126", false, "[Commander's Room] Reached Mantis (stunned Meryl)", "advanced_minevt");
+      settings.Add("a_p153", false, "[Underground Passage] DON'T MOVE!", "advanced_minevt");
+      settings.Add("a_p158", false, "[Medi Room] First arrival at Medi Room", "advanced_minevt");
+      settings.SetToolTip("a_p158", "Splits after the Cell vent clip in Any%");
+      settings.Add("a_p163", false, "[Medi Room] Escaped from prison", "advanced_minevt");
+      settings.Add("a_p174", false, "[Comms Tower A] Completed stairs chase", "advanced_minevt");
+      settings.Add("a_p178", false, "[Comms Tower A Roof] Attached the rope", "advanced_minevt");
+      settings.Add("a_p179", false, "[Comms Tower A Outside] Completed rappel", "advanced_minevt");
+      settings.Add("a_p186", false, "[Comms Tower B Roof] Reached Hind D", "advanced_minevt");
+      settings.Add("a_p194", false, "[Comms Tower B] Reached elevator ambush", "advanced_minevt");
+      settings.Add("a_p195", false, "[Comms Tower B] Completed elevator ambush", "advanced_minevt");
+      settings.Add("a_p197", false, "[Snowfield] Reached Sniper Wolf 2", "advanced_minevt");
+      settings.Add("a_p206", false, "[Cargo Elevator] Reached elevator ambush", "advanced_minevt");
+      settings.Add("a_p207", false, "[Cargo Elevator] Completed elevator ambush", "advanced_minevt");
+      settings.Add("a_p211", false, "[Warehouse] Reached Vulcan Raven", "advanced_minevt");
+      settings.Add("a_p228", false, "[Underground Base] Reached the control room", "advanced_minevt");
+      settings.Add("a_p238", false, "[Underground Base] Retrieved PAL key", "advanced_minevt");
+      settings.SetToolTip("a_p238", "Splits when the \"PAL KEY\" overlay disappears");
+      settings.Add("a_p239", false, "[Underground Base] Inserted normal PAL key", "advanced_minevt");
+      settings.Add("a_p241", false, "[Underground Base] Inserted cold PAL Key", "advanced_minevt");
+      settings.Add("a_p247", false, "[Underground Base] Inserted hot PAL Key", "advanced_minevt");
+      settings.Add("a_p252", false, "[Underground Base] Reached Metal Gear REX", "advanced_minevt");
+      settings.Add("a_p255", false, "[Supply Route] Completed Metal Gear REX (Phase 1)", "advanced_minevt");
+      settings.Add("a_p277", false, "[Supply Route] Reached Liquid Snake", "advanced_minevt");
+    settings.Add("advanced_wep", false, "Weapon Unlock Splits", "advanced");
+    settings.SetToolTip("advanced_wep", "Split the first time you pick up a weapon");
+      settings.Add("a_w0", false, "SOCOM", "advanced_wep");
+      settings.Add("a_w1", false, "FA-MAS", "advanced_wep");
+      settings.Add("a_w2", false, "Grenade", "advanced_wep");
+      settings.Add("a_w3", false, "Nikita", "advanced_wep");
+      settings.Add("a_w4", false, "Stinger", "advanced_wep");
+      settings.Add("a_w5", false, "Claymore", "advanced_wep");
+      settings.Add("a_w6", false, "C4", "advanced_wep");
+      settings.Add("a_w7", false, "Stun Grenade", "advanced_wep");
+      settings.Add("a_w8", false, "Chaff Grenade", "advanced_wep");
+      settings.Add("a_w9", false, "PSG-1", "advanced_wep");
+    settings.Add("advanced_itm", false, "Item Unlock Splits", "advanced");
+    settings.SetToolTip("advanced_itm", "Split the first time you pick up an item");
+      // Cigs, Scope, Box A, B, C, NVG, Therm G, Gas Mask, Body Armor, Ketchup, Stealth, Bandana, Camera, Ration, Medicine, Diazepam, PAL Key, Card, Time Bomb, Mine D, MO Disk, Rope, Handk, Suppressor
+      settings.Add("a_i2", false, "Cardboard Box A", "advanced_itm");
+      settings.Add("a_i3", false, "Cardboard Box B", "advanced_itm");
+      settings.Add("a_i4", false, "Cardboard Box C", "advanced_itm");
+      settings.Add("a_i5", false, "Night Vision Goggles", "advanced_itm");
+      settings.Add("a_i6", false, "Thermal Goggles", "advanced_itm");
+      settings.Add("a_i7", false, "Gas Mask", "advanced_itm");
+      settings.Add("a_i8", false, "Body Armor", "advanced_itm");
+      settings.Add("a_i12", false, "Camera", "advanced_itm");
+      settings.Add("a_i13", false, "Ration", "advanced_itm");
+      settings.Add("a_i15", false, "Diazepam", "advanced_itm");
+      settings.Add("a_i19", false, "Mine Detector", "advanced_itm");
+      settings.Add("a_i21", false, "Rope", "advanced_itm");
+      settings.Add("a_i23", false, "SOCOM Suppressor", "advanced_itm");
+    settings.Add("advanced_loc", false, "Area Movement Splits", "advanced");
+    settings.SetToolTip("advanced_loc", "Split when you move from one area to another. Defaults match the speedrun route.z");
       settings.Add("a_r0", true, "Dock", "advanced_loc");
-        settings.Add("a_r0_r1_all", true, "to Heliport", "a_r0");
+        settings.Add("a_r-1_r1_p9", true, "to Heliport", "a_r0");
       settings.Add("a_r1", true, "Heliport", "advanced_loc");
         settings.Add("a_r1_r2", true, "to Tank Hangar", "a_r1");
           settings.Add("a_r1_r2_p18", true, "on first arrival", "a_r1_r2");
@@ -226,7 +262,7 @@ startup {
           settings.Add("a_r2_r34_p163", true, "after torture", "a_r2_r34");
           settings.Add("a_r2_r34_all", false, "always", "a_r2_r34");
       settings.Add("a_r3", true, "Cell", "advanced_loc"); // TODO differentiate vent
-        settings.Add("a_r3_r2", false, "to Tank Hangar", "a_r3");
+        settings.Add("a_r3_r2", true, "to Tank Hangar", "a_r3");
           settings.Add("a_r3_r2_p163", true, "after torture", "a_r3_r2");
           settings.Add("a_r3_r2_all", false, "always", "a_r3_r2");
         settings.Add("a_r3_r4", true, "to Armory", "a_r3");
@@ -304,7 +340,7 @@ startup {
           settings.Add("a_r36_r7_p150", true, "after Wolf ambushes Meryl", "a_r36_r7");
           settings.Add("a_r36_r7_pall", false, "always", "a_r36_r7");
         settings.Add("a_r36_r9", true, "to Cave", "a_r36");
-          settings.Add("a_r36_r9_p137", true, "after Psycho Mantis", "a_r36_r9"); // maybe 138
+          settings.Add("a_r36_r9_p137", true, "after Psycho Mantis", "a_r36_r9");
           settings.Add("a_r36_r9_p150", true, "after collecting PSG-1 (AB)", "a_r36_r9");
           settings.Add("a_r36_r9_p163", true, "after torture", "a_r36_r9");
           settings.Add("a_r36_r9_all", false, "always", "a_r36_r9");
@@ -313,7 +349,7 @@ startup {
           settings.Add("a_r9_r36_p149", true, "after Wolf ambushes Meryl", "a_r9_r36");
           settings.Add("a_r9_r36_all", false, "always", "a_r9_r36");
         settings.Add("a_r9_r37", true, "to Underground Passage", "a_r9");
-          settings.Add("a_r9_r37_p141", true, "after Psycho Mantis", "a_r9_r37"); // maybe 143
+          settings.Add("a_r9_r37_p141", true, "after Psycho Mantis", "a_r9_r37");
           settings.Add("a_r9_r37_p150", true, "after collecting PSG-1 (AB)", "a_r9_r37");
           settings.Add("a_r9_r37_p163", true, "after torture", "a_r9_r37");
           settings.Add("a_r9_r37_all", false, "always", "a_r9_r37");
@@ -323,10 +359,10 @@ startup {
           settings.Add("a_r37_r9_all", false, "always", "a_r37_r9");
         settings.Add("a_r37_r38_all", true, "to Torture Room", "a_r37");
         settings.Add("a_r37_r10", true, "to Communications Tower A", "a_r37");
-          settings.Add("a_r37_r10_p173", true, "after torture", "a_r37");
-          settings.Add("a_r37_r10_all", false, "always", "a_r37");
+          settings.Add("a_r37_r10_p173", true, "after torture", "a_r37_r10");
+          settings.Add("a_r37_r10_all", false, "always", "a_r37_r10");
       settings.Add("a_r38", true, "Torture Room", "advanced_loc");
-        settings.Add("a_r38_r20_all", false, "to Medi Room", "a_r38");
+        settings.Add("a_r38_r20_all", true, "to Medi Room", "a_r38");
       settings.Add("a_r20", true, "Medi Room", "advanced_loc");
         settings.Add("a_r20_r38_all", false, "to Torture Room", "a_r20");
         settings.Add("a_r20_r3", true, "to Cell", "a_r20");
@@ -335,7 +371,7 @@ startup {
       settings.Add("a_r10", true, "Communications Towers", "advanced_loc");
         settings.Add("a_r10_r37_all", false, "to Underground Passage", "a_r10");
         settings.Add("a_r10_r44", true, "to Communications Tower Roofs", "a_r10");
-          settings.Add("a_r10_r44_p173", true, "after stairs chase", "a_r10_r44"); // maybe 174
+          settings.Add("a_r10_r44_p173", true, "after stairs chase", "a_r10_r44");
           settings.Add("a_r10_r44_p183", true, "after meeting Otacon", "a_r10_r44");
           settings.Add("a_r10_r44_all", false, "always", "a_r10_r44");
         settings.Add("a_r10_r11_all", false, "to Walkway", "a_r10");
@@ -358,7 +394,7 @@ startup {
         settings.Add("a_r12_r6_all", false, "to Nuke Building", "a_r12");
         settings.Add("a_r12_r10_all", false, "to Communications Towers", "a_r12");
         settings.Add("a_r12_r13", true, "to Blast Furnace", "a_r12");
-          settings.Add("a_r12_r13_p204", true, "after Sniper Wolf 2", "a_r12_r13");
+          settings.Add("a_r-1_r13_p204", true, "after Sniper Wolf 2", "a_r12_r13");
           settings.Add("a_r12_r13_all", false, "always", "a_r12_r13");
       settings.Add("a_r13", true, "Blast Furnace", "advanced_loc");
         settings.Add("a_r13_r12_all", false, "to Snowfield", "a_r13");
@@ -369,9 +405,9 @@ startup {
       settings.Add("a_r14", true, "Cargo Elevator", "advanced_loc");
         settings.Add("a_r14_r13", true, "to Blast Furnace", "a_r14");
           settings.Add("a_r14_r13_p244", true, "after entering cold PAL key", "a_r14_r13");
-          settings.Add("a_r14_r13_all", true, "always", "a_r14_r13");
+          settings.Add("a_r14_r13_all", false, "always", "a_r14_r13");
         settings.Add("a_r14_r40", true, "to Warehouse", "a_r14");
-          settings.Add("a_r14_r40_p210", true, "after Sniper Wolf 2", "a_r14_r40"); // maybe 209
+          settings.Add("a_r14_r40_p209", true, "after Sniper Wolf 2", "a_r14_r40");
           settings.Add("a_r14_r40_all", false, "always", "a_r14_r40");
         settings.Add("a_r14_r17", true, "to Warehouse (with guards)", "a_r14");
           settings.Add("a_r14_r17_p246", true, "after heating the PAL key", "a_r14_r17");
@@ -379,34 +415,38 @@ startup {
         settings.Add("a_r40_r14_all", false, "to Cargo Elevator", "a_r40");
         settings.Add("a_r40_r15", true, "to Warehouse North", "a_r40");
           settings.Add("a_r40_r15_p219", true, "after Vulcan Raven", "a_r40_r15");
-          settings.Add("a_r40_r15_all", false, "after cooling the PAL key", "a_r40_r15");
+          settings.Add("a_r40_r15_p240", false, "after cooling the PAL key", "a_r40_r15");
+          settings.Add("a_r40_r15_all", false, "always", "a_r40_r15");
       settings.Add("a_r17", true, "Warehouse (with guards)", "advanced_loc");
         settings.Add("a_r17_r14", true, "to Cargo Elevator", "a_r17");
           settings.Add("a_r17_r14_p242", true, "after entering cold PAL key", "a_r17_r14");
           settings.Add("a_r17_r14_all", false, "always", "a_r17_r14");
         settings.Add("a_r17_r15", false, "to Warehouse North", "a_r17");
-          settings.Add("a_r17_r15_p246", false, "after heating the PAL key", "a_r17_r15");
+          settings.Add("a_r17_r15_p246", true, "after heating the PAL key", "a_r17_r15");
+          settings.Add("a_r17_r15_all", true, "always", "a_r17_r15");
       settings.Add("a_r15", true, "Warehouse North", "advanced_loc");
         settings.Add("a_r15_r40", true, "to Warehouse", "a_r15");
           settings.Add("a_r15_r40_p240", true, "after entering normal PAL key", "a_r15_r40");
-          settings.Add("a_r15_r40_p242", true, "after entering cold PAL key", "a_r15_r40");
           settings.Add("a_r15_r40_all", false, "always", "a_r15_r40");
+        settings.Add("a_r15_r17", true, "to Warehouse (with guards)", "a_r15");
+          settings.Add("a_r15_r17_p242", true, "after entering cold PAL key", "a_r15_r17");
+          settings.Add("a_r15_r17_all", true, "always", "a_r15_r17");
         settings.Add("a_r15_r16", true, "to Underground Base", "a_r15");
           settings.Add("a_r15_r16_p219", true, "after Vulcan Raven", "a_r15_r16");
           settings.Add("a_r15_r16_p240", true, "after entering normal PAL key", "a_r15_r16");
           settings.Add("a_r15_r16_p242", true, "after cooling the PAL key", "a_r15_r16");
           settings.Add("a_r15_r16_p246", true, "after heating the PAL key", "a_r15_r16");
           settings.Add("a_r15_r16_all", false, "always", "a_r15_r16");
-      settings.Add("a_r16", true, "Underground Base", "advanced_loc"); // TODO diff levels, cutscenes?
+      settings.Add("a_r16", true, "Underground Base", "advanced_loc");
         settings.Add("a_r16_r15", true, "to Warehouse North", "a_r16");
           settings.Add("a_r16_r15_p240", true, "after entering normal PAL key", "a_r16_r15");
           settings.Add("a_r16_r15_p242", true, "after entering cold PAL key", "a_r16_r15");
           settings.Add("a_r16_r15_all", false, "always", "a_r16_r15");
-        settings.Add("a_r16_r41", true, "to Supply Route (Rex)", "a_r16");
+        settings.Add("a_r16_r41_all", true, "to Supply Route (Rex)", "a_r16");
       settings.Add("a_r41", true, "Supply Route (Rex)", "advanced_loc");
-        settings.Add("a_r41_r42", true, "to Supply Route (Liquid)", "a_r41");
+        settings.Add("a_r41_r42_all", true, "to Supply Route (Liquid)", "a_r41");
       settings.Add("a_r42", true, "Supply Route (Liquid)", "advanced_loc");
-        settings.Add("a_r42_r43", true, "to Escape Route", "a_r42");
+        settings.Add("a_r42_r43_all", true, "to Escape Route", "a_r42");
   
   print("Startup complete");
 }
@@ -442,8 +482,8 @@ update {
     D.Debug = Debug;
     
     Action<string, int, int> Info = delegate(string Message, int Timer, int Priority) {
+      if (Timer == -1) D.PrevInfo = Message;
       if (Priority >= D.InfoPriority) {
-        if (Timer == -1) D.PrevInfo = Message;
         vars.Info = Message;
         D.InfoTimer = Timer;
         D.InfoPriority = Priority;
@@ -469,7 +509,8 @@ update {
     // List possible progress values at essentially the same point in the game
     var SameProgressData = new List<ushort[]> {
       new ushort[] { 52, 58 },
-      new ushort[] { 149, 150 }
+      new ushort[] { 149, 150 },
+      new ushort[] { 290, 294 } // VE and regular final split
     };
     D.SameProgressData = new Dictionary<ushort, ushort[]>();
     foreach (ushort[] i in SameProgressData) {
@@ -482,7 +523,11 @@ update {
     
     // Suppress locations that clash with a previous split
     D.LocationClashData = new Dictionary<string, string> {
-      { "a_r0_r1_all", "a_p7" } // Dock > Heliport after reaching Dock elevator
+      { "a_r0_r1_all", "a_p7" }, // Dock > Heliport after reaching Dock elevator
+      { "a_r34_r6_p69", "a_p68" }, // Canyon > Nuke Bldg after beating Tank
+      { "a_r10_r44_p173", "a_p174" }, // Comms Tower A > CTA Roof after chase
+      { "a_r41_42_all", "a_p257" }, // Supply Route Rex > Liquid
+      { "a_r42_43_all", "a_p278" } // Supply Route > Escape Route
     };
     Func<string, bool> LocationClash = delegate(string Code) {
       if (!D.LocationClashData.ContainsKey(Code)) return false;
@@ -491,16 +536,17 @@ update {
     };
     D.LocationClash = LocationClash;
     
-    // Check if a weapon has just unlocked
-    Func<sbyte> WeaponUnlocked = delegate() {
-      for (int i = 0; i < 10; i++) {
+    // Check if a weapon/item has just unlocked
+    Func<byte[], byte[], sbyte> ItemUnlocked = delegate(byte[] Data, byte[] OldData) {
+      int Len = Data.Length;
+      for (int i = 0; i < Len; i++) {
         int Key = (2 * i) + 1;
-        if ( (current.WeaponData[Key] == 0) && (D.old.WeaponData[Key] == 255) )
+        if ( (Data[Key] == 0) && (OldData[Key] == 255) )
           return (sbyte) i;
       }
       return -1;
     };
-    D.WeaponUnlocked = WeaponUnlocked;
+    D.ItemUnlocked = ItemUnlocked;
   
     // Dock elevator timer
     Func<bool> WatDock = delegate() {
@@ -509,12 +555,19 @@ update {
       return false;
     };
     D.Watch.Add("a_p6", WatDock);
-  
     
+    // VE final split
+    Func<bool> ExcVEResults = () => (current.Difficulty == -1);
+    D.Except.Add("a_p286", ExcVEResults);
     
     // Results
-    Func<bool> WatResults = () => ( (vars.SplitTimes["Results"] > 0) || (current.RoomCode == -1) ) ? false : true;
+    Func<bool> WatResults = delegate() {
+      if ( (!D.SplitTimes.ContainsKey("a_p294")) || (D.SplitTimes["a_p294"] != 0) ) return false;
+      return (current.RoomCode != -1);
+    };
+    Func<bool> ExcFalse = () => false;
     D.Watch.Add("a_p294", WatResults);
+    D.Except.Add("a_p294", ExcFalse); // Don't split unless the watcher returns true
     
     
     // General boss watcher
@@ -549,11 +602,8 @@ update {
       // Main info string      
       if ( (Hp != PrevHp) && (Hp > 0) ) {
         string StrInfo = " | " + D.FormatValue(DisplayHp, MaxHp) + " HP";
-        if (StrDmg == "") D.Info(Name + StrInfo, 180, 1);
-        else {
-          D.Info(StrDmg + StrInfo, 120, 1);
-          D.PrevInfo = Name + StrInfo;
-        }
+        D.Info(Name + StrInfo, -1, 1);
+        if (StrDmg != "") D.Info(StrDmg + StrInfo, 120, 1);
         Return = true;
       }
       // Reset data when the combo times out
@@ -608,13 +658,15 @@ update {
     // Rex Phase 1
     Func<bool> WatRex1 = delegate() {
       if (current.VsRex) D.WatRex();
-      return ( (vars.SplitTimes["Rex1"] > 0) || (current.VsRex) || (!vars.old.VsRex) ) ? false : true;
+      if ( (!D.SplitTimes.ContainsKey("a_p255")) || (D.SplitTimes["a_p255"] != 0) ) return false;
+      return ( (!current.VsRex) && (D.old.VsRex) );
     };
     
     // Rex Phase 2
     Func<bool> WatRex2 = delegate() {
       if (current.VsRex) D.WatRex();
-      return ( (vars.SplitTimes["Rex2"] > 0) || (current.VsRex) ) ? false : true;
+      if ( (!D.SplitTimes.ContainsKey("a_p257")) || (D.SplitTimes["a_p257"] != 0) ) return false;
+      return (!current.VsRex);
     };
     
     // Attach bosses
@@ -653,7 +705,7 @@ update {
   if ( (settings["asl_info"]) && (!current.InMenu) ) {
     
     if (settings["asl_info_chaff"]) {
-      if (old.ChaffTime > 0)
+      if ( (current.ChaffTime != old.ChaffTime) && (old.ChaffTime > 0) )
         D.Info( string.Format(
           "Chaff: {0} ({1,4} left)",
           D.FormatValue(current.ChaffTime, 300),
@@ -671,11 +723,10 @@ update {
     }
     
     if ( (current.RoomCode != old.RoomCode) || (vars.CurrentRoom == "") ) {
-      D.PrevInfo = "";
       string CurrentRoom;
       D.Rooms.TryGetValue(current.RoomCode, out CurrentRoom);
       if (CurrentRoom != "") vars.CurrentRoom = CurrentRoom;
-      if (D.InfoTimer == -1) D.InfoTimer = 60;
+      if (D.InfoTimer == -1) D.InfoTimer = 0;
     }
     
     if ( (current.Difficulty != old.Difficulty) || (vars.Difficulty == "") ) {
@@ -705,9 +756,16 @@ update {
 split {
   dynamic D = vars.D;
 
+  sbyte NewItem = -1;
   if (settings["advanced_wep"]) {
-    sbyte NewWeapon = D.WeaponUnlocked();
-    if ( (NewWeapon != -1) && (settings["a_w" + NewWeapon]) ) return D.Split("a_w" + NewWeapon, "Weapon " + NewWeapon + " unlocked");
+    NewItem = D.ItemUnlocked(current.WeaponData, old.WeaponData);
+    if ( (NewItem != -1) && (settings["a_w" + NewItem]) )
+      return D.Split("a_w" + NewItem, "Weapon " + NewItem + " unlocked");
+  }
+  if (settings["advanced_itm"]) {
+    NewItem = D.ItemUnlocked(current.ItemData, old.ItemData);
+    if ( (NewItem != -1) && (settings["a_i" + NewItem]) )
+      return D.Split("a_i" + NewItem, "Item " + NewItem + " unlocked");
   }
   
   string ProgressCode = "a_p" + current.Progress;
@@ -719,10 +777,10 @@ split {
   
   if ( (settings["advanced_evt"]) || (settings["advanced_minevt"]) ) {
     if ( (settings.ContainsKey(ProgressCode)) && (settings[ProgressCode]) ) {
-      if (WatchProgress) return D.Split(ProgressCode, "Watch for " + ProgressCode);
+      if (WatchProgress) return D.Split(ProgressCode, ProgressCode + " (watch)");
       if (current.Progress != old.Progress) {
         if (D.Except.ContainsKey(ProgressCode)) {
-          if (D.Except[ProgressCode]()) return D.Split(ProgressCode, "Except for " + ProgressCode);
+          if (D.Except[ProgressCode]()) return D.Split(ProgressCode, ProgressCode + " (except)");
         }
         else return D.Split(ProgressCode, "Reached " + ProgressCode);
       }
@@ -732,16 +790,55 @@ split {
   if ( (settings["advanced_loc"]) && (current.RoomCode != old.RoomCode) ) {
     string LocationCode = "a_r" + old.RoomCode + "_r" + current.RoomCode;
     string LocationAll = LocationCode + "_all";
-    if ( (settings.ContainsKey(LocationAll)) && (settings[LocationAll]) ) return D.Split(LocationAll, "All visits for " + LocationAll);
+    if ( (settings.ContainsKey(LocationAll)) && (settings[LocationAll]) ) return D.Split(LocationAll, LocationAll + " (all visits");
     foreach ( ushort Progress in D.SameProgress(current.Progress) ) {
       string LocationProgress = LocationCode + "_p" + Progress;
-      D.Debug("Looking for " + LocationProgress);
+      D.Debug(LocationProgress + " (looking)");
       if ( (settings.ContainsKey(LocationProgress)) && (settings[LocationProgress]) ) {
         if ( (!settings["o_nomultisplit"]) || (!D.SplitTimes.ContainsKey(LocationProgress)) || (D.SplitTimes[LocationProgress] == 0) )
-          return D.Split(LocationProgress, "Room change for " + LocationProgress);
+          return D.Split(LocationProgress, LocationProgress + " (room change)");
       }
     }
   }
   
   return false;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
