@@ -15,7 +15,7 @@ state("mgsi") {
   
   bool      _BOSS_HEALTH:   0x000000;
   short     OcelotHp:       0x594124, 0x830;
-  short     NinjaHp:        0x2BBC7C, 0x6D4;
+  short     NinjaHp:        0x4ED7E4;
   short     MantisHp:       0x3236C6;
   short     MantisMaxHp:    0x283A58;
   short     Wolf1Hp:        0x5059E0;
@@ -26,18 +26,18 @@ state("mgsi") {
   short     RexHp:          0x4F071C;
   short     RexMaxHp:       0x4F0724;
   short     LiquidHp:       0x50B978;
-  short     EscapeHp:       0x000000;
-  short     EscapeMaxHp:    0x000000;
+  // short     EscapeHp:       0x000000;
+  // short     EscapeMaxHp:    0x000000;
   
   bool      _OTHER:         0x000000;
   sbyte     Difficulty:     0x38E7E2;
-  ushort    Health:         0x000000;
+  // ushort    Health:         0x000000;
   ushort    O2Time:         0x595348;
   short     ChaffTime:      0x391A28;
   bool      InMenu:         0x31D180;
   bool      VsRex:          0x388630;
   byte20    WeaponData:     0x38E802;
-  byte20    ItemData:       0x38E82A;
+  byte46    ItemData:       0x38E82A;
   ushort    DockTimer:      0x4F56AC;
 }
 
@@ -80,8 +80,8 @@ startup {
   
   vars.D = new ExpandoObject();
   dynamic D = vars.D;
-  D.Except = new Dictionary< string, Func<bool> >();
-  D.Watch = new Dictionary< string, Func<bool> >();
+  D.Except = new Dictionary< string, Func<int> >();
+  D.Watch = new Dictionary< string, Func<int> >();
   D.Initialised = false;
   
   D.Difficulties = new Dictionary<sbyte, string> {
@@ -153,7 +153,7 @@ startup {
     settings.Add("debug_file", true, "Save debug information to LiveSplit program directory", "options");
     settings.Add("o_startonload", false, "Start splits when loading a save", "options");
     settings.Add("o_nomultisplit", true, "Suppress splitting on repeated actions", "options");
-    settings.Add("o_nolocationclash", true, "Suppress location splits that clash with event splits", "options");
+    settings.Add("o_nolocationclash", true, "Suppress splits of different categories that clash with each other", "options");
     
   settings.Add("asl", true, "ASL Var Viewer integration");
   settings.SetToolTip("asl", "Disabling this may slightly improve performance");
@@ -165,10 +165,8 @@ startup {
         settings.Add("asl_info_chaff", true, "Chaff", "asl_info_vars");
         settings.Add("asl_info_o2", true, "O2", "asl_info_vars");
         settings.Add("asl_info_boss", true, "Boss health", "asl_info_vars");
-          settings.Add("asl_info_boss_dmg_flurry", true, "Group hits done within a short time", "asl_info_boss");
-          settings.SetToolTip("asl_info_boss_dmg_flurry", "Shows the sum damage for flurries of attacks");
-          settings.Add("asl_info_boss_dmg_full", false, "Group all hits done during the battle", "asl_info_boss");
-          settings.SetToolTip("asl_info_boss_dmg_full", "A simple damage increment that never resets");
+          settings.Add("asl_info_boss_dmg_flurry", true, "Show total combo damage", "asl_info_boss");
+          settings.SetToolTip("asl_info_boss_dmg_flurry", "Shows the sum damage for flurries of attacks, instead of single-attack damage");
           settings.Add("asl_info_boss_combo", true, "Add a combo counter", "asl_info_boss");
           settings.SetToolTip("asl_info_boss_combo", "This uses the same timing as grouped attacks above");
         settings.Add("asl_info_dock", true, "Dock elevator countdown", "asl_info_vars");
@@ -213,6 +211,7 @@ startup {
       settings.Add("a_p174", false, "[Comms Tower A] Completed stairs chase", "advanced_minevt");
       settings.Add("a_p178", false, "[Comms Tower A Roof] Attached the rope", "advanced_minevt");
       settings.Add("a_p179", false, "[Comms Tower A Outside] Completed rappel", "advanced_minevt");
+      settings.Add("a_p181", false, "[Comms Tower B] DAMN", "advanced_minevt");
       settings.Add("a_p186", false, "[Comms Tower B Roof] Reached Hind D", "advanced_minevt");
       settings.Add("a_p194", false, "[Comms Tower B] Reached elevator ambush", "advanced_minevt");
       settings.Add("a_p195", false, "[Comms Tower B] Completed elevator ambush", "advanced_minevt");
@@ -228,7 +227,6 @@ startup {
       settings.Add("a_p247", false, "[Underground Base] Inserted hot PAL Key", "advanced_minevt");
       settings.Add("a_p252", false, "[Underground Base] Reached Metal Gear REX", "advanced_minevt");
       settings.Add("a_p255", false, "[Supply Route] Completed Metal Gear REX (Phase 1)", "advanced_minevt");
-      settings.Add("a_p277", false, "[Supply Route] Reached Liquid Snake", "advanced_minevt");
     settings.Add("advanced_wep", false, "Weapon Unlock Splits", "advanced");
     settings.SetToolTip("advanced_wep", "Split the first time you pick up a weapon");
       settings.Add("a_w0", false, "SOCOM", "advanced_wep");
@@ -251,7 +249,7 @@ startup {
       settings.Add("a_i6", false, "Thermal Goggles", "advanced_itm");
       settings.Add("a_i7", false, "Gas Mask", "advanced_itm");
       settings.Add("a_i8", false, "Body Armor", "advanced_itm");
-      settings.Add("a_i12", false, "Camera", "advanced_itm");
+      settings.Add("a_i12", false, "Camera", "advanced_itm"); // TODO test this and everything past it
       settings.Add("a_i13", false, "Ration", "advanced_itm");
       settings.Add("a_i15", false, "Diazepam", "advanced_itm");
       settings.Add("a_i19", false, "Mine Detector", "advanced_itm");
@@ -280,7 +278,7 @@ startup {
           settings.Add("a_r2_r34_p150", true, "after collecting PSG-1 (AB)", "a_r2_r34");
           settings.Add("a_r2_r34_p163", true, "after torture", "a_r2_r34");
           settings.Add("a_r2_r34_all", false, "always", "a_r2_r34");
-      settings.Add("a_r3", true, "Cell", "advanced_loc"); // TODO differentiate vent
+      settings.Add("a_r3", true, "Cell", "advanced_loc");
         settings.Add("a_r3_r2", true, "to Tank Hangar", "a_r3");
           settings.Add("a_r3_r2_p163", true, "after torture", "a_r3_r2");
           settings.Add("a_r3_r2_all", false, "always", "a_r3_r2");
@@ -298,11 +296,11 @@ startup {
         settings.Add("a_r4_r33", true, "to Armory South", "a_r4");
           settings.Add("a_r4_r33_p36", true, "after Guard Encounter", "a_r4_r33");
           settings.Add("a_r4_r33_all", false, "always", "a_r4_r33");
-      settings.Add("a_r33", true, "Armory South", "advanced_loc"); // TODO differentiate vs ocelot
+      settings.Add("a_r33", true, "Armory South", "advanced_loc");
         settings.Add("a_r33_r4", true, "to Armory", "a_r33");
           settings.Add("a_r33_r4_p52", true, "after Revolver Ocelot", "a_r33_r4");
           settings.Add("a_r33_r4_all", false, "always", "a_r33_r4");
-      settings.Add("a_r34", true, "Canyon", "advanced_loc"); // TODO diff vs tank
+      settings.Add("a_r34", true, "Canyon", "advanced_loc");
         settings.Add("a_r34_r2", true, "to Tank Hangar", "a_r34");
           settings.Add("a_r34_r2_p150", true, "after Wolf ambushes Meryl", "a_r34_r2");
           settings.Add("a_r34_r2_all", false, "always", "a_r34_r2");
@@ -354,7 +352,7 @@ startup {
         settings.Add("a_r35_r45", true, "to Nuke Building, B2 Corridor", "a_r35");
           settings.Add("a_r35_r45_p111", true, "after Ninja", "a_r35_r45");
           settings.Add("a_r35_r45_all", false, "always", "a_r35_r45");
-      settings.Add("a_r36", true, "Commander's Room", "advanced_loc"); // TODO diff mantis
+      settings.Add("a_r36", true, "Commander's Room", "advanced_loc");
         settings.Add("a_r36_r7", true, "to Nuke Building, B1", "a_r36");
           settings.Add("a_r36_r7_p150", true, "after Wolf ambushes Meryl", "a_r36_r7");
           settings.Add("a_r36_r7_pall", false, "always", "a_r36_r7");
@@ -403,7 +401,7 @@ startup {
           settings.Add("a_r44_r10_p190", true, "after Hind D", "a_r44_r10");
           settings.Add("a_r44_r10_all", false, "always", "a_r44_r10");
       settings.Add("a_r39", true, "Communications Tower Rappel", "advanced_loc");
-        settings.Add("a_r39_r11_all", false, "to Walkway", "a_r39");
+        settings.Add("a_r39_r11_all", true, "to Walkway", "a_r39");
       settings.Add("a_r11", true, "Walkway", "advanced_loc");
         settings.Add("a_r11_r10", true, "to Communications Towers", "a_r11");
           settings.Add("a_r11_r10_p180", true, "after walkway ambush", "a_r11_r10");
@@ -434,22 +432,22 @@ startup {
         settings.Add("a_r40_r14_all", false, "to Cargo Elevator", "a_r40");
         settings.Add("a_r40_r15", true, "to Warehouse North", "a_r40");
           settings.Add("a_r40_r15_p219", true, "after Vulcan Raven", "a_r40_r15");
-          settings.Add("a_r40_r15_p240", false, "after cooling the PAL key", "a_r40_r15");
+          settings.Add("a_r40_r15_p240", true, "after cooling the PAL key", "a_r40_r15");
           settings.Add("a_r40_r15_all", false, "always", "a_r40_r15");
       settings.Add("a_r17", true, "Warehouse (with guards)", "advanced_loc");
         settings.Add("a_r17_r14", true, "to Cargo Elevator", "a_r17");
           settings.Add("a_r17_r14_p242", true, "after entering cold PAL key", "a_r17_r14");
           settings.Add("a_r17_r14_all", false, "always", "a_r17_r14");
-        settings.Add("a_r17_r15", false, "to Warehouse North", "a_r17");
+        settings.Add("a_r17_r15", true, "to Warehouse North", "a_r17");
           settings.Add("a_r17_r15_p246", true, "after heating the PAL key", "a_r17_r15");
-          settings.Add("a_r17_r15_all", true, "always", "a_r17_r15");
+          settings.Add("a_r17_r15_all", false, "always", "a_r17_r15");
       settings.Add("a_r15", true, "Warehouse North", "advanced_loc");
         settings.Add("a_r15_r40", true, "to Warehouse", "a_r15");
           settings.Add("a_r15_r40_p240", true, "after entering normal PAL key", "a_r15_r40");
           settings.Add("a_r15_r40_all", false, "always", "a_r15_r40");
         settings.Add("a_r15_r17", true, "to Warehouse (with guards)", "a_r15");
           settings.Add("a_r15_r17_p242", true, "after entering cold PAL key", "a_r15_r17");
-          settings.Add("a_r15_r17_all", true, "always", "a_r15_r17");
+          settings.Add("a_r15_r17_all", false, "always", "a_r15_r17");
         settings.Add("a_r15_r16", true, "to Underground Base", "a_r15");
           settings.Add("a_r15_r16_p219", true, "after Vulcan Raven", "a_r15_r16");
           settings.Add("a_r15_r16_p240", true, "after entering normal PAL key", "a_r15_r16");
@@ -512,8 +510,13 @@ update {
     
     // Confirm a split
     Func<string, string, bool> Split = delegate(string Code, string Reason) {
-      if ( (!settings["o_nolocationclash"]) || (D.LocationClash(Code)) ) {
+      if ( (settings["o_nolocationclash"]) && (D.LocationClash(Code)) ) {
         Debug(Code + " clashes with an earlier split, not splitting");
+        return false;
+      }
+      if ( (settings["o_nomultisplit"]) && (Code.Substring(Code.Length - 4) != "all") &&
+        (D.SplitTimes.ContainsKey(Code)) && (D.SplitTimes[Code] > 0) ) {
+        Debug(Code + " has already been split, not splitting");
         return false;
       }
       D.DebugTimer = D.DebugTimerStart;
@@ -532,6 +535,7 @@ update {
     var SameProgressData = new List<ushort[]> {
       new ushort[] { 52, 58 },
       new ushort[] { 149, 150 },
+      new ushort[] { 237, 238 }, // Rat (in case the insta doesn't work)
       new ushort[] { 290, 294 } // VE and regular final split
     };
     D.SameProgressData = new Dictionary<ushort, ushort[]>();
@@ -545,22 +549,30 @@ update {
     
     // Suppress locations that clash with a previous split
     D.LocationClashData = new Dictionary<string, string> {
-      { "a_r0_r1_all", "a_p7" }, // Dock > Heliport after reaching Dock elevator
+      { "a_r-1_r1_p9", "a_p7" }, // Dock > Heliport after reaching Dock elevator
       { "a_r34_r6_p69", "a_p68" }, // Canyon > Nuke Bldg after beating Tank
-      { "a_r10_r44_p173", "a_p174" }, // Comms Tower A > CTA Roof after chase
-      { "a_r41_42_all", "a_p257" }, // Supply Route Rex > Liquid
-      { "a_r42_43_all", "a_p278" } // Supply Route > Escape Route
+      { "a_p76", "a_r45_r35_p75" }, // Reached Ninja
+      { "a_r37_r38_all", "a_p153" }, // UG Passage > Torture Room after Wolf 1
+      { "a_p158", "a_r38_r20_all" }, // Prison Cell after TR > Medi Room
+      { "a_r20_r3_p163", "a_p163" }, // Medi Room > Cell after escape
+      { "a_p174", "a_r10_r44_p173" }, // Comms Tower A > CTA Roof after chase
+      { "a_r44_r39_all", "a_p178" }, // CTA Roof > CTA Outside after rope
+      { "a_r39_r11_all", "a_p179" }, // CTA Outside > Walkway after rappel
+      { "a_p211", "a_r14_r40_p209" }, // Reached Raven
+      { "a_r16_r41_all", "a_p252" }, // Reached Rex
+      { "a_r41_r42_all", "a_p257" }, // Supply Route Rex > Liquid
+      { "a_r42_r43_all", "a_p278" } // Supply Route > Escape Route
     };
     Func<string, bool> LocationClash = delegate(string Code) {
       if (!D.LocationClashData.ContainsKey(Code)) return false;
       string Clash = D.LocationClashData[Code];
-      return (D.SplitTimes[Clash] > 0);
+      return ( (D.SplitTimes.ContainsKey(Clash)) && (D.SplitTimes[Clash] > 0) );
     };
     D.LocationClash = LocationClash;
     
     // Check if a weapon/item has just unlocked
     Func<byte[], byte[], sbyte> ItemUnlocked = delegate(byte[] Data, byte[] OldData) {
-      int Len = Data.Length;
+      int Len = Data.Length / 2;
       for (int i = 0; i < Len; i++) {
         int Key = (2 * i) + 1;
         if ( (Data[Key] == 0) && (OldData[Key] == 255) )
@@ -571,25 +583,25 @@ update {
     D.ItemUnlocked = ItemUnlocked;
   
     // Dock elevator timer
-    Func<bool> WatDock = delegate() {
-      if ( (settings["asl_info_dock"]) && (current.DockTimer < D.old.DockTimer) )
+    Func<int> WatDock = delegate() {
+      if ( (settings["asl_info_dock"]) && (current.DockTimer < D.old.DockTimer) &&
+        (current.DockTimer > 0) && (current.DockTimer <= 3600) )
         D.Info("Elevator appears in " + D.FramesToSeconds(current.DockTimer * 2), 15, 1);
-      return false;
+      return 0;
     };
     D.Watch.Add("a_p6", WatDock);
     
+    // PAL key (rat)
+    Func<int> WatRat = () => ( (current.ItemData[33] == 0) && (D.old.ItemData[33] == 255) ) ? 1 : -1;
+    D.Watch.Add("a_237", WatRat);
+    
     // VE final split
-    Func<bool> ExcVEResults = () => (current.Difficulty == -1);
-    D.Except.Add("a_p286", ExcVEResults);
+    Func<int> ExcVEResults = () => ( (current.Difficulty == -1) ? 1 : -1 );
+    D.Except.Add("a_p290", ExcVEResults); 
     
     // Results
-    Func<bool> WatResults = delegate() {
-      if ( (!D.SplitTimes.ContainsKey("a_p294")) || (D.SplitTimes["a_p294"] != 0) ) return false;
-      return (current.RoomCode != -1);
-    };
-    Func<bool> ExcFalse = () => false;
+    Func<int> WatResults = () => ( ((current.RoomCode != -1) && (D.old.RoomCode == 1)) ? 1 : -1 );
     D.Watch.Add("a_p294", WatResults);
-    D.Except.Add("a_p294", ExcFalse); // Don't split unless the watcher returns true
     
     
     // General boss watcher
@@ -652,18 +664,19 @@ update {
     D.BossHealth = BossHealth;
     
     // Bosses
-    Func<bool> WatOcelot = () => (D.BossHealth("Revolver Ocelot", current.OcelotHp, D.old.OcelotHp, 1024, true) && false);
-    Func<bool> WatNinja = () => (D.BossHealth("Ninja", current.NinjaHp, D.old.NinjaHp, 255, true) && false);
-    Func<bool> WatMantis = () => (D.BossHealth("Psycho Mantis", current.MantisHp, D.old.MantisHp, current.MantisMaxHp, true) && false);
-    Func<bool> WatWolf1 = () => (D.BossHealth("Sniper Wolf", current.Wolf1Hp, D.old.Wolf1Hp, 1024, true) && false);
-    Func<bool> WatHind = () => (D.BossHealth("Hind D", current.HindHp, D.old.HindHp, 1024, false) && false);
-    Func<bool> WatWolf2 = () => (D.BossHealth("Sniper Wolf", current.Wolf2Hp, D.old.Wolf2Hp, 1024, true) && false);
-    Func<bool> WatRaven = () => (D.BossHealth("Vulcan Raven", current.RavenHp, D.old.RavenHp, current.RavenMaxHp, true) && false);
-    Func<bool> WatRex = () => (D.BossHealth("Metal Gear REX", current.RexHp, D.old.RexHp, current.RexMaxHp, true) && false);
+    Func<int> WatOcelot = () => { D.BossHealth("Revolver Ocelot", current.OcelotHp, D.old.OcelotHp, 1024, true); return 0; };
+    Func<int> WatNinja = () => { D.BossHealth("Ninja", current.NinjaHp, D.old.NinjaHp, 255, true); return 0; };
+    Func<int> WatMantis = () => { D.BossHealth("Psycho Mantis", current.MantisHp, D.old.MantisHp, current.MantisMaxHp, true); return 0; };
+    Func<int> WatWolf1 = () => { D.BossHealth("Sniper Wolf", current.Wolf1Hp, D.old.Wolf1Hp, 1024, true); return 0; };
+    Func<int> WatHind = () => { D.BossHealth("Hind D", current.HindHp, D.old.HindHp, 1024, false); return 0; };
+    Func<int> WatWolf2 = () => { D.BossHealth("Sniper Wolf", current.Wolf2Hp, D.old.Wolf2Hp, 1024, true); return 0; };
+    Func<int> WatRaven = () => { D.BossHealth("Vulcan Raven", current.RavenHp, D.old.RavenHp, current.RavenMaxHp, true); return 0; };
+    Func<int> WatRex = () => { D.BossHealth("Metal Gear REX", current.RexHp, D.old.RexHp, current.RexMaxHp, true); return ( (!current.VsRex) && (D.old.VsRex) ) ? 1 : -1; };
+    Func<int> WatLiquidSimple = () => { D.BossHealth("Liquid Snake", current.LiquidHp, D.old.LiquidHp, 255, false); return 0; };
     D.WatRex = WatRex;
     
-    Func<bool> WatLiquid = delegate() {
-      if (!D.BossHealth("Liquid Snake", current.LiquidHp, D.old.LiquidHp, 255, false)) return false;
+    Func<int> WatLiquid = delegate() {
+      if (!D.BossHealth("Liquid Snake", current.LiquidHp, D.old.LiquidHp, 255, false)) return -1;
       int Phase = 1;
       if (
         ( (current.Difficulty < 2) && (current.LiquidHp < 56) ) ||
@@ -673,23 +686,7 @@ update {
       string StrAdd = " (Phase " + Phase + ")";
       vars.Info += StrAdd;
       D.PrevInfo += StrAdd;
-      return false;
-    };
-    
-    //Func<bool> WatEscape = () => (D.BossHealth("Liquid Snake", current.EscapeHp, D.old.EscapeHp, D.EscapeMaxHp, false) && false);
-    
-    // Rex Phase 1
-    Func<bool> WatRex1 = delegate() {
-      if (current.VsRex) D.WatRex();
-      if ( (!D.SplitTimes.ContainsKey("a_p255")) || (D.SplitTimes["a_p255"] != 0) ) return false;
-      return ( (!current.VsRex) && (D.old.VsRex) );
-    };
-    
-    // Rex Phase 2
-    Func<bool> WatRex2 = delegate() {
-      if (current.VsRex) D.WatRex();
-      if ( (!D.SplitTimes.ContainsKey("a_p257")) || (D.SplitTimes["a_p257"] != 0) ) return false;
-      return (!current.VsRex);
+      return -1;
     };
     
     // Attach bosses
@@ -700,10 +697,9 @@ update {
     D.Watch.Add("a_p186", WatHind); 
     D.Watch.Add("a_p197", WatWolf2);
     D.Watch.Add("a_p211", WatRaven);
-    D.Watch.Add("a_p255", WatRex1);
-    D.Watch.Add("a_p257", WatRex2);
-    D.Watch.Add("a_p277", WatLiquid);
-    // D.Watch.Add("a_p283", WatEscape);
+    D.Watch.Add("a_p255", WatRex);
+    D.Watch.Add("a_p257", WatRex);
+    D.Watch.Add("a_p277", WatLiquidSimple);
     
     
     // Convert frames to seconds
@@ -724,9 +720,10 @@ update {
     D.Initialised = true;
   }
   
+  // Update ASL variables
   vars.CurrentRoom = "";
   if ( (settings["asl_info"]) && (!current.InMenu) ) {
-    
+    // Chaff timer
     if (settings["asl_info_chaff"]) {
       if ( (current.ChaffTime != old.ChaffTime) && (old.ChaffTime > 0) )
         D.Info( string.Format(
@@ -735,7 +732,7 @@ update {
           D.FramesToSeconds(current.ChaffTime * 2)
         ), 15, 2);
     }
-    
+    // O2 timer // TODO fix multiplier
     if (settings["asl_info_o2"]) {
       if (old.O2Time < 1024)
         D.Info( string.Format(
@@ -744,19 +741,19 @@ update {
           D.FramesToSeconds(current.O2Time * 4)
         ), 15, 3);
     }
-    
+    // Current area
     if ( (current.RoomCode != old.RoomCode) || (vars.CurrentRoom == "") ) {
       string CurrentRoom;
       D.Rooms.TryGetValue(current.RoomCode, out CurrentRoom);
       if (CurrentRoom != "") vars.CurrentRoom = CurrentRoom;
       if (D.InfoTimer == -1) D.InfoTimer = 0;
     }
-    
+    // Current difficulty
     if ( (current.Difficulty != old.Difficulty) || (vars.Difficulty == "") ) {
       vars.Difficulty = ( (current.Difficulty >= -1) && (current.Difficulty <= 3) ) ?
         D.Difficulties[current.Difficulty] : "";
     }
-    
+    // Elapse the timer for Info
     if (D.InfoTimer != -1) {
       D.InfoTimer--;
       if (D.InfoTimer == -1) {
@@ -764,27 +761,23 @@ update {
         D.InfoPriority = -1;
       }
     }
-    
+    // Stats & Codename
     if ( (settings["asl_stats"]) || (settings["asl_info_codename"]) ) {
-     
+      // Current codename (not for VE)
       if (current.Difficulty != -1) {
         int OldRank = D.CurrentRank;
-        
         // Rank 0 (Big Boss) (Alert<5, Kill<26, Ration<2, Continue=0, Time<3h)
         if (D.CurrentRank == 0) {
           if ( (current.Alerts >= 5) || (current.Kills >= 26) || (current.RationsUsed >= 2) ||
             (current.Continues != 0) || (current.GameTime >= 648000) )
             D.CurrentRank = 1;
         }
-        
         // Rank 1 (Eagle) (Time < 2.5h)
         if ( (D.CurrentRank == 1) && (current.GameTime >= 540000) ) D.CurrentRank = 2;
-        
         // Rank 2 (Orca) (Kills > 249)
         if ( (D.CurrentRank == 2) && (current.Kills <= 249) ) D.CurrentRank = 3;
-        
         // Rank 3 (Ostrich) (Rations > 129, Saves > 79, Time >= 18h)
-        if (D.CurrentRank == 3) {
+        if ( (D.CurrentRank >= 3) && (D.CurrentRank < 7) ) {
           bool Ration = (current.RationsUsed > 129);
           bool Save = (current.Saves > 79);
           bool Time = (current.GameTime >= 3888000);
@@ -795,7 +788,6 @@ update {
             else D.CurrentRank = 7;
           }
         }
-        
         // Rank 7+ (Everything else)
         if ( (D.CurrentRank >= 7) && 
           ( (current.Kills != old.Kills) || (current.Alerts != old.Alerts) || (D.CurrentRank != OldRank) )
@@ -814,11 +806,10 @@ update {
             else D.CurrentRank = (AK >= 9) ? 9 : 8; // TasDevil, otherwise Crocodile
           }
         }
-        
         if ( (D.CurrentRank != OldRank) && (settings["asl_info_codename"]) && (vars.Stats != "") )
           D.Info("Codename changed to " + D.CodeNames[D.CurrentRank][current.Difficulty], 180, 4);
       }
-      
+      // Stats
       if ( (settings["asl_stats"]) && (
         (current.Alerts != old.Alerts) || (current.Kills != old.Kills) || (current.Continues != old.Continues) ||
         (current.RationsUsed != old.RationsUsed) || (current.Saves != old.Saves) || (current.InMenu != old.InMenu)
@@ -834,19 +825,13 @@ update {
           ((settings["asl_stats_short"]) ? "R" : D.Plural(current.RationsUsed, " Ration", " Rations")) );
         if (current.Saves > 0) Stats.Add( current.Saves + 
           ((settings["asl_stats_short"]) ? "S" : D.Plural(current.Saves, " Save", " Saves")) );
-        
         string StringStats = string.Join( settings["asl_stats_short"] ? " " : ", ", Stats );
-        
         if (current.Difficulty != -1)
           StringStats += " [" + D.CodeNames[D.CurrentRank][current.Difficulty] + "]";
-        
         vars.Stats = StringStats;
       }
-
     }
-    
   }
-  
   
   if ( (!current.InMenu) && (old.InMenu) ) D.InitVars();
   return true;
@@ -855,6 +840,7 @@ update {
 split {
   dynamic D = vars.D;
 
+  // Split if a new weapon/item has been unlocked
   sbyte NewItem = -1;
   if (settings["advanced_wep"]) {
     NewItem = D.ItemUnlocked(current.WeaponData, old.WeaponData);
@@ -863,20 +849,34 @@ split {
   }
   if (settings["advanced_itm"]) {
     NewItem = D.ItemUnlocked(current.ItemData, old.ItemData);
-    if ( (NewItem != -1) && (settings["a_i" + NewItem]) )
+    if ( (NewItem != -1) && (settings.ContainsKey("a_i" + NewItem)) && (settings["a_i" + NewItem]) )
       return D.Split("a_i" + NewItem, "Item " + NewItem + " unlocked");
   }
   
-  string ProgressCode = "a_p" + current.Progress;
-  string RoomCode = "a_r" + current.RoomCode;
-  string RoomProgressCode = RoomCode + "_p" + current.Progress;
-  bool WatchProgress = ( (D.Watch.ContainsKey(ProgressCode)) && (D.Watch[ProgressCode]()) );
-  bool WatchRoom = ( (D.Watch.ContainsKey(RoomCode)) && (D.Watch[RoomCode]()) );
-  bool WatchRoomProgress = ( (D.Watch.ContainsKey(RoomProgressCode)) && (D.Watch[RoomProgressCode]()) );
+  // Watch functions
+  var Codes = new Dictionary<string, string> {
+    { "Progress",     "a_p" + current.Progress },
+    { "Room",         "a_r" + current.RoomCode },
+    { "RoomProgress", "a_r" + current.RoomCode + "_p" + current.Progress }
+  };
+  int WatchSplit = 0;
+  string WatchSplitCode = "";
+  foreach (string Code in Codes.Values) {
+    if ( D.Watch.ContainsKey(Code) ) {
+      int Result = D.Watch[Code]();
+      if (Result != 0) {
+        WatchSplit = Result;
+        WatchSplitCode = Code;
+      }
+    }
+  }
+  if ( (WatchSplit != 0) && (settings.ContainsKey(WatchSplitCode)) && (settings[WatchSplitCode]) )
+    return (WatchSplit == 1) ? D.Split(WatchSplitCode, WatchSplitCode + " (watch)") : false;
   
+  // Progress changes
   if ( (settings["advanced_evt"]) || (settings["advanced_minevt"]) ) {
+    string ProgressCode = Codes["Progress"];
     if ( (settings.ContainsKey(ProgressCode)) && (settings[ProgressCode]) ) {
-      if (WatchProgress) return D.Split(ProgressCode, ProgressCode + " (watch)");
       if (current.Progress != old.Progress) {
         if (D.Except.ContainsKey(ProgressCode)) {
           if (D.Except[ProgressCode]()) return D.Split(ProgressCode, ProgressCode + " (except)");
@@ -885,18 +885,17 @@ split {
       }
     }
   }
-  
+    
+  // Location changes
   if ( (settings["advanced_loc"]) && (current.RoomCode != old.RoomCode) ) {
     string LocationCode = "a_r" + old.RoomCode + "_r" + current.RoomCode;
     string LocationAll = LocationCode + "_all";
-    if ( (settings.ContainsKey(LocationAll)) && (settings[LocationAll]) ) return D.Split(LocationAll, LocationAll + " (all visits");
+    if ( (settings.ContainsKey(LocationAll)) && (settings[LocationAll]) ) return D.Split(LocationAll, LocationAll + " (all visits)");
     foreach ( ushort Progress in D.SameProgress(current.Progress) ) {
       string LocationProgress = LocationCode + "_p" + Progress;
       D.Debug(LocationProgress + " (looking)");
-      if ( (settings.ContainsKey(LocationProgress)) && (settings[LocationProgress]) ) {
-        if ( (!settings["o_nomultisplit"]) || (!D.SplitTimes.ContainsKey(LocationProgress)) || (D.SplitTimes[LocationProgress] == 0) )
-          return D.Split(LocationProgress, LocationProgress + " (room change)");
-      }
+      if ( (settings.ContainsKey(LocationProgress)) && (settings[LocationProgress]) )
+        return D.Split(LocationProgress, LocationProgress + " (room change)");
     }
   }
   
