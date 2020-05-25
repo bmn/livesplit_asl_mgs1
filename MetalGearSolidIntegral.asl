@@ -299,6 +299,7 @@ startup {
         settings.Add("a_r4_r2", true, "to Tank Hangar", "a_r4");
           settings.Add("a_r4_r2_p52", true, "after Revolver Ocelot", "a_r4_r2");
           settings.Add("a_r4_r2_p150", true, "after collecting PSG-1 (AB)", "a_r4_r2");
+          settings.Add("a_r4_r2_p163", true, "after torture (Any%)", "a_r4_r2");
           settings.Add("a_r4_r2_all", false, "always", "a_r4_r2");
         settings.Add("a_r4_r3_all", false, "to Cell", "a_r4");
         settings.Add("a_r4_r33", true, "to Armory South", "a_r4");
