@@ -2,7 +2,7 @@
 <Run version="1.7.0">
   <GameIcon />
   <GameName>Metal Gear Solid</GameName>
-  <CategoryName>Any%</CategoryName>
+  <CategoryName>All Bosses</CategoryName>
   <Metadata>
     <Run id="" />
     <Platform usesEmulator="False">PC</Platform>
@@ -15,7 +15,61 @@
   <AttemptHistory />
   <Segments>
     <Segment>
-      <Name>Enter Prison Cell</Name>
+      <Name>Guard Encounter</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Revolver Ocelot</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>M1 Tank</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Ninja</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Psycho Mantis</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Sniper Wolf</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Hind D</Name>
       <Icon />
       <SplitTimes>
         <SplitTime name="Personal Best" />
@@ -69,7 +123,7 @@
       <SegmentHistory />
     </Segment>
     <Segment>
-      <Name>Results</Name>
+      <Name>Score</Name>
       <Icon />
       <SplitTimes>
         <SplitTime name="Personal Best" />
