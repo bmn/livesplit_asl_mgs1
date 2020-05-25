@@ -16,6 +16,7 @@ state("mgsi") {
   bool      _BOSS_HEALTH:   0x000000;
   short     OcelotHp:       0x594124, 0x830;
   short     NinjaHp:        0x4ED7E4;
+  short     NinjaHp2:       0x6B16EC;
   short     MantisHp:       0x3236C6;
   short     MantisMaxHp:    0x283A58;
   short     Wolf1Hp:        0x5059E0;
@@ -26,6 +27,7 @@ state("mgsi") {
   short     RexHp:          0x4F071C;
   short     RexMaxHp:       0x4F0724;
   short     LiquidHp:       0x50B978;
+  byte      LiquidPhase:    0x50B94C;
   // short     EscapeHp:       0x000000;
   // short     EscapeMaxHp:    0x000000;
   
@@ -107,6 +109,15 @@ startup {
     { 11, new string[] { "Flying Squirrel", "Bat", "Flying Fox", "Night Owl" } }
   };
   
+  // todo 6, 16
+  D.O2Multiplier = new Dictionary<int, double> {
+    { 0, 1.0 },
+    { 1, 2.0 },
+    { 6, 301/64 },
+    { 8, 3/4 },
+    { 16, 2.0 }
+  };
+  
   D.CurrentRank = 0;
   D.SplitTimes = new Dictionary<string, uint> {};
   Action InitVars = delegate() {
@@ -140,7 +151,7 @@ startup {
     { 36, "Commander's Room" },
     { 37, "Underground Passage" },
     { 38, "Torture Room" },
-    { 39, "Comms Tower Outside" },
+    { 39, "Comms Tower Wall" },
     { 40, "Warehouse" },
     { 41, "Supply Route" },
     { 42, "Supply Route" },
@@ -249,12 +260,9 @@ startup {
       settings.Add("a_i6", false, "Thermal Goggles", "advanced_itm");
       settings.Add("a_i7", false, "Gas Mask", "advanced_itm");
       settings.Add("a_i8", false, "Body Armor", "advanced_itm");
-      settings.Add("a_i12", false, "Camera", "advanced_itm"); // TODO test this and everything past it
-      settings.Add("a_i13", false, "Ration", "advanced_itm");
-      settings.Add("a_i15", false, "Diazepam", "advanced_itm");
+      settings.Add("a_i12", false, "Camera", "advanced_itm");
       settings.Add("a_i19", false, "Mine Detector", "advanced_itm");
       settings.Add("a_i21", false, "Rope", "advanced_itm");
-      settings.Add("a_i23", false, "SOCOM Suppressor", "advanced_itm");
     settings.Add("advanced_loc", false, "Area Movement Splits", "advanced");
     settings.SetToolTip("advanced_loc", "Split when you move from one area to another. Defaults match the speedrun route.z");
       settings.Add("a_r0", true, "Dock", "advanced_loc");
@@ -586,12 +594,12 @@ update {
     Func<int> WatDock = delegate() {
       if ( (settings["asl_info_dock"]) && (current.DockTimer < D.old.DockTimer) &&
         (current.DockTimer > 0) && (current.DockTimer <= 3600) )
-        D.Info("Elevator appears in " + D.FramesToSeconds(current.DockTimer * 2), 15, 1);
+        D.Info("Elevator appears in " + D.FramesToSeconds(current.DockTimer), 15, 1);
       return 0;
     };
     D.Watch.Add("a_p6", WatDock);
     
-    // PAL key (rat)
+    // PAL key (rat), currently not used
     Func<int> WatRat = () => ( (current.ItemData[33] == 0) && (D.old.ItemData[33] == 255) ) ? 1 : -1;
     D.Watch.Add("a_237", WatRat);
     
@@ -600,7 +608,7 @@ update {
     D.Except.Add("a_p290", ExcVEResults); 
     
     // Results
-    Func<int> WatResults = () => ( ((current.RoomCode != -1) && (D.old.RoomCode == 1)) ? 1 : -1 );
+    Func<int> WatResults = () => ( ((current.RoomCode != -1) && (D.old.RoomCode == -1)) ? 1 : -1 );
     D.Watch.Add("a_p294", WatResults);
     
     
@@ -675,15 +683,12 @@ update {
     Func<int> WatLiquidSimple = () => { D.BossHealth("Liquid Snake", current.LiquidHp, D.old.LiquidHp, 255, false); return 0; };
     D.WatRex = WatRex;
     
+    var LiquidPhases = new Dictionary<byte, byte> { { 0, 1 }, { 3, 2 }, { 2, 3 }, { 4, 4 } };
     Func<int> WatLiquid = delegate() {
       if (!D.BossHealth("Liquid Snake", current.LiquidHp, D.old.LiquidHp, 255, false)) return -1;
-      int Phase = 1;
-      if (
-        ( (current.Difficulty < 2) && (current.LiquidHp < 56) ) ||
-        (current.LiquidHp < 58)
-      ) Phase = 3;
-      else if (current.LiquidHp < 170) Phase = 2;
-      string StrAdd = " (Phase " + Phase + ")";
+      byte Phase = 0;
+      LiquidPhases.TryGetValue(current.LiquidPhase, out Phase);
+      string StrAdd = (Phase == 0) ? "" : " (Phase " + Phase + ")";
       vars.Info += StrAdd;
       D.PrevInfo += StrAdd;
       return -1;
@@ -699,11 +704,11 @@ update {
     D.Watch.Add("a_p211", WatRaven);
     D.Watch.Add("a_p255", WatRex);
     D.Watch.Add("a_p257", WatRex);
-    D.Watch.Add("a_p277", WatLiquidSimple);
+    D.Watch.Add("a_p277", WatLiquid);
     
     
-    // Convert frames to seconds
-    Func<int, string> FramesToSeconds = (int Frames) => string.Format("{0:F1}", (decimal) Frames / 60);
+    // Convert frames (30fps logic) to seconds
+    Func<int, string> FramesToSeconds = (int Frames) => string.Format("{0:F1}", (decimal) Frames / 30);
     D.FramesToSeconds = FramesToSeconds;
     
     // Convert current/max to percentage (if that setting is enabled)
@@ -729,16 +734,20 @@ update {
         D.Info( string.Format(
           "Chaff: {0} ({1,4} left)",
           D.FormatValue(current.ChaffTime, 300),
-          D.FramesToSeconds(current.ChaffTime * 2)
+          D.FramesToSeconds(current.ChaffTime)
         ), 15, 2);
     }
-    // O2 timer // TODO fix multiplier
+    // O2 timer
     if (settings["asl_info_o2"]) {
       if (old.O2Time < 1024)
         D.Info( string.Format(
+          "O2: {0}",
+          D.FormatValue(current.O2Time, 1024)
+        ), 15, 3);
+        if (false) D.Info( string.Format(
           "O2: {0} ({1,4} left)",
           D.FormatValue(current.O2Time, 1024),
-          D.FramesToSeconds(current.O2Time * 4)
+          D.FramesToSeconds((int)((double)current.O2Time / D.O2Multiplier[current.RoomCode]))
         ), 15, 3);
     }
     // Current area
@@ -901,42 +910,3 @@ split {
   
   return false;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,11 +2,11 @@
 
 state("mgsi") {
   uint   GameTime:    0x595344;
-  byte   RoomCode:    0x28CE34;
+  sbyte  RoomCode:    0x28CE34;
   ushort Progress:    0x38D7CA;
   bool   InMenu:      0x31D180;
   bool   VsRex:       0x388630;
-  sbyte  Psg1Unlock:  0x38E815;
+  bool   Psg1Locked:  0x38E815;
 }
 
 isLoading {
@@ -20,113 +20,115 @@ gameTime {
 reset {
   // Don't reset from the credits
   if ( (current.InMenu) && (current.InMenu != old.InMenu) && (current.Progress != 294) ) {
-    vars.InitVars();
+    vars.D.InitVars();
     return true;
   }
   return false;
 }
 
 start {
-  if ( (current.Progress == 1) && (current.Progress != vars.old.Progress) ) {
-    vars.InitVars();
+  if ( (current.Progress == 1) && (current.Progress != vars.D.old.Progress) ) {
+    vars.D.InitVars();
     return true;
   }
   return false;
 } 
 
 startup {
-  vars.Except = new Dictionary< string, Func<bool> >();
-  vars.Watch = new Dictionary< string, Func<bool> >();
-  vars.Initialised = false;
+  vars.D = new ExpandoObject();
+  dynamic D = vars.D;
   
-  vars.SplitTimes = new Dictionary<string, uint> { { "Rex1", 0 }, { "Rex2", 0 }, { "Results", 0 } };
+  D.Initialised = false;
+  D.Except = new Dictionary< string, Func<bool> >();
+  D.Watch = new Dictionary< string, Func<bool> >();
+  
+  D.SplitTimes = new Dictionary<string, uint> { { "Rex1", 0 }, { "Rex2", 0 }, { "Results", 0 } };
   Action InitVars = delegate() {
-    foreach ( string Key in vars.SplitTimes.Keys.ToList() ) vars.SplitTimes[Key] = 0;
+    var Keys = new List<string>(D.SplitTimes.Keys);
+    foreach ( string Key in Keys ) D.SplitTimes[Key] = 0;
   };
-  vars.InitVars = InitVars;
+  D.InitVars = InitVars;
   
-  settings.Add("splits", true, "Split Points");
-    settings.Add("p_7", false, "Dock Elevator", "splits");
-    settings.Add("p_27", false, "Exit DARPA Chief's cell", "splits");
-    settings.Add("p_29", true, "Guard Encounter", "splits");
-    settings.Add("p_39", true, "Revolver Ocelot", "splits");
-    settings.Add("p_68", true, "M1 Tank", "splits");
-    settings.Add("p_78", true, "Ninja", "splits");
-    settings.Add("p_126", false, "Stun Meryl", "splits");
-    settings.Add("p_133", true, "Psycho Mantis", "splits");
-    settings.Add("p_150", false, "Collect PSG-1", "splits");
-    settings.Add("p_151", true, "Sniper Wolf", "splits");
-    settings.Add("p_158", true, "Enter Prison Cell", "splits");
-    settings.Add("p_163", false, "Prison Escape", "splits");
-    settings.Add("p_174", false, "Communications Tower Chase", "splits");
-    settings.Add("p_179", false, "Communications Tower Rappel", "splits");
-    settings.Add("p_188", true, "Hind D", "splits");
-    settings.Add("p_195", false, "Comms Tower Elevator Ambush", "splits");
-    settings.Add("p_198", true, "Sniper Wolf 2", "splits");
-    settings.Add("p_207", false, "Cargo Elevator Ambush", "splits");
-    settings.Add("p_212", true, "Vulcan Raven", "splits");
-    settings.Add("p_238", false, "Retrieved PAL Key", "splits");
-    settings.Add("p_239", false, "Normal PAL Key", "splits");
-    settings.Add("p_241", false, "Cold PAL Key", "splits");
-    settings.Add("p_247", false, "Hot PAL Key", "splits");
-    settings.Add("p_255", false, "Rex Phase 1", "splits");
-    settings.Add("p_257", true, "Rex Phase 2", "splits");
-    settings.Add("p_278", true, "Liquid Snake", "splits");
-    settings.Add("p_286", false, "Escape", "splits");
-    settings.Add("p_287", true, "Ending Codec", "splits");
-    settings.SetToolTip("p_287", "The final split on Very Easy");
-    settings.Add("p_294", true, "Results", "splits");
+  settings.Add("basic", true, "Split Points");
+  settings.SetToolTip("basic", "Same split behaviour as Basic Splits Mode in the full version");
+    settings.Add("b_p_7", false, "Dock Elevator", "basic");
+    settings.Add("b_p_29", true, "Guard Encounter", "basic");
+    settings.Add("b_p_39", true, "Revolver Ocelot", "basic");
+    settings.Add("b_p_68", true, "M1 Tank", "basic");
+    settings.Add("b_p_78", true, "Ninja", "basic");
+    settings.Add("b_p_133", true, "Psycho Mantis", "basic");
+    settings.Add("b_w_psg1", false, "Collect PSG-1", "basic");
+    settings.Add("b_p_151", true, "Sniper Wolf", "basic");
+    settings.Add("b_p_158", false, "Enter Prison Cell", "basic");
+    settings.Add("b_p_163", false, "Prison Escape", "basic");
+    settings.Add("b_p_174", false, "Comms Tower Chase", "basic");
+    settings.Add("b_p_179", false, "Comms Tower Rappel", "basic");
+    settings.Add("b_p_188", true, "Hind D", "basic");
+    settings.Add("b_p_195", false, "Comms Tower Elevator Ambush", "basic");
+    settings.Add("b_p_198", true, "Sniper Wolf 2", "basic");
+    settings.Add("b_p_207", false, "Cargo Elevator Ambush", "basic");
+    settings.Add("b_p_212", true, "Vulcan Raven", "basic");
+    settings.Add("b_p_238", false, "Retrieved PAL Key", "basic");
+    settings.Add("b_p_239", false, "Normal PAL Key", "basic");
+    settings.Add("b_p_241", false, "Cold PAL Key", "basic");
+    settings.Add("b_p_247", false, "Hot PAL Key", "basic");
+    settings.Add("b_p_255", false, "Metal Gear REX (Phase 1)", "basic");
+    settings.Add("b_p_257", true, "Metal Gear REX", "basic");
+    settings.Add("b_p_278", true, "Liquid Snake", "basic");
+    settings.Add("b_p_286", true, "Escape", "basic");
+    settings.Add("b_p_287", false, "Ending Codec", "basic");
+    settings.SetToolTip("b_p_287", "The final split on Very Easy");
+    settings.Add("b_p_294", true, "Score", "basic");
   
   print("Startup complete");
 }
 
 update {
-  vars.old = old;
+  dynamic D = vars.D;
+  D.old = old;
   
-  if (!vars.Initialised) {
-  
-    // PSG-1
-    Func<bool> WatPsg1 = delegate() {
-      return ( (current.Psg1Unlock != vars.old.Psg1Unlock) && (current.PsgUnlock == 0) );
-    };
-    vars.Watch.Add("p_150", WatPsg1);
+  if (!D.Initialised) {
   
     // Rex Phase 1
     Func<bool> WatRex1 = delegate() {
-      if ( (vars.SplitTimes["Rex1"] > 0) || (current.VsRex) || (!vars.old.VsRex) ) return false;
-      vars.SplitTimes["Rex1"] = current.GameTime;
+      if ( (D.SplitTimes["Rex1"] > 0) || (current.VsRex) || (!D.old.VsRex) ) return false;
+      D.SplitTimes["Rex1"] = current.GameTime;
       return true;
     };
-    vars.Watch.Add("p_255", WatRex1);
+    D.Watch.Add("p_255", WatRex1);
     
     // Rex Phase 2
     Func<bool> WatRex2 = delegate() {
-      if ( (vars.SplitTimes["Rex2"] > 0) || (current.VsRex) ) return false;
-      vars.SplitTimes["Rex2"] = current.GameTime;
+      if ( (D.SplitTimes["Rex2"] > 0) || (current.VsRex) ) return false;
+      D.SplitTimes["Rex2"] = current.GameTime;
       return true;
     };
-    vars.Watch.Add("p_257", WatRex2);
+    D.Watch.Add("p_257", WatRex2);
     
     // Results
     Func<bool> WatResults = delegate() {
-      if ( (vars.SplitTimes["Results"] > 0) || (current.RoomCode == 255) ) return false;
-      vars.SplitTimes["Results"] = current.GameTime;
+      if ( (D.SplitTimes["Results"] > 0) || (current.RoomCode == -1) || (D.old.RoomCode != -1) ) return false;
+      D.SplitTimes["Results"] = current.GameTime;
       return true;
     };
-    vars.Watch.Add("p_294", WatResults);
+    D.Watch.Add("p_294", WatResults);
     
-    vars.Initialised = true;
+    D.Initialised = true;
   }
   
-  if (current.GameTime < vars.SplitTimes["Rex1"]) vars.InitVars();
+  if ( (!current.InMenu) && (old.InMenu) ) D.InitVars();
   return true;
 }
 
 split {
-  string ProgressCode = "p_" + current.Progress;
+  dynamic D = vars.D;
+  
+  if ( (settings["b_w_psg1"]) && (old.Psg1Locked) && (!current.Psg1Locked) ) return true;
+
+  string ProgressCode = "b_p_" + current.Progress;
   if ( (!settings.ContainsKey(ProgressCode)) || (!settings[ProgressCode]) ) return false;
-  if (vars.Watch.ContainsKey(ProgressCode)) return vars.Watch[ProgressCode]();
+  if (D.Watch.ContainsKey(ProgressCode)) return D.Watch[ProgressCode]();
   if (current.Progress == old.Progress) return false;
-  if (vars.Except.ContainsKey(ProgressCode)) return vars.Except[ProgressCode]();
+  if (D.Except.ContainsKey(ProgressCode)) return D.Except[ProgressCode]();
   return true;
 }
