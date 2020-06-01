@@ -32,6 +32,8 @@ See the settings for customisability options.
 ## Split Points
 There are five categories of Split Points. By default only the Boss Completion splits are enabled (offering a similar selection to Autosplitter Lite), but you can enable multiple categories and customise them to get the exact set of splits you want. If two categories have splits that occur at the same time, or in the same cutscene sequence, only the first of these splits will occur.
 
+You can enable/disable all splits, or return to default settings, by right-clicking a category and selecting one of those options.
+
 * Boss Completion Splits
   * These occur when you defeat a major boss.
   * There is also a split at the Score screen. If on Very Easy, this will split instead on the first codec in the ending, as per speedrun.com rules.
