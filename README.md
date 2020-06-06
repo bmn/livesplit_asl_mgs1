@@ -8,6 +8,7 @@ A LiveSplit autosplitter for Metal Gear Solid Integral on PC
   * This is needed for the autosplitter to be able to see the game's memory.
 * In LiveSplit's Layout Editor, add a `Scriptable Auto Splitter` component, open it and point it at the splitter of your choice.
   * Alternatively, open one of the provided layouts, which will include a component with a appropriate set of defaults.
+    * You might still need to point the Scriptable Auto Splitter to the correct file, depending on your install location.
 * Tweak the autosplitter settings to your liking.
   * A set of split files is provided that match common setups. You can customise these further if you like.
 
@@ -35,16 +36,21 @@ There are five categories of Split Points. By default only the Boss Completion s
 You can enable/disable all splits, or return to default settings, by right-clicking a category and selecting one of those options.
 
 * Boss Completion Splits
+  * *Enabled by default*
   * These occur when you defeat a major boss.
   * There is also a split at the Score screen. If on Very Easy, this will split instead on the first codec in the ending, as per speedrun.com rules.
 * Other Event Splits
+  * *Disabled by default. Recommended to only enable specific entries here and add those to your split list.*
   * These occur at other notable occasions, such as when you arrive at a boss or complete minor set pieces. Of particular note are:
     * Breaking into prison with the vent clip.
     * Retrieving the PAL Key from the rat, and the use of each key in the control room.
 * Weapon/Item Unlock Splits
+  * *Disabled by default. Recommended to only enable specific entries here and add those to your split list.*
   * These occur the first time you collect a weapon or item.
 * Area Movement Splits
+  * *Disabled by default, but enabled in the example layouts that include "Locations".*
   * These occur when you move from one area to another.
   * They're organised by *Departure Area > Destination Area > Game Progress*, offering fine control of when you want to split.
-  * The default settings will split once only, on each movement that occurs during a typical speedrun.
+  * The default settings will split once only, on each movement that occurs during a typical speedrun. You can disable specific settings to remove them from your splits.
+  * Movements that don't occur in a typical speedrun will not have any child settings for game progress. In this case, enabling that movement is equivalent to selecting the "always" setting.
   
