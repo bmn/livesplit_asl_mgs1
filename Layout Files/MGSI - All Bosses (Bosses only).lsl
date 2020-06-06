@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Layout version="1.6.1">
   <Mode>Vertical</Mode>
-  <X>2488</X>
-  <Y>160</Y>
+  <X>2458</X>
+  <Y>113</Y>
   <VerticalWidth>286</VerticalWidth>
   <VerticalHeight>444</VerticalHeight>
   <HorizontalWidth>-1</HorizontalWidth>
@@ -249,11 +249,8 @@
           <Setting id="a_i7" type="bool">False</Setting>
           <Setting id="a_i8" type="bool">False</Setting>
           <Setting id="a_i12" type="bool">False</Setting>
-          <Setting id="a_i13" type="bool">False</Setting>
-          <Setting id="a_i15" type="bool">False</Setting>
           <Setting id="a_i19" type="bool">False</Setting>
           <Setting id="a_i21" type="bool">False</Setting>
-          <Setting id="a_i23" type="bool">False</Setting>
           <Setting id="advanced_loc" type="bool">False</Setting>
           <Setting id="a_r0" type="bool">True</Setting>
           <Setting id="a_r-1_r1_p9" type="bool">True</Setting>

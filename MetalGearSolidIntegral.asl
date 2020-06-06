@@ -211,6 +211,7 @@ startup {
     settings.SetToolTip("advanced_minevt", "For more options, see the Area Movement Splits section");
       settings.Add("a_p7", false, "[Dock] Reached elevator", "advanced_minevt");
       settings.Add("a_p19", false, "[Cell] Reached the DARPA Chief", "advanced_minevt");
+      settings.Add("a_p22", false, "[Cell] METAL GEAR!?", "advanced_minevt");
       settings.Add("a_p27", false, "[Cell] Reached Guard Encounter", "advanced_minevt");
       settings.Add("a_p37", false, "[Armory South] Reached Revolver Ocelot", "advanced_minevt");
       settings.Add("a_p50", false, "[Armory South] BRIBES", "advanced_minevt");
@@ -298,7 +299,7 @@ startup {
           settings.Add("a_r3_r2_all", false, "always", "a_r3_r2");
         settings.Add("a_r3_r4", true, "to Armory", "a_r3");
           settings.Add("a_r3_r4_p36", true, "after Guard Encounter", "a_r3_r4");
-          settings.Add("a_r3_r4_p163", true, "after torture (Any% no GME)", "a_r3_r4");
+          settings.Add("a_r3_r4_p163", true, "after torture (Any%)", "a_r3_r4");
           settings.Add("a_r3_r4_all", false, "always", "a_r3_r4");
         settings.Add("a_r3_r20", true, "to Medi Room", "a_r3");
           settings.Add("a_r3_r20_p18", true, "on first arrival (Any%)", "a_r3_r20");
@@ -402,31 +403,39 @@ startup {
         settings.Add("a_r20_r3", true, "to Cell", "a_r20");
           settings.Add("a_r20_r3_p163", true, "after torture", "a_r20_r3");
           settings.Add("a_r20_r3_all", false, "always", "a_r20_r3");
-      settings.Add("a_r10", true, "Communications Tower A or B", "advanced_loc");
-        settings.Add("a_r10_r37_all", false, "to Underground Passage", "a_r10");
-        settings.Add("a_r10_r44", true, "to Communications Tower A or B Roof", "a_r10");
-          settings.Add("a_r10_r44_p173", true, "after stairs chase", "a_r10_r44");
-          settings.Add("a_r10_r44_p183", true, "after meeting Otacon", "a_r10_r44");
-          settings.Add("a_r10_r44_all", false, "always", "a_r10_r44");
-        settings.Add("a_r10_r11_all", false, "to Walkway", "a_r10");
-        settings.Add("a_r10_r12", true, "to Snowfield", "a_r10");
-          settings.Add("a_r10_r12_p195", true, "after Hind D", "a_r10_r12");
-          settings.Add("a_r10_r12_all", false, "always", "a_r10_r12");
-      settings.Add("a_r44", true, "Communications Tower A or B Roof", "advanced_loc");
-        settings.Add("a_r44_r39_all", true, "to Communications Tower Rappel", "a_r44");
-        settings.Add("a_r44_r10", true, "to Communications Towers", "a_r44");
-          settings.Add("a_r44_r10_p190", true, "after Hind D", "a_r44_r10");
-          settings.Add("a_r44_r10_all", false, "always", "a_r44_r10");
-      settings.Add("a_r39", true, "Communications Tower A Wall", "advanced_loc");
+      settings.Add("a_r10_a", true, "Communications Tower A", "advanced_loc");
+        settings.Add("a_r10_r37_all", false, "to Underground Passage", "a_r10_a");
+        settings.Add("a_r10_r44_a", true, "to Comms Tower A Roof", "a_r10_a");
+          settings.Add("a_r10_r44_p173", true, "after stairs chase", "a_r10_r44_a");
+      settings.Add("a_r44_a", true, "Comms Tower A Roof", "advanced_loc");
+        settings.Add("a_r44_r39_all", true, "to Comms Tower A Wall", "a_r44_a");
+      settings.Add("a_r39", true, "Comms Tower A Wall", "advanced_loc");
         settings.Add("a_r39_r11_all", true, "to Walkway", "a_r39");
       settings.Add("a_r11", true, "Walkway", "advanced_loc");
-        settings.Add("a_r11_r10", true, "to Communications Tower A or B", "a_r11");
+        settings.Add("a_r11_r10", true, "to Comms Tower A or B", "a_r11");
           settings.Add("a_r11_r10_p180", true, "after rappel", "a_r11_r10");
           settings.Add("a_r11_r10_all", false, "always", "a_r11_r10");
+      settings.Add("a_r10_b", true, "Communications Tower B", "advanced_loc");
+        settings.Add("a_r10_r44_b", true, "to Comms Tower B Roof", "a_r10_b");
+          settings.Add("a_r10_r44_p183", true, "after meeting Otacon", "a_r10_r44_b");
+        settings.Add("a_r10_r12", true, "to Snowfield", "a_r10_b");
+          settings.Add("a_r10_r12_p180", true, "after Walkway ambush (Any%)", "a_r10_r12");
+          settings.Add("a_r10_r12_p195", true, "after Hind D (AB)", "a_r10_r12");
+          settings.Add("a_r10_r12_all", false, "always", "a_r10_r12");
+      settings.Add("a_r44_b", true, "Comms Tower B Roof", "advanced_loc");
+        settings.Add("a_r44_r10_b", true, "to Communications Tower B", "a_r44_b");
+          settings.Add("a_r44_r10_p190", true, "after Hind D", "a_r44_r10_b");
+      settings.Add("a_r10", false, "Comms Tower A or B", "advanced_loc");
+      settings.SetToolTip("a_r10", "These are in addition to the specific location movements above");
+        settings.Add("a_r10_r44_all", false, "to Comms Tower A or B Roof", "a_r10");
+        settings.Add("a_r10_r11_all", false, "to Walkway", "a_r10");
+      settings.Add("a_r44", false, "Comms Tower A or B Roof", "advanced_loc");
+      settings.SetToolTip("a_r44", "These are in addition to the specific location movements above");
+        settings.Add("a_r44_r10_all", false, "to Comms Tower A or B", "a_r44");
       settings.Add("a_r12", true, "Snowfield", "advanced_loc");
         settings.Add("a_r12_r1_all", false, "to Heliport", "a_r12");
         settings.Add("a_r12_r6_all", false, "to Nuke Building", "a_r12");
-        settings.Add("a_r12_r10_all", false, "to Communications Towers", "a_r12");
+        settings.Add("a_r12_r10_all", false, "to Communications Tower B", "a_r12");
         settings.Add("a_r12_r13", true, "to Blast Furnace", "a_r12");
           settings.Add("a_r-1_r13_p204", true, "after Sniper Wolf 2", "a_r12_r13");
           settings.Add("a_r12_r13_all", false, "always", "a_r12_r13");
@@ -442,29 +451,26 @@ startup {
           settings.Add("a_r14_r13_all", false, "always", "a_r14_r13");
         settings.Add("a_r14_r40", true, "to Warehouse", "a_r14");
           settings.Add("a_r14_r40_p209", true, "after Sniper Wolf 2", "a_r14_r40");
-          settings.Add("a_r14_r40_all", false, "always", "a_r14_r40");
-        settings.Add("a_r14_r17", true, "to Warehouse (with guards)", "a_r14");
-          settings.Add("a_r14_r17_p246", true, "after heating the PAL key", "a_r14_r17");
+          settings.Add("a_r14_r17_p246", true, "after heating the PAL key", "a_r14_r40");
+          settings.Add("a_r14_r40_all", false, "always (Warehouse without guards)", "a_r14_r40");
+          settings.Add("a_r14_r17_all", false, "always (Warehouse with guards)", "a_r14_r40");
       settings.Add("a_r40", true, "Warehouse", "advanced_loc");
-        settings.Add("a_r40_r14_all", false, "to Cargo Elevator", "a_r40");
+        settings.Add("a_r40_r14", true, "to Cargo Elevator", "a_r40");
+          settings.Add("a_r17_r14_p242", true, "after using cold PAL key", "a_r40_r14");
+          settings.Add("a_r40_r14_all", false, "always (Warehouse without guards)", "a_r40_r14");
+          settings.Add("a_r17_r14_all", false, "always (Warehouse with guards)", "a_r40_r14");
         settings.Add("a_r40_r15", true, "to Warehouse North", "a_r40");
           settings.Add("a_r40_r15_p219", true, "after Vulcan Raven", "a_r40_r15");
           settings.Add("a_r40_r15_p240", true, "after cooling the PAL key", "a_r40_r15");
-          settings.Add("a_r40_r15_all", false, "always", "a_r40_r15");
-      settings.Add("a_r17", true, "Warehouse (with guards)", "advanced_loc");
-        settings.Add("a_r17_r14", true, "to Cargo Elevator", "a_r17");
-          settings.Add("a_r17_r14_p242", true, "after using cold PAL key", "a_r17_r14");
-          settings.Add("a_r17_r14_all", false, "always", "a_r17_r14");
-        settings.Add("a_r17_r15", true, "to Warehouse North", "a_r17");
-          settings.Add("a_r17_r15_p246", true, "after heating the PAL key", "a_r17_r15");
-          settings.Add("a_r17_r15_all", false, "always", "a_r17_r15");
+          settings.Add("a_r17_r15_p246", true, "after heating the PAL key", "a_r40_r15");
+          settings.Add("a_r40_r15_all", false, "always (Warehouse without guards)", "a_r40_r15");
+          settings.Add("a_r17_r15_all", false, "always (Warehouse with guards)", "a_r40_r15");
       settings.Add("a_r15", true, "Warehouse North", "advanced_loc");
         settings.Add("a_r15_r40", true, "to Warehouse", "a_r15");
           settings.Add("a_r15_r40_p240", true, "after using normal PAL key", "a_r15_r40");
-          settings.Add("a_r15_r40_all", false, "always", "a_r15_r40");
-        settings.Add("a_r15_r17", true, "to Warehouse (with guards)", "a_r15");
-          settings.Add("a_r15_r17_p242", true, "after using cold PAL key", "a_r15_r17");
-          settings.Add("a_r15_r17_all", false, "always", "a_r15_r17");
+          settings.Add("a_r15_r17_p242", true, "after using cold PAL key", "a_r15_r40");
+          settings.Add("a_r15_r40_all", false, "always (Warehouse with guards)", "a_r15_r40");
+          settings.Add("a_r15_r17_all", false, "always (Warehouse without guards)", "a_r15_r40");
         settings.Add("a_r15_r16", true, "to Underground Base", "a_r15");
           settings.Add("a_r15_r16_p219", true, "after Vulcan Raven", "a_r15_r16");
           settings.Add("a_r15_r16_p240", true, "after using normal PAL key", "a_r15_r16");
@@ -576,27 +582,33 @@ update {
       (D.SameSplitData.ContainsKey(Code)) ? D.SameSplitData[Code] : new string[] { Code };
     D.SameSplit = SameSplit;
     
-    // Suppress locations that clash with a previous split
-    D.LocationClashData = new Dictionary<string, string> {
-      { "a_r-1_r1_p9", "a_p7" }, // Dock > Heliport after reaching Dock elevator
-      { "a_r34_r6_p69", "a_p68" }, // Canyon > Nuke Bldg after beating Tank
-      { "a_p76", "a_r45_r35_p75" }, // Reached Ninja
-      { "a_r37_r38_all", "a_p153" }, // UG Passage > Torture Room after Wolf 1
-      { "a_p158", "a_r38_r20_p18" }, // Prison Cell after TR > Medi Room
-      { "a_r20_r3_p163", "a_p163" }, // Medi Room > Cell after escape
-      { "a_p174", "a_r10_r44_p173" }, // Comms Tower A > CTA Roof after chase
-      { "a_r44_r39_all", "a_p178" }, // CTA Roof > CTA Outside after rope
-      { "a_r39_r11_all", "a_p179" }, // CTA Outside > Walkway after rappel
-      { "a_p211", "a_r14_r40_p209" }, // Reached Raven
-      { "a_r16_r41_all", "a_p252" }, // Reached Rex
-      { "a_r41_r42_all", "a_p257" }, // Supply Route Rex > Liquid
-      { "a_r42_r43_all", "a_p278" }, // Supply Route > Escape Route
-      { "a_p238", "a_p237" } // Rat clash with insta-rat
+    // Suppress locations that clash with a previous split (second split, first split)
+    D.LocationClashData = new Dictionary<string, string[]> {
+      { "a_r-1_r1_p9", new string[] { "a_p7" } }, // Dock > Heliport after reaching Dock elevator
+      { "a_r34_r6_p69", new string[] { "a_p68" } }, // Canyon > Nuke Bldg after beating Tank
+      { "a_p76", new string[] { "a_r45_r35_p75" } }, // Reached Ninja
+      { "a_r37_r38_all", new string[] { "a_p153" } }, // UG Passage > Torture Room after Wolf 1
+      { "a_p158", new string[] {
+        "a_r3_r20_p18", // Medi Room after Cell > Medi Room (vent clip)
+        "a_r38_r20_p18" // Prison Cell after TR > Medi Room
+      } }, 
+      { "a_r20_r3_p163", new string[] { "a_p163" } }, // Medi Room > Cell after escape
+      { "a_p174", new string[] { "a_r10_r44_p173" } }, // Comms Tower A > CTA Roof after chase
+      { "a_r44_r39_all", new string[] { "a_p178" } }, // CTA Roof > CTA Outside after rope
+      { "a_r39_r11_all", new string[] { "a_p179" } }, // CTA Outside > Walkway after rappel
+      { "a_p211", new string[] { "a_r14_r40_p209" } }, // Reached Raven
+      { "a_r16_r41_all", new string[] { "a_p252" } }, // Reached Rex
+      { "a_r41_r42_all", new string[] { "a_p257" } }, // Supply Route Rex > Liquid
+      { "a_r42_r43_all", new string[] { "a_p278" } }, // Supply Route > Escape Route
+      { "a_p238", new string[] { "a_p237" } } // Rat clash with insta-rat
     };
     Func<string, bool> LocationClash = delegate(string Code) {
       if (!D.LocationClashData.ContainsKey(Code)) return false;
-      string Clash = D.LocationClashData[Code];
-      return ( (D.SplitTimes.ContainsKey(Clash)) && (D.SplitTimes[Clash] > 0) );
+      string[] Clashes = D.LocationClashData[Code];
+      foreach (string Clash in Clashes) {
+        if ( (D.SplitTimes.ContainsKey(Clash)) && (D.SplitTimes[Clash] > 0) ) return true;
+      }
+      return false;
     };
     D.LocationClash = LocationClash;
     

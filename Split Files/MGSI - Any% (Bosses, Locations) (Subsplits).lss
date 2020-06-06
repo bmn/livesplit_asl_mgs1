@@ -69,6 +69,15 @@
       <SegmentHistory />
     </Segment>
     <Segment>
+      <Name>-Armory</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
       <Name>-Tank Hangar</Name>
       <Icon />
       <SplitTimes>
