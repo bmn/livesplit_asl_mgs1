@@ -591,6 +591,15 @@
       <SegmentHistory />
     </Segment>
     <Segment>
+      <Name>Retrieved PAL Key</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
       <Name>Underground Base</Name>
       <Icon />
       <SplitTimes>

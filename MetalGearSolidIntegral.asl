@@ -192,7 +192,7 @@ startup {
       settings.SetToolTip("asl_stats_short", "Enable this if the full stat names make the message too long");
 
   settings.Add("advanced", true, "Split Points");
-    settings.Add("advanced_evt", true, "Boss Completion Splits", "advanced");
+    settings.Add("advanced_evt", true, "Major Splits", "advanced");
       settings.Add("a_p29", true, "Guard Encounter", "advanced_evt");
       settings.Add("a_p39", true, "Revolver Ocelot", "advanced_evt");
       settings.Add("a_p68", true, "M1 Tank", "advanced_evt");
@@ -202,6 +202,7 @@ startup {
       settings.Add("a_p188", true, "Hind D", "advanced_evt");
       settings.Add("a_p198", true, "Sniper Wolf 2", "advanced_evt");
       settings.Add("a_p212", true, "Vulcan Raven", "advanced_evt");
+      settings.Add("a_p238", true, "Retrieved PAL key", "advanced_evt");
       settings.Add("a_p257", true, "Metal Gear REX", "advanced_evt");
       settings.Add("a_p278", true, "Liquid Snake", "advanced_evt");
       settings.Add("a_p286", true, "Escape", "advanced_evt");
@@ -236,8 +237,6 @@ startup {
       settings.Add("a_p207", false, "[Cargo Elevator] Completed elevator ambush", "advanced_minevt");
       settings.Add("a_p211", false, "[Warehouse] Reached Vulcan Raven", "advanced_minevt");
       settings.Add("a_p228", false, "[Underground Base] Reached the control room", "advanced_minevt");
-      settings.Add("a_p238", false, "[Underground Base] Retrieved PAL key", "advanced_minevt");
-      // settings.SetToolTip("a_p238", "Splits when the \"PAL KEY\" overlay disappears");
       settings.Add("a_p239", false, "[Underground Base] Inserted normal PAL key", "advanced_minevt");
       settings.Add("a_r15_r40_p240_evt", false, "[Warehouse] Entered area to cool the PAL key", "advanced_minevt");
       settings.Add("a_p241", false, "[Underground Base] Inserted cold PAL Key", "advanced_minevt");
