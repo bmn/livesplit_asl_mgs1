@@ -43,6 +43,7 @@ state("mgsi") {
   byte20    WeaponData:     0x38E802;
   byte46    ItemData:       0x38E82A;
   ushort    DockTimer:      0x4F56AC;
+  ushort    ScoreDone:      0x38E7EA;
 }
 
 isLoading {
@@ -642,7 +643,8 @@ update {
     D.Except.Add("a_p290", ExcVEResults); 
     
     // Results
-    Func<int> WatResults = () => ( (current.RoomCode != -1) && (D.old.RoomCode == -1) ) ? 1 : -1;
+    //Func<int> WatResults = () => ( (current.RoomCode != -1) && (D.old.RoomCode == -1) ) ? 1 : -1;
+    Func<int> WatResults = () => ( (current.RoomCode != -1) && (current.ScoreDone == 4) && (D.old.ScoreDone != 4) ) ? 1 : -1;
     D.Watch.Add("a_p294", WatResults);
     
     
