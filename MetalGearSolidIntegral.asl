@@ -10,6 +10,7 @@ state("mgsi") {
   
   bool      _GAME_PROGRESS: 0x000000;
   uint      GameTime:       0x595344;
+  string4   RoomString:     0x2504CE; // also 26AAE0, 38E7C0, 3A8ED9
   sbyte     RoomCode:       0x28CE34;
   ushort    Progress:       0x38D7CA;
   
