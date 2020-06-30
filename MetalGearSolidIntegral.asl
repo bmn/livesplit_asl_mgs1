@@ -421,7 +421,8 @@ startup {
           settings.Add("a_r10_r44_p183", true, "after meeting Otacon", "a_r10_r44_b");
         settings.Add("a_r10_r12", true, "to Snowfield", "a_r10_b");
           settings.Add("a_r10_r12_p180", true, "after Walkway ambush (Any%)", "a_r10_r12");
-          settings.Add("a_r10_r12_p195", true, "after Hind D (AB)", "a_r10_r12");
+          settings.Add("a_r10_r12_p190", true, "after Hind D (AB)", "a_r10_r12");
+          settings.Add("a_r10_r12_p195", true, "after elevator ambush (glitchless)", "a_r10_r12");
           settings.Add("a_r10_r12_all", false, "always", "a_r10_r12");
       settings.Add("a_r44_b", true, "Comms Tower B Roof", "advanced_loc");
         settings.Add("a_r44_r10_b", true, "to Communications Tower B", "a_r44_b");
