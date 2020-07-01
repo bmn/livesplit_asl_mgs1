@@ -480,16 +480,54 @@ startup {
           settings.Add("a_r15_r16_p242", true, "after cooling the PAL key", "a_r15_r16");
           settings.Add("a_r15_r16_p246", true, "after heating the PAL key", "a_r15_r16");
           settings.Add("a_r15_r16_all", false, "always", "a_r15_r16");
-      settings.Add("a_r16", true, "Underground Base", "advanced_loc");
+      settings.Add("a_r16", true, "Underground Base (ground)", "advanced_loc");
         settings.Add("a_r16_r15", true, "to Warehouse North", "a_r16");
           settings.Add("a_r16_r15_p240", true, "after using normal PAL key", "a_r16_r15");
           settings.Add("a_r16_r15_p242", true, "after using cold PAL key", "a_r16_r15");
           settings.Add("a_r16_r15_all", false, "always", "a_r16_r15");
+        settings.Add("a_s16a_s16b", true, "to Underground Base (east)", "a_r16");
+          settings.Add("a_s16a_s16b_p221", true, "after Vulcan Raven", "a_s16a_s16b");
+          settings.Add("a_s16a_s16b_p238", true, "after picking up PAL key", "a_s16a_s16b");
+          settings.Add("a_s16a_s16b_p240", true, "after cooling the PAL key", "a_s16a_s16b");
+          settings.Add("a_s16a_s16b_p246", true, "after heating the PAL key", "a_s16a_s16b");
+          settings.Add("a_s16a_s16b_all", false, "always", "a_s16a_s16b");
+      settings.Add("a_s16b", true, "Underground Base (east)", "advanced_loc");
+        settings.Add("a_s16b_s16a", true, "to Underground Base (ground)", "a_s16b");
+          settings.Add("a_s16b_s16a_p237", true, "after losing PAL key", "a_s16b_s16a");
+          settings.Add("a_s16b_s16a_p240", true, "after using normal PAL key", "a_s16b_s16a");
+          settings.Add("a_s16b_s16a_p242", true, "after using cold PAL key", "a_s16b_s16a");
+          settings.Add("a_s16b_s16a_all", false, "always", "a_s16b_s16a");
+        settings.Add("a_s16b_s16c", true, "to Underground Base (west)", "a_s16b");
+          settings.Add("a_s16b_s16c_p223", true, "after Vulcan Raven", "a_s16b_s16c");
+          settings.Add("a_s16b_s16c_p238", true, "after picking up PAL key", "a_s16b_s16c");
+          settings.Add("a_s16b_s16c_p240", true, "after cooling the PAL key", "a_s16b_s16c");
+          settings.Add("a_s16b_s16c_p246", true, "after heating the PAL key", "a_s16b_s16c");
+          settings.Add("a_s16b_s16c_all", false, "always", "a_s16b_s16c");
+      settings.Add("a_s16c", true, "Underground Base (west)", "advanced_loc");
+        settings.Add("a_s16c_s16b", true, "to Underground Base (east)", "a_s16c");
+          settings.Add("a_s16c_s16b_p237", true, "after losing PAL key", "a_s16c_s16b");
+          settings.Add("a_s16c_s16b_p240", true, "after using normal PAL key", "a_s16c_s16b");
+          settings.Add("a_s16c_s16b_p242", true, "after using cold PAL key", "a_s16c_s16b");
+          settings.Add("a_s16c_s16b_all", false, "always", "a_s16c_s16b");
+        settings.Add("a_s16c_s16d", true, "to Control Room", "a_s16c");
+          settings.Add("a_s16c_s16d_p225", true, "after Vulcan Raven", "a_s16c_s16d");
+          settings.Add("a_s16c_s16d_p238", true, "after picking up PAL key", "a_s16c_s16d");
+          settings.Add("a_s16c_s16d_p240", true, "after cooling the PAL key", "a_s16c_s16d");
+          settings.Add("a_s16c_s16d_p246", true, "after heating the PAL key", "a_s16c_s16d");
+          settings.Add("a_s16c_s16d_all", false, "always", "a_s16c_s16d");
         settings.Add("a_r16_r41_all", true, "to Supply Route (Rex)", "a_r16");
+      settings.Add("a_s16d", true, "Control Room", "advanced_loc");
+        settings.Add("a_s16d_s16c", true, "to Underground Base (west)", "a_s16d");
+          settings.Add("a_s16d_s16c_p237", true, "after losing PAL key", "a_s16d_s16c");
+          settings.Add("a_s16d_s16c_p240", true, "after using normal PAL key", "a_s16d_s16c");
+          settings.Add("a_s16d_s16c_p242", true, "after using cold PAL key", "a_s16d_s16c");
+          settings.Add("a_s16d_s16c_p251", true, "after using hot PAL key", "a_s16d_s16c");
+          settings.Add("a_s16d_s16c_all", false, "always", "a_s16d_s16c");
       settings.Add("a_r41", true, "Supply Route (Rex)", "advanced_loc");
         settings.Add("a_r41_r42_all", true, "to Supply Route (Liquid)", "a_r41");
       settings.Add("a_r42", true, "Supply Route (Liquid)", "advanced_loc");
         settings.Add("a_r42_r43_all", true, "to Escape Route", "a_r42");
+
   
   print("Startup complete");
 }
@@ -951,16 +989,19 @@ split {
     
   // Location changes
   if ( (settings["advanced_loc"]) && (current.RoomCode != old.RoomCode) ) {
-    string LocationCode = "a_r" + old.RoomCode + "_r" + current.RoomCode;
-    string LocationAll = LocationCode + "_all";
-    foreach ( string Code in D.SameSplit(LocationAll) )
-      if ( (settings.ContainsKey(Code)) && (settings[Code]) ) return D.Split(LocationAll, Code + " (all visits)");
+    string[] LocationCode = new string[] { "a_r" + old.RoomCode + "_r" + current.RoomCode,
+      "a_" + old.RoomString + "_" + current.RoomString };
+    foreach ( string Location in LocationCode ) {
+      foreach ( string Code in D.SameSplit(Location + "_all") )
+        if ( (settings.ContainsKey(Code)) && (settings[Code]) ) return D.Split(Location, Code + " (all visits)");
+    }
     foreach ( ushort Progress in D.SameProgress(current.Progress) ) {
-      string LocationProgress = LocationCode + "_p" + Progress;
-      foreach ( string Code in D.SameSplit(LocationProgress) ) {
-        D.Debug(Code + " (looking for setting)");
-        if ( (settings.ContainsKey(Code)) && (settings[Code]) )
-          return D.Split(LocationProgress, Code + " (room change)");
+      foreach ( string Location in LocationCode ) {
+        foreach ( string Code in D.SameSplit(Location + "_p" + Progress) ) {
+          D.Debug(Code + " (looking for setting)");
+          if ( (settings.ContainsKey(Code)) && (settings[Code]) )
+            return D.Split(Location, Code + " (room change)");
+        }
       }
     }
   }
