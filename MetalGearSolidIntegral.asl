@@ -205,7 +205,6 @@ startup {
       settings.Add("a_p188", true, "Hind D", "advanced_evt");
       settings.Add("a_p198", true, "Sniper Wolf 2", "advanced_evt");
       settings.Add("a_p212", true, "Vulcan Raven", "advanced_evt");
-      settings.Add("a_p238", true, "Retrieved PAL key", "advanced_evt");
       settings.Add("a_p257", true, "Metal Gear REX", "advanced_evt");
       settings.Add("a_p278", true, "Liquid Snake", "advanced_evt");
       settings.Add("a_p286", true, "Escape", "advanced_evt");
@@ -240,11 +239,12 @@ startup {
       settings.Add("a_p207", false, "[Cargo Elevator] Completed elevator ambush", "advanced_minevt");
       settings.Add("a_p211", false, "[Warehouse] Reached Vulcan Raven", "advanced_minevt");
       settings.Add("a_p228", false, "[Underground Base] Reached the control room", "advanced_minevt");
-      settings.Add("a_p239", false, "[Underground Base] Inserted normal PAL key", "advanced_minevt");
+      settings.Add("a_p238", false, "[Underground Base] Retrieved PAL key", "advanced_minevt");
+      settings.Add("a_p239", false, "[Control Room] Inserted normal PAL key", "advanced_minevt");
       settings.Add("a_r15_r40_p240_evt", false, "[Warehouse] Entered area to cool the PAL key", "advanced_minevt");
-      settings.Add("a_p241", false, "[Underground Base] Inserted cold PAL Key", "advanced_minevt");
+      settings.Add("a_p241", false, "[Control Room] Inserted cold PAL Key", "advanced_minevt");
       settings.Add("a_r14_r13_p244_evt", false, "[Blast Furnace] Entered area to heat the PAL key", "advanced_minevt");
-      settings.Add("a_p247", false, "[Underground Base] Inserted hot PAL Key", "advanced_minevt");
+      settings.Add("a_p247", false, "[Control Room] Inserted hot PAL Key", "advanced_minevt");
       settings.Add("a_p252", false, "[Underground Base] Reached Metal Gear REX", "advanced_minevt");
       settings.Add("a_p255", false, "[Supply Route] Completed Metal Gear REX (Phase 1)", "advanced_minevt");
     settings.Add("advanced_wep", false, "Weapon Unlock Splits", "advanced");
