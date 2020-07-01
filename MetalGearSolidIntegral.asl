@@ -998,10 +998,11 @@ split {
     }
     foreach ( ushort Progress in D.SameProgress(current.Progress) ) {
       foreach ( string Location in LocationCode ) {
-        foreach ( string Code in D.SameSplit(Location + "_p" + Progress) ) {
+        string LocationProgress = Location + "_p" + Progress;
+        foreach ( string Code in D.SameSplit(LocationProgress) ) {
           D.Debug(Code + " (looking for setting)");
           if ( (settings.ContainsKey(Code)) && (settings[Code]) )
-            return D.Split(Location, Code + " (room change)");
+            return D.Split(LocationProgress, Code + " (room change)");
         }
       }
     }
