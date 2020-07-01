@@ -526,7 +526,9 @@ startup {
       settings.Add("a_r41", true, "Supply Route (Rex)", "advanced_loc");
         settings.Add("a_r41_r42_all", true, "to Supply Route (Liquid)", "a_r41");
       settings.Add("a_r42", true, "Supply Route (Liquid)", "advanced_loc");
-        settings.Add("a_r42_r43_all", true, "to Escape Route", "a_r42");
+        settings.Add("a_r42_r43_all", true, "to Escape Route (1)", "a_r42");
+      settings.Add("a_r43", true, "Escape Route (1)", "advanced_loc");
+        settings.Add("a_s19a_s19b_p283", true, "to Escape Route (2)", "a_r43");
 
   
   print("Startup complete");
