@@ -799,7 +799,7 @@ update {
     }
     // Current area
     if ( (current.RoomCode != old.RoomCode) || (vars.CurrentRoom == "") ) {
-      if ( (current.Progress == 278) && (old.Progress == 277) ) D.PrevInfo == "";
+      if ( (current.Progress == 278) && (old.Progress == 277) ) D.PrevInfo = "";
       string CurrentRoom;
       D.Rooms.TryGetValue(current.RoomCode, out CurrentRoom);
       if (CurrentRoom != "") vars.CurrentRoom = CurrentRoom;
