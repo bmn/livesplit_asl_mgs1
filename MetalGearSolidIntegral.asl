@@ -768,7 +768,7 @@ update {
       return ( (!current.VsRex) && (D.old.VsRex) ) ? 1 : -1;
     };
     
-    var LiquidPhases = new Dictionary<byte, byte> { { 0, 1 }, { 3, 2 }, { 2, 3 }, { 4, 4 } };
+    var LiquidPhases = new Dictionary<byte, byte> { { 0, 0 }, { 3, 1 }, { 2, 2 }, { 4, 3 } };
     Func<int> WatLiquid = delegate() {
       if (!D.BossHealth("Liquid Snake", current.LiquidHp, D.old.LiquidHp, 255, false)) return -1;
       byte Phase = 0;
