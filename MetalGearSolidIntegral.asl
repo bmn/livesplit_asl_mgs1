@@ -125,6 +125,7 @@ startup {
   D.SplitTimes = new Dictionary<string, uint> {};
   Action InitVars = delegate() {
     D.CurrentRank = 0;
+    D.PrevInfo = "";
     var Keys = new List<string>(D.SplitTimes.Keys);
     foreach ( string Key in Keys ) D.SplitTimes[Key] = 0;
   };
@@ -798,6 +799,7 @@ update {
     }
     // Current area
     if ( (current.RoomCode != old.RoomCode) || (vars.CurrentRoom == "") ) {
+      if ( (current.Progress == 278) && (old.Progress == 277) ) D.PrevInfo == "";
       string CurrentRoom;
       D.Rooms.TryGetValue(current.RoomCode, out CurrentRoom);
       if (CurrentRoom != "") vars.CurrentRoom = CurrentRoom;
