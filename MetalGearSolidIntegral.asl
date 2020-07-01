@@ -995,8 +995,9 @@ split {
     if (current.RoomCode != old.RoomCode) LocationCode.Add("a_r" + old.RoomCode + "_r" + current.RoomCode);
     if (current.RoomString != old.RoomString) LocationCode.Add("a_" + old.RoomString + "_" + current.RoomString);
     foreach ( string Location in LocationCode ) {
-      foreach ( string Code in D.SameSplit(Location + "_all") )
-        if ( (settings.ContainsKey(Code)) && (settings[Code]) ) return D.Split(Location, Code + " (all visits)");
+      string LocationProgress = Location + "_all";
+      foreach ( string Code in D.SameSplit(LocationProgress) )
+        if ( (settings.ContainsKey(Code)) && (settings[Code]) ) return D.Split(LocationProgress, Code + " (all visits)");
     }
     foreach ( ushort Progress in D.SameProgress(current.Progress) ) {
       foreach ( string Location in LocationCode ) {
