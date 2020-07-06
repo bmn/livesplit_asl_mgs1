@@ -33,16 +33,7 @@
       <SegmentHistory />
     </Segment>
     <Segment>
-      <Name>Retrieved PAL Key</Name>
-      <Icon />
-      <SplitTimes>
-        <SplitTime name="Personal Best" />
-      </SplitTimes>
-      <BestSegmentTime />
-      <SegmentHistory />
-    </Segment>
-    <Segment>
-      <Name>Rex</Name>
+      <Name>Metal Gear REX</Name>
       <Icon />
       <SplitTimes>
         <SplitTime name="Personal Best" />
