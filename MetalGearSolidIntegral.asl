@@ -190,7 +190,8 @@ startup {
         settings.Add("asl_info_dock", true, "Dock elevator countdown", "asl_info_vars");
       settings.Add("asl_info_max", true, "Also show the maximum value for raw values", "asl_info");
       settings.Add("asl_info_percent", true, "Show percentages instead of raw values", "asl_info");
-    settings.Add("asl_stats", true, "Stats (game stats and current codename)", "asl");
+    settings.Add("asl_stats", true, "Stats (game stats)", "asl");
+      settings.Add("asl_stats_codename", true, "Also show the current codename", "asl_stats");
       settings.Add("asl_stats_short", false, "Show single letters for stats instead of full titles", "asl_stats");
       settings.SetToolTip("asl_stats_short", "Enable this if the full stat names make the message too long");
 
@@ -592,8 +593,12 @@ update {
     };
     D.Split = Split;
     
-    Func<int, string, string, string> Plural = (Var, Singular, Pluralular) => (Var != 1) ? Pluralular : Singular;
-    D.Plural = Plural;
+    Func<int, string, string, string, string> PluralOrShort =
+    delegate(int Var, string Singular, string Pluralular, string Letter) {
+      if (settings["asl_stats_short"]) return Letter;
+      return (Var != 1) ? Pluralular : Singular;
+    };
+    D.PluralOrShort = PluralOrShort;
     
   
     // List possible progress values at essentially the same point in the game
@@ -911,18 +916,13 @@ update {
         (current.RationsUsed != old.RationsUsed) || (current.Saves != old.Saves) || (current.InMenu != old.InMenu)
       ) ) {
         var Stats = new List<string>();
-        if (current.Alerts > 0) Stats.Add( current.Alerts +  
-          ((settings["asl_stats_short"]) ? "A" : D.Plural(current.Alerts, " Alert", " Alerts")) );
-        if (current.Kills > 0) Stats.Add( current.Kills + 
-          ((settings["asl_stats_short"]) ? "K" : D.Plural(current.Kills, " Kill", " Kills")) );
-        if (current.Continues > 0) Stats.Add( current.Continues +  
-          ((settings["asl_stats_short"]) ? "C" : D.Plural(current.Continues, " Continue", " Continues")) );
-        if (current.RationsUsed > 0) Stats.Add( current.RationsUsed + 
-          ((settings["asl_stats_short"]) ? "R" : D.Plural(current.RationsUsed, " Ration", " Rations")) );
-        if (current.Saves > 0) Stats.Add( current.Saves + 
-          ((settings["asl_stats_short"]) ? "S" : D.Plural(current.Saves, " Save", " Saves")) );
+        if (current.Alerts > 0) Stats.Add( current.Alerts + D.PluralOrShort(current.Alerts, " Alert", " Alerts", "A") );
+        if (current.Kills > 0) Stats.Add( current.Kills + D.PluralOrShort(current.Kills, " Kill", " Kills", "K") );
+        if (current.Continues > 0) Stats.Add( current.Continues + D.PluralOrShort(current.Continues, " Continue", " Continues") );
+        if (current.RationsUsed > 0) Stats.Add( current.RationsUsed + D.PluralOrShort(current.RationsUsed, " Ration", " Rations") );
+        if (current.Saves > 0) Stats.Add( current.Saves + D.PluralOrShort(current.Saves, " Save", " Saves") );
         string StringStats = string.Join( settings["asl_stats_short"] ? " " : ", ", Stats );
-        if (current.Difficulty != -1)
+        if ( (current.Difficulty != -1) && (settings["asl_stats_codename"]) )
           StringStats += " [" + D.CodeNames[D.CurrentRank][current.Difficulty] + "]";
         vars.Stats = StringStats;
       }
@@ -990,6 +990,7 @@ split {
     
   // Location changes
   if (settings["advanced_loc"]) {
+    if ( (current.RoomCode == old.RoomCode) && (current.RoomString == old.RoomString) ) return false;
     List<string> LocationCode = new List<string>();
     if (current.RoomCode != old.RoomCode) LocationCode.Add("a_r" + old.RoomCode + "_r" + current.RoomCode);
     if (current.RoomString != old.RoomString) LocationCode.Add("a_" + old.RoomString + "_" + current.RoomString);
