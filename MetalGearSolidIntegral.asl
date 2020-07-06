@@ -229,7 +229,7 @@ startup {
       settings.Add("a_p163", false, "[Medi Room] Escaped from prison", "advanced_minevt");
       settings.Add("a_p174", false, "[Comms Tower A] Completed stairs chase", "advanced_minevt");
       settings.Add("a_p178", false, "[Comms Tower A Roof] Attached the rope", "advanced_minevt");
-      settings.Add("a_p179", false, "[Comms Tower A Outside] Completed rappel", "advanced_minevt");
+      settings.Add("a_p179", false, "[Comms Tower A Wall] Completed rappel", "advanced_minevt");
       settings.Add("a_p181", false, "[Comms Tower B] DAMN", "advanced_minevt");
       settings.Add("a_p186", false, "[Comms Tower B Roof] Reached Hind D", "advanced_minevt");
       settings.Add("a_p194", false, "[Comms Tower B] Reached elevator ambush", "advanced_minevt");
@@ -405,36 +405,35 @@ startup {
         settings.Add("a_r20_r3", true, "to Cell", "a_r20");
           settings.Add("a_r20_r3_p163", true, "after torture", "a_r20_r3");
           settings.Add("a_r20_r3_all", false, "always", "a_r20_r3");
-      settings.Add("a_r10_a", true, "Communications Tower A", "advanced_loc");
-        settings.Add("a_r10_r37_all", false, "to Underground Passage", "a_r10_a");
-        settings.Add("a_r10_r44_a", true, "to Comms Tower A Roof", "a_r10_a");
-          settings.Add("a_r10_r44_p173", true, "after stairs chase", "a_r10_r44_a");
-      settings.Add("a_r44_a", true, "Comms Tower A Roof", "advanced_loc");
-        settings.Add("a_r44_r39_all", true, "to Comms Tower A Wall", "a_r44_a");
+      settings.Add("a_s11a", true, "Communications Tower A", "advanced_loc");
+        settings.Add("a_r10_r37_all", false, "to Underground Passage", "a_s11a");
+        settings.Add("a_s11a_s11b", true, "to Comms Tower A Roof", "a_s11a");
+          settings.Add("a_s11a_s11b_p173", true, "after stairs chase", "a_s11a_s11b");
+          settings.Add("a_s11a_s11b_all", true, "always", "a_s11a_s11b");
+      settings.Add("a_s11b", true, "Comms Tower A Roof", "advanced_loc");
+        settings.Add("a_s11b_s11a_all", false, "to Comms Tower A", "a_s11b");
+        settings.Add("a_r44_r39_all", true, "to Comms Tower A Wall", "a_s11b");
       settings.Add("a_r39", true, "Comms Tower A Wall", "advanced_loc");
         settings.Add("a_r39_r11_all", true, "to Walkway", "a_r39");
       settings.Add("a_r11", true, "Walkway", "advanced_loc");
-        settings.Add("a_r11_r10", true, "to Comms Tower A or B", "a_r11");
-          settings.Add("a_r11_r10_p180", true, "after rappel", "a_r11_r10");
-          settings.Add("a_r11_r10_all", false, "always", "a_r11_r10");
-      settings.Add("a_r10_b", true, "Communications Tower B", "advanced_loc");
-        settings.Add("a_r10_r44_b", true, "to Comms Tower B Roof", "a_r10_b");
-          settings.Add("a_r10_r44_p183", true, "after meeting Otacon", "a_r10_r44_b");
-        settings.Add("a_r10_r12", true, "to Snowfield", "a_r10_b");
+        settings.Add("a_s11i_s11a_all", false, "to Comms Tower A", "a_r11");
+        settings.Add("a_s11i_s11c", true, "to Comms Tower B", "a_r11");
+          settings.Add("a_s11i_s11c_p180", true, "after rappel", "a_s11i_s11c");
+          settings.Add("a_s11i_s11c_all", false, "always", "a_s11i_s11c");
+      settings.Add("a_s11c", true, "Communications Tower B", "advanced_loc");
+        settings.Add("a_s11c_s11i_all", false, "to Walkway", "a_s11c");
+        settings.Add("a_s11c_s11h", true, "to Comms Tower B Roof", "a_s11c");
+          settings.Add("a_s11c_s11h_p183", true, "after meeting Otacon", "a_s11c_s11h");
+          settings.Add("a_s11c_s11h_all", false, "always", "a_s11c_s11h");
+        settings.Add("a_r10_r12", true, "to Snowfield", "a_s11c");
           settings.Add("a_r10_r12_p180", true, "after Walkway ambush (Any%)", "a_r10_r12");
           settings.Add("a_r10_r12_p190", true, "after Hind D (AB)", "a_r10_r12");
           settings.Add("a_r10_r12_p195", true, "after elevator ambush (glitchless)", "a_r10_r12");
           settings.Add("a_r10_r12_all", false, "always", "a_r10_r12");
-      settings.Add("a_r44_b", true, "Comms Tower B Roof", "advanced_loc");
-        settings.Add("a_r44_r10_b", true, "to Communications Tower B", "a_r44_b");
-          settings.Add("a_r44_r10_p190", true, "after Hind D", "a_r44_r10_b");
-      settings.Add("a_r10", false, "Comms Tower A or B", "advanced_loc");
-      settings.SetToolTip("a_r10", "These are in addition to the specific location movements above");
-        settings.Add("a_r10_r44_all", false, "to Comms Tower A or B Roof", "a_r10");
-        settings.Add("a_r10_r11_all", false, "to Walkway", "a_r10");
-      settings.Add("a_r44", false, "Comms Tower A or B Roof", "advanced_loc");
-      settings.SetToolTip("a_r44", "These are in addition to the specific location movements above");
-        settings.Add("a_r44_r10_all", false, "to Comms Tower A or B", "a_r44");
+      settings.Add("a_s11h", true, "Comms Tower B Roof", "advanced_loc");
+        settings.Add("a_s11h_s11c", true, "to Communications Tower B", "a_s11h");
+          settings.Add("a_s11h_s11c_p190", true, "after Hind D", "a_s11h_s11c");
+          settings.Add("a_s11h_s11c_all", false, "always", "a_s11h_s11c");
       settings.Add("a_r12", true, "Snowfield", "advanced_loc");
         settings.Add("a_r12_r1_all", false, "to Heliport", "a_r12");
         settings.Add("a_r12_r6_all", false, "to Nuke Building", "a_r12");
@@ -636,7 +635,7 @@ update {
         "a_r38_r20_p18" // Prison Cell after TR > Medi Room
       } }, 
       { "a_r20_r3_p163", new string[] { "a_p163" } }, // Medi Room > Cell after escape
-      { "a_p174", new string[] { "a_r10_r44_p173" } }, // Comms Tower A > CTA Roof after chase
+      { "a_p174", new string[] { "a_s11a_s11b_p173" } }, // Comms Tower A > CTA Roof after chase
       { "a_r44_r39_all", new string[] { "a_p178" } }, // CTA Roof > CTA Outside after rope
       { "a_r39_r11_all", new string[] { "a_p179" } }, // CTA Outside > Walkway after rappel
       { "a_p211", new string[] { "a_r14_r40_p209" } }, // Reached Raven
