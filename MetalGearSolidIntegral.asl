@@ -40,6 +40,7 @@ state("mgsi") {
   short     ChaffTime:      0x391A28;
   bool      InMenu:         0x31D180;
   bool      VsRex:          0x388630;
+  sbyte      CurrentWeapon:  0x38E7FC;
   byte20    WeaponData:     0x38E802;
   byte46    ItemData:       0x38E82A;
   ushort    DockTimer:      0x4F56AC;
@@ -80,6 +81,7 @@ startup {
   vars.Stats = "";
   vars.CurrentRoom = "";
   vars.Difficulty = "";
+  vars.ShotsFired = "";
   vars._OTHER = "";
   vars.DebugMessage = "";
   
@@ -88,6 +90,19 @@ startup {
   D.Except = new Dictionary< string, Func<int> >();
   D.Watch = new Dictionary< string, Func<int> >();
   D.Initialised = false;
+  
+  D.Weapons = new Dictionary<sbyte, string> {
+    { 0, "SOCOM" },
+    { 1, "FA-MAS" },
+    { 2, "Grenade" },
+    { 3, "Nikita" },
+    { 4, "Stinger" },
+    { 5, "Claymore" },
+    { 6, "C4" },
+    { 7, "Stun Grenade" },
+    { 8, "Chaff Grenade" },
+    { 9, "PSG-1" }
+  };
   
   D.Difficulties = new Dictionary<sbyte, string> {
     { -1, "Very Easy" },
@@ -126,6 +141,8 @@ startup {
   Action InitVars = delegate() {
     D.CurrentRank = 0;
     D.PrevInfo = "";
+    D.ShotsFired = 0;
+    D.ShotsFiredData = new Dictionary<sbyte, int>() { {0,0},{1,0},{2,0},{3,0},{4,0},{5,0},{6,0},{7,0},{8,0},{9,0} };
     var Keys = new List<string>(D.SplitTimes.Keys);
     foreach ( string Key in Keys ) D.SplitTimes[Key] = 0;
   };
@@ -190,6 +207,8 @@ startup {
         settings.Add("asl_info_dock", true, "Dock elevator countdown", "asl_info_vars");
       settings.Add("asl_info_max", true, "Also show the maximum value for raw values", "asl_info");
       settings.Add("asl_info_percent", true, "Show percentages instead of raw values", "asl_info");
+    settings.Add("asl_shots", true, "ShotsFired (weapon usage)", "asl");
+      settings.Add("asl_shots_perweapon", true, "Also show the total for your equipped weapon", "asl_shots");
     settings.Add("asl_stats", true, "Stats (game stats)", "asl");
       settings.Add("asl_stats_codename", true, "Also show the current codename", "asl_stats");
       settings.Add("asl_stats_short", false, "Show single letters for stats instead of full titles", "asl_stats");
@@ -813,6 +832,7 @@ update {
     };
     D.FormatValue = FormatValue;
     
+    vars.D.InitVars();
     D.Initialised = true;
   }
   
@@ -911,20 +931,41 @@ update {
           D.Info("Codename changed to " + D.CodeNames[D.CurrentRank][current.Difficulty], 180, 4);
       }
       // Stats
-      if ( (settings["asl_stats"]) && (
-        (current.Alerts != old.Alerts) || (current.Kills != old.Kills) || (current.Continues != old.Continues) ||
-        (current.RationsUsed != old.RationsUsed) || (current.Saves != old.Saves) || (current.InMenu != old.InMenu)
-      ) ) {
-        var Stats = new List<string>();
-        if (current.Alerts > 0) Stats.Add( current.Alerts + D.PluralOrShort(current.Alerts, " Alert", " Alerts", "A") );
-        if (current.Kills > 0) Stats.Add( current.Kills + D.PluralOrShort(current.Kills, " Kill", " Kills", "K") );
-        if (current.Continues > 0) Stats.Add( current.Continues + D.PluralOrShort(current.Continues, " Continue", " Continues") );
-        if (current.RationsUsed > 0) Stats.Add( current.RationsUsed + D.PluralOrShort(current.RationsUsed, " Ration", " Rations") );
-        if (current.Saves > 0) Stats.Add( current.Saves + D.PluralOrShort(current.Saves, " Save", " Saves") );
-        string StringStats = string.Join( settings["asl_stats_short"] ? " " : ", ", Stats );
-        if ( (current.Difficulty != -1) && (settings["asl_stats_codename"]) )
-          StringStats += " [" + D.CodeNames[D.CurrentRank][current.Difficulty] + "]";
-        vars.Stats = StringStats;
+      if (settings["asl_stats"]) {
+        if (
+          (current.Alerts != old.Alerts) || (current.Kills != old.Kills) || (current.Continues != old.Continues) ||
+          (current.RationsUsed != old.RationsUsed) || (current.Saves != old.Saves) || (current.InMenu != old.InMenu)
+        ) {
+          var Stats = new List<string>();
+          if (current.Alerts > 0) Stats.Add( current.Alerts + D.PluralOrShort(current.Alerts, " Alert", " Alerts", "A") );
+          if (current.Kills > 0) Stats.Add( current.Kills + D.PluralOrShort(current.Kills, " Kill", " Kills", "K") );
+          if (current.Continues > 0) Stats.Add( current.Continues + D.PluralOrShort(current.Continues, " Continue", " Continues") );
+          if (current.RationsUsed > 0) Stats.Add( current.RationsUsed + D.PluralOrShort(current.RationsUsed, " Ration", " Rations") );
+          if (current.Saves > 0) Stats.Add( current.Saves + D.PluralOrShort(current.Saves, " Save", " Saves") );
+          string StringStats = string.Join( settings["asl_stats_short"] ? " " : ", ", Stats );
+          if ( (current.Difficulty != -1) && (settings["asl_stats_codename"]) )
+            StringStats += " [" + D.CodeNames[D.CurrentRank][current.Difficulty] + "]";
+          vars.Stats = StringStats;
+        }
+        if (settings["asl_shots"]) { // setting for shots fired
+          bool RefreshShots = false;
+          if ( (current.CurrentWeapon == old.CurrentWeapon) && (current.CurrentWeapon != -1) ) { // weapon hasn't changed
+            byte CurAmmo = current.WeaponData[current.CurrentWeapon * 2];
+            byte OldAmmo = old.WeaponData[current.CurrentWeapon * 2];
+            if (CurAmmo < OldAmmo) { // used ammo
+              int AmmoDiff = (OldAmmo - CurAmmo);
+              D.ShotsFired += AmmoDiff;
+              D.ShotsFiredData[current.CurrentWeapon] += AmmoDiff;
+              RefreshShots = true;
+            }
+          }
+          else RefreshShots = true;
+          if (RefreshShots) {
+            string ShotsWeapon = ( (settings["asl_shots_perweapon"]) && (current.CurrentWeapon >= 0) && (current.CurrentWeapon <= 9) ) ?
+              " / " + D.ShotsFiredData[current.CurrentWeapon] + " " + D.Weapons[current.CurrentWeapon] : "";
+            vars.ShotsFired = D.ShotsFired + ShotsWeapon;
+          }
+        }
       }
     }
   }
