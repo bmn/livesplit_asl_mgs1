@@ -626,7 +626,7 @@ update {
       new ushort[] { 149, 150 },
       new ushort[] { 163, 173 }, // After torture
       new ushort[] { 181, 183 }, // Otacon in CTB
-      new ushort[] { 208, 209 }, // after Wolf 2
+      new ushort[] { 208, 209, 210 }, // after Wolf 2
       new ushort[] { 237, 238 }, // Rat (in case the insta doesn't work)
       new ushort[] { 242, 244, 246 }, // After cold key
       new ushort[] { 290, 294 } // VE and regular final split
