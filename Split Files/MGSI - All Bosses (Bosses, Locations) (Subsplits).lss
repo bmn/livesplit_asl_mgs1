@@ -618,7 +618,7 @@
       <SegmentHistory />
     </Segment>
     <Segment>
-      <Name>-Control Room</Name>
+      <Name>-Command Room</Name>
       <Icon />
       <SplitTimes>
         <SplitTime name="Personal Best" />
@@ -645,7 +645,7 @@
       <SegmentHistory />
     </Segment>
     <Segment>
-      <Name>Underground Base 1</Name>
+      <Name>{Underground Base 1 (Rat)}Underground Base 1</Name>
       <Icon />
       <SplitTimes>
         <SplitTime name="Personal Best" />
@@ -672,7 +672,16 @@
       <SegmentHistory />
     </Segment>
     <Segment>
-      <Name>Control Room</Name>
+      <Name>{Command Room (Normal Key)}Command Room</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>-Underground Base 3</Name>
       <Icon />
       <SplitTimes>
         <SplitTime name="Personal Best" />
@@ -753,7 +762,7 @@
       <SegmentHistory />
     </Segment>
     <Segment>
-      <Name>Control Room</Name>
+      <Name>{Command Room (Cold Key)}Command Room</Name>
       <Icon />
       <SplitTimes>
         <SplitTime name="Personal Best" />
@@ -879,7 +888,7 @@
       <SegmentHistory />
     </Segment>
     <Segment>
-      <Name>Control Room</Name>
+      <Name>{Command Room (Hot Key)}Command Room</Name>
       <Icon />
       <SplitTimes>
         <SplitTime name="Personal Best" />
@@ -924,7 +933,7 @@
       <SegmentHistory />
     </Segment>
     <Segment>
-      <Name>Escape Route 2</Name>
+      <Name>{Escape Route}Escape Route 2</Name>
       <Icon />
       <SplitTimes>
         <SplitTime name="Personal Best" />
