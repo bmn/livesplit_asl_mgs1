@@ -421,7 +421,7 @@ startup {
       settings.Add("a_r38", true, "Torture Room", "advanced_loc");
         settings.Add("a_r38_r20_all", true, "to Medi Room", "a_r38");
       settings.Add("a_r20", true, "Medi Room", "advanced_loc");
-        settings.Add("a_r20_r38_all", false, "to Torture Room", "a_r20");
+        settings.Add("a_r20_r38_all", true, "to Torture Room", "a_r20");
         settings.Add("a_r20_r3", true, "to Cell", "a_r20");
           settings.Add("a_r20_r3_p163", true, "after torture", "a_r20_r3");
           settings.Add("a_r20_r3_all", false, "always", "a_r20_r3");
@@ -540,7 +540,7 @@ startup {
           settings.Add("a_s16d_s16c_p237", true, "after losing PAL key", "a_s16d_s16c");
           settings.Add("a_s16d_s16c_p240", true, "after using normal PAL key", "a_s16d_s16c");
           settings.Add("a_s16d_s16c_p242", true, "after using cold PAL key", "a_s16d_s16c");
-          settings.Add("a_s16d_s16c_p251", true, "after using hot PAL key", "a_s16d_s16c");
+          settings.Add("a_s16d_d16e_p251", true, "after using hot PAL key", "a_s16d_s16c");
           settings.Add("a_s16d_s16c_all", false, "always", "a_s16d_s16c");
       settings.Add("a_r41", true, "Supply Route (Rex)", "advanced_loc");
         settings.Add("a_r41_r42_all", true, "to Supply Route (Liquid)", "a_r41");
