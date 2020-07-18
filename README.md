@@ -31,7 +31,9 @@ The information below pertains to the Full Autosplitter only.
 See the settings for customisability options.
 
 ## Split Points
-There are five categories of Split Points. By default only the Boss Completion splits are enabled (offering a similar selection to Autosplitter Lite), but you can enable multiple categories and customise them to get the exact set of splits you want. If two categories have splits that occur at the same time, or in the same cutscene sequence, only the first of these splits will occur.
+The Split Points settings are a list of every possible point that the Full Autosplitter can trigger a split at. Each can be enabled or disabled so you can fully customise your list of splits - remove splits you don't care about, or add new ones you consider important.
+
+There are five categories of Split Points. By default only the Boss Completion splits are enabled (offering a similar selection to Autosplitter Lite), but you can enable multiple categories if desired. If two categories have splits that occur at the same time, or in the same cutscene sequence, only the first of these splits will occur.
 
 You can enable/disable all splits, or return to default settings, by right-clicking a category and selecting one of those options.
 
