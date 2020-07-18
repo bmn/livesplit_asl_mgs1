@@ -42,7 +42,7 @@
       <SegmentHistory />
     </Segment>
     <Segment>
-      <Name>Cell</Name>
+      <Name>{Cell (Vent Clip)}Cell</Name>
       <Icon />
       <SplitTimes>
         <SplitTime name="Personal Best" />
@@ -87,7 +87,7 @@
       <SegmentHistory />
     </Segment>
     <Segment>
-      <Name>-Armory</Name>
+      <Name>Armory</Name>
       <Icon />
       <SplitTimes>
         <SplitTime name="Personal Best" />
@@ -295,6 +295,15 @@
     </Segment>
     <Segment>
       <Name>Command Room</Name>
+      <Icon />
+      <SplitTimes>
+        <SplitTime name="Personal Best" />
+      </SplitTimes>
+      <BestSegmentTime />
+      <SegmentHistory />
+    </Segment>
+    <Segment>
+      <Name>Underground Base 3</Name>
       <Icon />
       <SplitTimes>
         <SplitTime name="Personal Best" />
