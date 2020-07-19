@@ -528,14 +528,14 @@ startup {
           settings.Add("a_s16c_s16b_p240", true, "after using normal PAL key", "a_s16c_s16b");
           settings.Add("a_s16c_s16b_p242", true, "after using cold PAL key", "a_s16c_s16b");
           settings.Add("a_s16c_s16b_all", false, "always", "a_s16c_s16b");
-        settings.Add("a_s16c_s16d", true, "to Control Room", "a_s16c");
+        settings.Add("a_s16c_s16d", true, "to Command Room", "a_s16c");
           settings.Add("a_s16c_s16d_p225", true, "after Vulcan Raven", "a_s16c_s16d");
           settings.Add("a_s16c_s16d_p238", true, "after picking up PAL key", "a_s16c_s16d");
           settings.Add("a_s16c_s16d_p240", true, "after cooling the PAL key", "a_s16c_s16d");
           settings.Add("a_s16c_s16d_p246", true, "after heating the PAL key", "a_s16c_s16d");
           settings.Add("a_s16c_s16d_all", false, "always", "a_s16c_s16d");
         settings.Add("a_r16_r41_all", true, "to Supply Route (Rex)", "a_r16");
-      settings.Add("a_s16d", true, "Control Room", "advanced_loc");
+      settings.Add("a_s16d", true, "Command Room", "advanced_loc");
         settings.Add("a_s16d_s16c", true, "to Underground Base (3)", "a_s16d");
           settings.Add("a_s16d_s16c_p237", true, "after losing PAL key", "a_s16d_s16c");
           settings.Add("a_s16d_s16c_p240", true, "after using normal PAL key", "a_s16d_s16c");
