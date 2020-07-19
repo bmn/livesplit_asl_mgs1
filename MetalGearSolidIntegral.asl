@@ -599,7 +599,7 @@ update {
         Debug(Code + " clashes with an earlier split, not splitting");
         return false;
       }
-      if ( (settings["o_nomultisplit"]) && (Code.Substring(Code.Length - 4) != "all") &&
+      if ( (settings["o_nomultisplit"]) && (Code.Substring(Code.Length - 4) != "_all") &&
         (D.SplitTimes.ContainsKey(Code)) && (D.SplitTimes[Code] > 0) ) {
         Debug(Code + " has already been split, not splitting");
         return false;
