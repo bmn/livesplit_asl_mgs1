@@ -491,8 +491,8 @@ startup {
         settings.Add("a_r15_r40", true, "to Warehouse", "a_r15");
           settings.Add("a_r15_r40_p240", true, "after using normal PAL key", "a_r15_r40");
           settings.Add("a_r15_r17_p242", true, "after using cold PAL key", "a_r15_r40");
-          settings.Add("a_r15_r40_all", false, "always (Warehouse with guards)", "a_r15_r40");
-          settings.Add("a_r15_r17_all", false, "always (Warehouse without guards)", "a_r15_r40");
+          settings.Add("a_r15_r40_all", false, "always (Warehouse without guards)", "a_r15_r40");
+          settings.Add("a_r15_r17_all", false, "always (Warehouse with guards)", "a_r15_r40");
         settings.Add("a_r15_r16", true, "to Underground Base (1)", "a_r15");
           settings.Add("a_r15_r16_p219", true, "after Vulcan Raven", "a_r15_r16");
           settings.Add("a_r15_r16_p240", true, "after using normal PAL key", "a_r15_r16");
