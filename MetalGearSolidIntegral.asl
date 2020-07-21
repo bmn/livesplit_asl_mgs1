@@ -366,6 +366,7 @@ startup {
       settings.Add("a_r7", true, "Nuke Building, B1", "advanced_loc");
         settings.Add("a_r7_r6", true, "to Nuke Building", "a_r7");
           settings.Add("a_r7_r6_p150", true, "after Wolf ambushes Meryl", "a_r7_r6");
+          settings.Add("a_r7_r6_all", false, "always", "a_r7_r6");
         settings.Add("a_r7_r8", true, "to Nuke Building, B2", "a_r7");
           settings.Add("a_r7_r8_p69", true, "after collecting Nikita", "a_r7_r8");
           settings.Add("a_r7_r8_all", false, "always", "a_r7_r8");
@@ -378,6 +379,7 @@ startup {
         settings.Add("a_r8_r6_all", false, "to Nuke Building", "a_r8");
         settings.Add("a_r8_r7", true, "to Nuke Building, B1", "a_r8");
           settings.Add("a_r8_r7_p111", true, "after Ninja", "a_r8_r7");
+          settings.Add("a_r8_r7_all", true, "always", "a_r8_r7");
         settings.Add("a_r8_r45", true, "to Lab Hallway", "a_r8");
           settings.Add("a_r8_r45_p69", true, "after collecting Nikita", "a_r8_r45");
           settings.Add("a_r8_r45_all", false, "always", "a_r8_r45");
