@@ -42,7 +42,7 @@
       <SegmentHistory />
     </Segment>
     <Segment>
-      <Name>{Cell (Vent Clip)}Cell</Name>
+      <Name>Cell</Name>
       <Icon />
       <SplitTimes>
         <SplitTime name="Personal Best" />
