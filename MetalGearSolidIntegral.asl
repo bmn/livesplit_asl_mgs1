@@ -10,16 +10,16 @@ state("mgsi") {
   
   bool      _GAME_PROGRESS: 0x000000;
   uint      GameTime:       0x595344;
-  string4   RoomString:     0x2504CE; // also 26AAE0, 38E7C0, 3A8ED9
+  string4   RoomString:     0x2504CE;
   sbyte     RoomCode:       0x28CE34;
   ushort    Progress:       0x38D7CA;
   
   bool      _BOSS_HEALTH:   0x000000;
   short     OcelotHp:       0x594124, 0x830;
-  short     NinjaHp:        0x2BFD8C, 0x19E4; // also 387C00, 4F1DC0
+  short     NinjaHp:        0x2BFD8C, 0x19E4;
   short     MantisHp:       0x3236C6;
   short     MantisMaxHp:    0x283A58;
-  short     Wolf1Hp:        0x5045C4, 0xA40; // also 508650
+  short     Wolf1Hp:        0x5045C4, 0xA40;
   short     HindHp:         0x4E6E14;
   short     Wolf2Hp:        0x502220;
   short     RavenHp:        0x4E9A20;
@@ -30,17 +30,14 @@ state("mgsi") {
   short     Rex2MaxHp:      0x38DBEE;
   short     LiquidHp:       0x50B978;
   byte      LiquidPhase:    0x50B94C;
-  // short     EscapeHp:       0x000000;
-  // short     EscapeMaxHp:    0x000000;
   
   bool      _OTHER:         0x000000;
   sbyte     Difficulty:     0x38E7E2;
-  // ushort    Health:         0x000000;
   ushort    O2Time:         0x595348;
   short     ChaffTime:      0x391A28;
   bool      InMenu:         0x31D180;
   bool      VsRex:          0x388630;
-  sbyte      CurrentWeapon:  0x38E7FC;
+  sbyte     CurrentWeapon:  0x38E7FC;
   byte20    WeaponData:     0x38E802;
   byte46    ItemData:       0x38E82A;
   ushort    DockTimer:      0x4F56AC;
