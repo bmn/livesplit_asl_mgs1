@@ -10,16 +10,16 @@ state("mgsi") {
   
   bool      _GAME_PROGRESS: 0x000000;
   uint      GameTime:       0x595344;
-  string4   RoomString:     0x2504CE; // also 26AAE0, 38E7C0, 3A8ED9
+  string4   RoomString:     0x2504CE;
   sbyte     RoomCode:       0x28CE34;
   ushort    Progress:       0x38D7CA;
   
   bool      _BOSS_HEALTH:   0x000000;
   short     OcelotHp:       0x594124, 0x830;
-  short     NinjaHp:        0x2BFD8C, 0x19E4; // also 387C00, 4F1DC0
+  short     NinjaHp:        0x2BFD8C, 0x19E4;
   short     MantisHp:       0x3236C6;
   short     MantisMaxHp:    0x283A58;
-  short     Wolf1Hp:        0x5045C4, 0xA40; // also 508650
+  short     Wolf1Hp:        0x5045C4, 0xA40;
   short     HindHp:         0x4E6E14;
   short     Wolf2Hp:        0x502220;
   short     RavenHp:        0x4E9A20;
@@ -30,17 +30,14 @@ state("mgsi") {
   short     Rex2MaxHp:      0x38DBEE;
   short     LiquidHp:       0x50B978;
   byte      LiquidPhase:    0x50B94C;
-  // short     EscapeHp:       0x000000;
-  // short     EscapeMaxHp:    0x000000;
   
   bool      _OTHER:         0x000000;
   sbyte     Difficulty:     0x38E7E2;
-  // ushort    Health:         0x000000;
   ushort    O2Time:         0x595348;
   short     ChaffTime:      0x391A28;
   bool      InMenu:         0x31D180;
   bool      VsRex:          0x388630;
-  sbyte      CurrentWeapon:  0x38E7FC;
+  sbyte     CurrentWeapon:  0x38E7FC;
   byte20    WeaponData:     0x38E802;
   byte46    ItemData:       0x38E82A;
   ushort    DockTimer:      0x4F56AC;
@@ -366,6 +363,7 @@ startup {
       settings.Add("a_r7", true, "Nuke Building, B1", "advanced_loc");
         settings.Add("a_r7_r6", true, "to Nuke Building", "a_r7");
           settings.Add("a_r7_r6_p150", true, "after Wolf ambushes Meryl", "a_r7_r6");
+          settings.Add("a_r7_r6_all", false, "always", "a_r7_r6");
         settings.Add("a_r7_r8", true, "to Nuke Building, B2", "a_r7");
           settings.Add("a_r7_r8_p69", true, "after collecting Nikita", "a_r7_r8");
           settings.Add("a_r7_r8_all", false, "always", "a_r7_r8");
@@ -378,6 +376,7 @@ startup {
         settings.Add("a_r8_r6_all", false, "to Nuke Building", "a_r8");
         settings.Add("a_r8_r7", true, "to Nuke Building, B1", "a_r8");
           settings.Add("a_r8_r7_p111", true, "after Ninja", "a_r8_r7");
+          settings.Add("a_r8_r7_all", true, "always", "a_r8_r7");
         settings.Add("a_r8_r45", true, "to Lab Hallway", "a_r8");
           settings.Add("a_r8_r45_p69", true, "after collecting Nikita", "a_r8_r45");
           settings.Add("a_r8_r45_all", false, "always", "a_r8_r45");
@@ -491,8 +490,8 @@ startup {
         settings.Add("a_r15_r40", true, "to Warehouse", "a_r15");
           settings.Add("a_r15_r40_p240", true, "after using normal PAL key", "a_r15_r40");
           settings.Add("a_r15_r17_p242", true, "after using cold PAL key", "a_r15_r40");
-          settings.Add("a_r15_r40_all", false, "always (Warehouse with guards)", "a_r15_r40");
-          settings.Add("a_r15_r17_all", false, "always (Warehouse without guards)", "a_r15_r40");
+          settings.Add("a_r15_r40_all", false, "always (Warehouse without guards)", "a_r15_r40");
+          settings.Add("a_r15_r17_all", false, "always (Warehouse with guards)", "a_r15_r40");
         settings.Add("a_r15_r16", true, "to Underground Base (1)", "a_r15");
           settings.Add("a_r15_r16_p219", true, "after Vulcan Raven", "a_r15_r16");
           settings.Add("a_r15_r16_p240", true, "after using normal PAL key", "a_r15_r16");
@@ -528,14 +527,14 @@ startup {
           settings.Add("a_s16c_s16b_p240", true, "after using normal PAL key", "a_s16c_s16b");
           settings.Add("a_s16c_s16b_p242", true, "after using cold PAL key", "a_s16c_s16b");
           settings.Add("a_s16c_s16b_all", false, "always", "a_s16c_s16b");
-        settings.Add("a_s16c_s16d", true, "to Control Room", "a_s16c");
+        settings.Add("a_s16c_s16d", true, "to Command Room", "a_s16c");
           settings.Add("a_s16c_s16d_p225", true, "after Vulcan Raven", "a_s16c_s16d");
           settings.Add("a_s16c_s16d_p238", true, "after picking up PAL key", "a_s16c_s16d");
           settings.Add("a_s16c_s16d_p240", true, "after cooling the PAL key", "a_s16c_s16d");
           settings.Add("a_s16c_s16d_p246", true, "after heating the PAL key", "a_s16c_s16d");
           settings.Add("a_s16c_s16d_all", false, "always", "a_s16c_s16d");
         settings.Add("a_r16_r41_all", true, "to Supply Route (Rex)", "a_r16");
-      settings.Add("a_s16d", true, "Control Room", "advanced_loc");
+      settings.Add("a_s16d", true, "Command Room", "advanced_loc");
         settings.Add("a_s16d_s16c", true, "to Underground Base (3)", "a_s16d");
           settings.Add("a_s16d_s16c_p237", true, "after losing PAL key", "a_s16d_s16c");
           settings.Add("a_s16d_s16c_p240", true, "after using normal PAL key", "a_s16d_s16c");
@@ -599,7 +598,7 @@ update {
         Debug(Code + " clashes with an earlier split, not splitting");
         return false;
       }
-      if ( (settings["o_nomultisplit"]) && (Code.Substring(Code.Length - 4) != "all") &&
+      if ( (settings["o_nomultisplit"]) && (Code.Substring(Code.Length - 4) != "_all") &&
         (D.SplitTimes.ContainsKey(Code)) && (D.SplitTimes[Code] > 0) ) {
         Debug(Code + " has already been split, not splitting");
         return false;
