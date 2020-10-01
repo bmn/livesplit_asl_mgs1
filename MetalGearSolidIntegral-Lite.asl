@@ -7,6 +7,8 @@ state("mgsi") {
   bool   InMenu:      0x31D180;
   bool   VsRex:       0x388630;
   bool   Psg1Locked:  0x38E815;
+  ushort ScoreDone:   0x38E7EA;
+  byte   ScoreDone2:  0x5942EC;
 }
 
 isLoading {
@@ -107,9 +109,13 @@ update {
     
     // Results
     Func<bool> WatResults = delegate() {
-      if ( (D.SplitTimes["Results"] > 0) || (current.RoomCode == -1) || (D.old.RoomCode != -1) ) return false;
-      D.SplitTimes["Results"] = current.GameTime;
-      return true;
+      if (D.SplitTimes["Results"] > 0) return false; 
+      if ( (current.RoomCode != -1) && ((current.ScoreDone % 4) == current.Difficulty)
+        && (current.ScoreDone == current.ScoreDone2) && (D.old.ScoreDone != current.ScoreDone) ) {
+        D.SplitTimes["Results"] = current.GameTime;
+        return true;
+      }
+      return false;
     };
     D.Watch.Add("p_294", WatResults);
     
