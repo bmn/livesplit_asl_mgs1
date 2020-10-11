@@ -718,7 +718,7 @@ update {
       }
       return ( (current.RoomCode != -1) && ((current.ScoreDone % 4) == current.Difficulty)
       && (current.ScoreDone == current.ScoreDone2) && (D.old.ScoreDone != current.ScoreDone) ) ? 1 : -1;
-    }
+    };
     D.Watch.Add("a_p294", WatResults);
     
     
