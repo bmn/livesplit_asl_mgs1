@@ -948,9 +948,9 @@ update {
           var Stats = new List<string>();
           if (current.Alerts > 0) Stats.Add( current.Alerts + D.PluralOrShort(current.Alerts, " Alert", " Alerts", "A") );
           if (current.Kills > 0) Stats.Add( current.Kills + D.PluralOrShort(current.Kills, " Kill", " Kills", "K") );
-          if (current.Continues > 0) Stats.Add( current.Continues + D.PluralOrShort(current.Continues, " Continue", " Continues") );
-          if (current.RationsUsed > 0) Stats.Add( current.RationsUsed + D.PluralOrShort(current.RationsUsed, " Ration", " Rations") );
-          if (current.Saves > 0) Stats.Add( current.Saves + D.PluralOrShort(current.Saves, " Save", " Saves") );
+          if (current.Continues > 0) Stats.Add( current.Continues + D.PluralOrShort(current.Continues, " Continue", " Continues", "C") );
+          if (current.RationsUsed > 0) Stats.Add( current.RationsUsed + D.PluralOrShort(current.RationsUsed, " Ration", " Rations", "R") );
+          if (current.Saves > 0) Stats.Add( current.Saves + D.PluralOrShort(current.Saves, " Save", " Saves", "S") );
           string StringStats = string.Join( settings["asl_stats_short"] ? " " : ", ", Stats );
           if ( (current.Difficulty != -1) && (settings["asl_stats_codename"]) )
             StringStats += " [" + D.CodeNames[D.CurrentRank][current.Difficulty] + "]";
