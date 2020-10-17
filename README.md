@@ -4,8 +4,6 @@ A LiveSplit autosplitter for Metal Gear Solid Integral on PC
 ## Basic Usage
 * Extract the autosplitter to a convenient location.
   * Your LiveSplit folder is recommended (e.g. `LiveSplit\livesplit_asl_mgsi\MetalGearSolidIntegral.asl` etc.).
-* Have LiveSplit open as Administrator
-  * This is needed for the autosplitter to be able to see the game's memory.
 * In LiveSplit's Layout Editor, add a `Scriptable Auto Splitter` component, open it and point it at the splitter of your choice.
   * Alternatively, open one of the provided layouts, which will include a component with a appropriate set of defaults.
     * You might still need to point the Scriptable Auto Splitter to the correct file, depending on your install location.
