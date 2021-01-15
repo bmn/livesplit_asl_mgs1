@@ -1,7 +1,15 @@
 # livesplit_asl_mgsi
 A LiveSplit autosplitter for Metal Gear Solid Integral on PC
 
-## Basic Usage
+## Installation
+
+### Automatic
+* In LiveSplit's Splits Editor, select `Metal Gear Solid` as your game name. Below this, an autosplitter entry should appear automatically.
+* Click the `Activate` button to have LiveSplit download the autosplitter.
+* Click the `Settings` button and tweak the settings to your liking.
+  * A set of split files is provided that match common setups. You can customise these further if you like.
+
+### Manual (or for pre-made Splits/Layouts)
 * Extract the autosplitter to a convenient location.
   * Your LiveSplit folder is recommended (e.g. `LiveSplit\livesplit_asl_mgsi\MetalGearSolidIntegral.asl` etc.).
 * In LiveSplit's Layout Editor, add a `Scriptable Auto Splitter` component, open it and point it at the splitter of your choice.
@@ -9,6 +17,11 @@ A LiveSplit autosplitter for Metal Gear Solid Integral on PC
     * You might still need to point the Scriptable Auto Splitter to the correct file, depending on your install location.
 * Tweak the autosplitter settings to your liking.
   * A set of split files is provided that match common setups. You can customise these further if you like.
+  
+### Notes
+* To use `Bosses, Locations` split files, enable the `Area Movement Splits` category. No other change should be needed from the default settings.
+* The Automatic and Manual installation methods create two separate autosplitters and it is possible to have both enabled at the same time.
+  * If you experience double-splits, make sure you do **not** have both an activated Automatic splitter in your splits editor and a Manual splitter in your layout!
 
 ## Variants
 ### Autosplitter Lite
