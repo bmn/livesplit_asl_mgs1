@@ -1027,8 +1027,10 @@ split {
   if ( ( (settings["advanced_evt"]) || (settings["advanced_minevt"]) ) && (current.Progress != old.Progress) ) {
     string ProgressCode = Codes["Progress"];
     foreach ( string Code in D.SameSplit(ProgressCode) ) {
-      if ( (settings.ContainsKey(Code)) && (settings[Code]) ) {
-        D.Debug(ProgressCode + " (looking for setting)");
+      bool SettingExists = settings.ContainsKey(Code);
+      bool SettingValue = settings[Code];
+      D.Debug(Code + " (setting " + (SettingExists ? "= " + SettingValue.ToString() : "doesn't exist") + ")");
+      if (SettingExists && SettingValue) {
         if (D.Except.ContainsKey(ProgressCode)) {
           if (D.Except[ProgressCode]() == 1) return D.Split(ProgressCode, Code + " (except)");
         }
@@ -1053,8 +1055,10 @@ split {
       foreach ( string Location in LocationCode ) {
         string LocationProgress = Location + "_p" + Progress;
         foreach ( string Code in D.SameSplit(LocationProgress) ) {
-          D.Debug(Code + " (looking for setting)");
-          if ( (settings.ContainsKey(Code)) && (settings[Code]) )
+          bool SettingExists = settings.ContainsKey(Code);
+          bool SettingValue = settings[Code];
+          D.Debug(Code + " (setting " + (SettingExists ? "= " + SettingValue.ToString() : "doesn't exist") + ")");
+          if ( SettingExists && SettingValue )
             return D.Split(LocationProgress, Code + " (room change)");
         }
       }
