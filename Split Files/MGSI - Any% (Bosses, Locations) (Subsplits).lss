@@ -321,7 +321,7 @@
       <SegmentHistory />
     </Segment>
     <Segment>
-      <Name>{Underground Base 1 (Rat)}Underground Base 1</Name>
+      <Name>{Underground Base 1 (PAL Key)}Underground Base 1</Name>
       <Icon />
       <SplitTimes>
         <SplitTime name="Personal Best" />
