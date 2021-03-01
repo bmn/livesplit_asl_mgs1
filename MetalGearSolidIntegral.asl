@@ -125,15 +125,6 @@ startup {
     { 11, new string[] { "Flying Squirrel", "Bat", "Flying Fox", "Night Owl" } }
   };
   
-  // todo 6, 16
-  D.O2Multiplier = new Dictionary<int, double> {
-    { 0, 1.0 },
-    { 1, 2.0 },
-    { 6, 301/64 },
-    { 8, 3/4 },
-    { 16, 2.0 }
-  };
-  
   D.CurrentRank = 0;
   D.SplitTimes = new Dictionary<string, uint> {};
   Action InitVars = delegate() {
