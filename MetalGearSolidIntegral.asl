@@ -703,13 +703,8 @@ update {
     D.Except.Add("a_p290", ExcVEResults); 
     
     // Results
-    Func<int> WatResults = delegate() {
-      if ( (current.RoomCode != D.old.RoomCode) || (current.ScoreDone != D.old.ScoreDone) || (current.ScoreDone2 != old.ScoreDone2) ) {
-        D.Debug("RoomCode="+current.RoomCode+" Difficulty="+current.Difficulty+" ScoreDone="+current.ScoreDone+" ScoreDone2="+current.ScoreDone2+" old.ScoreDone="+D.old.ScoreDone);
-      }
-      return ( (current.RoomCode != -1) && ((current.ScoreDone % 4) == current.Difficulty)
+    Func<int> WatResults = () => ( (current.RoomCode != -1) && ((current.ScoreDone % 4) == current.Difficulty)
       && (current.ScoreDone == current.ScoreDone2) && (D.old.ScoreDone != current.ScoreDone) ) ? 1 : -1;
-    };
     D.Watch.Add("a_p294", WatResults);
     
     
