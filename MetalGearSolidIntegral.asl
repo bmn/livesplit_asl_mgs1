@@ -314,6 +314,7 @@ startup {
           settings.Add("a_r3_r4_all", false, "always", "a_r3_r4");
         settings.Add("a_r3_r20", true, "to Medi Room", "a_r3");
           settings.Add("a_r3_r20_p18", true, "on first arrival (Any%)", "a_r3_r20");
+          settings.Add("a_r3_r20_p158", true, "on first arrival (Any%, alternate)", "a_r3_r20");
           settings.Add("a_r3_r20_all", false, "always", "a_r3_r20");
       settings.Add("a_r4", true, "Armory", "advanced_loc");
         settings.Add("a_r4_r2", true, "to Tank Hangar", "a_r4");
@@ -450,7 +451,8 @@ startup {
         settings.Add("a_r12_r6_all", false, "to Nuke Building", "a_r12");
         settings.Add("a_r12_r10_all", false, "to Communications Tower B", "a_r12");
         settings.Add("a_r12_r13", true, "to Blast Furnace", "a_r12");
-          settings.Add("a_r-1_r13_p204", true, "after Sniper Wolf 2", "a_r12_r13");
+          settings.Add("a_r12_r13_p204", true, "after Sniper Wolf 2", "a_r12_r13");
+          settings.Add("a_r-1_r13_p204", true, "after Sniper Wolf 2 (alternate)", "a_r12_r13");
           settings.Add("a_r12_r13_all", false, "always", "a_r12_r13");
       settings.Add("a_r13", true, "Blast Furnace", "advanced_loc");
         settings.Add("a_r13_r12_all", false, "to Snowfield", "a_r13");
@@ -617,7 +619,9 @@ update {
       new ushort[] { 149, 150 },
       new ushort[] { 163, 173 }, // After torture
       new ushort[] { 181, 183 }, // Otacon in CTB
-      new ushort[] { 208, 209, 210 }, // after Wolf 2
+      new ushort[] { 198, 202, 204 }, // Beating Wolf 2
+      new ushort[] { 208, 209, 210 }, // Entering Raven
+      new ushort[] { 212, 213, 217 }, // Beating Raven
       new ushort[] { 237, 238 }, // Rat (in case the insta doesn't work)
       new ushort[] { 242, 244, 246 }, // After cold key
       new ushort[] { 290, 294 } // VE and regular final split
@@ -653,6 +657,7 @@ update {
       { "a_p174", new string[] { "a_s11a_s11b_p173" } }, // Comms Tower A > CTA Roof after chase
       { "a_r44_r39_all", new string[] { "a_p178" } }, // CTA Roof > CTA Outside after rope
       { "a_r39_r11_all", new string[] { "a_p179" } }, // CTA Outside > Walkway after rappel
+      { "a_r-1_r13_p204", new string[] { "a_r12_r13_p204" } }, // Snowfield > Blast Furnace repeat
       { "a_p211", new string[] { "a_r14_r40_p209" } }, // Reached Raven
       { "a_r16_r41_all", new string[] { "a_p252" } }, // Reached Rex
       { "a_r41_r42_all", new string[] { "a_p257" } }, // Supply Route Rex > Liquid
