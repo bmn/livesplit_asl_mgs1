@@ -625,7 +625,6 @@ update {
       new ushort[] { 198, 202, 204 }, // Beating Wolf 2
       new ushort[] { 208, 209, 210 }, // Entering Raven
       new ushort[] { 212, 213, 217 }, // Beating Raven
-      new ushort[] { 237, 238 }, // Rat (in case the insta doesn't work)
       new ushort[] { 242, 244, 246 }, // After cold key
       new ushort[] { 290, 294 } // VE and regular final split
     };
@@ -697,14 +696,6 @@ update {
       return 0;
     };
     D.Watch.Add("a_p6", WatDock);
-    
-    // PAL key (rat)
-    Func<int> WatRat = () => {
-      D.Info("current.ItemData[33] = " + current.ItemData[33], 600, 1);
-      return ( (current.ItemData[33] == 0) && (D.old.ItemData[33] == 255) ) ? 1 : -1;
-    };
-    //Func<int> WatRat = () => ( (current.ItemData[33] == 0) && (D.old.ItemData[33] == 255) ) ? 1 : -1;
-    D.Watch.Add("a_p237", WatRat);
     
     // VE final split
     Func<int> ExcVEResults = () => (current.Difficulty == -1) ? 1 : -1;
