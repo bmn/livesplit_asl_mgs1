@@ -1051,9 +1051,8 @@ split {
         string LocationProgress = Location + "_p" + Progress;
         foreach ( string Code in D.SameSplit(LocationProgress) ) {
           bool SettingExists = settings.ContainsKey(Code);
-          bool SettingValue = settings[Code];
-          D.Debug(Code + " (setting " + (SettingExists ? "= " + SettingValue.ToString() : "doesn't exist") + ")");
-          if ( SettingExists && SettingValue )
+          D.Debug(Code + " (setting " + (SettingExists ? "= " + settings[Code].ToString() : "doesn't exist") + ")");
+          if ( SettingExists && settings[Code] )
             return D.Split(LocationProgress, Code + " (room change)");
         }
       }
