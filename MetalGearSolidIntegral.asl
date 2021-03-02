@@ -178,6 +178,8 @@ startup {
     settings.SetToolTip("o_nomultisplit", "This avoids unwanted splits if you backtrack in a way that would trigger a repeat split");
     settings.Add("o_nolocationclash", true, "Suppress splits of different categories that clash with each other", "options");
     settings.SetToolTip("o_nolocationclash", "If you enable multiple similar splits (e.g. \"Reached dock elevator\" and \"Dock > Heliport\") this will only split for the first one");
+    settings.Add("o_halfframerate", false, "Run the autosplitter at 30 fps", "options");
+    settings.SetToolTip("o_halfframerate", "Game logic runs at 30 fps, but timers run at 60 fps.\nEnabling this can improve performance/accuracy on weaker systems, but more capable systems may see a slight loss of timer precision.");
     
   settings.Add("asl", true, "ASL Var Viewer integration");
   settings.SetToolTip("asl", "Disabling this may slightly improve performance");
@@ -969,6 +971,8 @@ update {
       }
     }
   }
+  
+  refreshRate = settings["o_halfframerate"] ? 30 : 60;
   
   if ( (!current.InMenu) && (old.InMenu) ) D.InitVars();
   return true;
