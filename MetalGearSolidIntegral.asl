@@ -173,6 +173,7 @@ startup {
   settings.Add("options", true, "Options");
     settings.Add("debug_file", true, "Save debug information to LiveSplit program directory", "options");
     settings.SetToolTip("debug_file", "The log will be saved at mgsi.log");
+    settings.Add("debug_stdout", false, "Output debug information to Windows", "options");
     settings.Add("o_startonload", false, "Start splits when loading a save", "options");
     settings.Add("o_nomultisplit", true, "Suppress splitting on repeated actions", "options");
     settings.SetToolTip("o_nomultisplit", "This avoids unwanted splits if you backtrack in a way that would trigger a repeat split");
@@ -571,7 +572,7 @@ update {
           stream.Close();
         }
       }
-      print("[MGSIAS] " + message);
+      if (settings["debug_stdout"]) print("[MGSIAS] " + message);
       vars.DebugMessage = message;
       // also overwrite the previous message if we're already showing the "splitting now" message
       if (D.DebugTimer != D.DebugTimerStart) D.PrevDebug = message;
