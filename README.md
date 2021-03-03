@@ -1,16 +1,27 @@
 # livesplit_asl_mgsi
 A LiveSplit autosplitter for Metal Gear Solid Integral on PC
 
-## Basic Usage
+## Installation
+
+### Automatic
+* In LiveSplit's Splits Editor, select `Metal Gear Solid` as your game name. Below this, an autosplitter entry should appear automatically.
+* Click the `Activate` button to have LiveSplit download the autosplitter.
+* Click the `Settings` button and tweak the settings to your liking.
+  * A set of split files is provided that match common setups. You can customise these further if you like.
+
+### Manual (or for pre-made Splits/Layouts)
 * Extract the autosplitter to a convenient location.
   * Your LiveSplit folder is recommended (e.g. `LiveSplit\livesplit_asl_mgsi\MetalGearSolidIntegral.asl` etc.).
-* Have LiveSplit open as Administrator
-  * This is needed for the autosplitter to be able to see the game's memory.
 * In LiveSplit's Layout Editor, add a `Scriptable Auto Splitter` component, open it and point it at the splitter of your choice.
   * Alternatively, open one of the provided layouts, which will include a component with a appropriate set of defaults.
     * You might still need to point the Scriptable Auto Splitter to the correct file, depending on your install location.
 * Tweak the autosplitter settings to your liking.
   * A set of split files is provided that match common setups. You can customise these further if you like.
+  
+### Notes
+* To use `Bosses, Locations` split files, enable the `Area Movement Splits` category. No other change should be needed from the default settings.
+* The Automatic and Manual installation methods create two separate autosplitters and it is possible to have both enabled at the same time.
+  * If you experience double-splits, make sure you do **not** have both an activated Automatic splitter in your splits editor and a Manual splitter in your layout!
 
 ## Variants
 ### Autosplitter Lite
@@ -55,4 +66,3 @@ You can enable/disable all splits, or return to default settings, by right-click
   * They're organised by *Departure Area > Destination Area > Game Progress*, offering fine control of when you want to split.
   * The default settings will split once only, on each movement that occurs during a typical speedrun. You can disable specific settings to remove them from your splits.
   * Movements that don't occur in a typical speedrun will not have any child settings for game progress. In this case, enabling that movement is equivalent to selecting the "always" setting.
-  
