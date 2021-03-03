@@ -125,15 +125,6 @@ startup {
     { 11, new string[] { "Flying Squirrel", "Bat", "Flying Fox", "Night Owl" } }
   };
   
-  // todo 6, 16
-  D.O2Multiplier = new Dictionary<int, double> {
-    { 0, 1.0 },
-    { 1, 2.0 },
-    { 6, 301/64 },
-    { 8, 3/4 },
-    { 16, 2.0 }
-  };
-  
   D.CurrentRank = 0;
   D.SplitTimes = new Dictionary<string, uint> {};
   Action InitVars = delegate() {
@@ -182,11 +173,14 @@ startup {
   settings.Add("options", true, "Options");
     settings.Add("debug_file", true, "Save debug information to LiveSplit program directory", "options");
     settings.SetToolTip("debug_file", "The log will be saved at mgsi.log");
+    settings.Add("debug_stdout", false, "Output debug information to Windows", "options");
     settings.Add("o_startonload", false, "Start splits when loading a save", "options");
     settings.Add("o_nomultisplit", true, "Suppress splitting on repeated actions", "options");
     settings.SetToolTip("o_nomultisplit", "This avoids unwanted splits if you backtrack in a way that would trigger a repeat split");
     settings.Add("o_nolocationclash", true, "Suppress splits of different categories that clash with each other", "options");
     settings.SetToolTip("o_nolocationclash", "If you enable multiple similar splits (e.g. \"Reached dock elevator\" and \"Dock > Heliport\") this will only split for the first one");
+    settings.Add("o_halfframerate", false, "Run the autosplitter at 30 fps", "options");
+    settings.SetToolTip("o_halfframerate", "Game logic runs at 30 fps, but timers run at 60 fps.\nEnabling this can improve performance/accuracy on weaker systems, but more capable systems may see a slight loss of timer precision.");
     
   settings.Add("asl", true, "ASL Var Viewer integration");
   settings.SetToolTip("asl", "Disabling this may slightly improve performance");
@@ -323,6 +317,7 @@ startup {
           settings.Add("a_r3_r4_all", false, "always", "a_r3_r4");
         settings.Add("a_r3_r20", true, "to Medi Room", "a_r3");
           settings.Add("a_r3_r20_p18", true, "on first arrival (Any%)", "a_r3_r20");
+          settings.Add("a_r3_r20_p158", true, "on first arrival (Any%, alternate)", "a_r3_r20");
           settings.Add("a_r3_r20_all", false, "always", "a_r3_r20");
       settings.Add("a_r4", true, "Armory", "advanced_loc");
         settings.Add("a_r4_r2", true, "to Tank Hangar", "a_r4");
@@ -459,7 +454,8 @@ startup {
         settings.Add("a_r12_r6_all", false, "to Nuke Building", "a_r12");
         settings.Add("a_r12_r10_all", false, "to Communications Tower B", "a_r12");
         settings.Add("a_r12_r13", true, "to Blast Furnace", "a_r12");
-          settings.Add("a_r-1_r13_p204", true, "after Sniper Wolf 2", "a_r12_r13");
+          settings.Add("a_r12_r13_p204", true, "after Sniper Wolf 2", "a_r12_r13");
+          settings.Add("a_r-1_r13_p204", true, "after Sniper Wolf 2 (alternate)", "a_r12_r13");
           settings.Add("a_r12_r13_all", false, "always", "a_r12_r13");
       settings.Add("a_r13", true, "Blast Furnace", "advanced_loc");
         settings.Add("a_r13_r12_all", false, "to Snowfield", "a_r13");
@@ -576,7 +572,7 @@ update {
           stream.Close();
         }
       }
-      print("[MGSIAS] " + message);
+      if (settings["debug_stdout"]) print("[MGSIAS] " + message);
       vars.DebugMessage = message;
       // also overwrite the previous message if we're already showing the "splitting now" message
       if (D.DebugTimer != D.DebugTimerStart) D.PrevDebug = message;
@@ -626,8 +622,9 @@ update {
       new ushort[] { 149, 150 },
       new ushort[] { 163, 173 }, // After torture
       new ushort[] { 181, 183 }, // Otacon in CTB
-      new ushort[] { 208, 209, 210 }, // after Wolf 2
-      new ushort[] { 237, 238 }, // Rat (in case the insta doesn't work)
+      new ushort[] { 198, 202, 204 }, // Beating Wolf 2
+      new ushort[] { 208, 209, 210 }, // Entering Raven
+      new ushort[] { 212, 213, 217 }, // Beating Raven
       new ushort[] { 242, 244, 246 }, // After cold key
       new ushort[] { 290, 294 } // VE and regular final split
     };
@@ -662,6 +659,7 @@ update {
       { "a_p174", new string[] { "a_s11a_s11b_p173" } }, // Comms Tower A > CTA Roof after chase
       { "a_r44_r39_all", new string[] { "a_p178" } }, // CTA Roof > CTA Outside after rope
       { "a_r39_r11_all", new string[] { "a_p179" } }, // CTA Outside > Walkway after rappel
+      { "a_r-1_r13_p204", new string[] { "a_r12_r13_p204" } }, // Snowfield > Blast Furnace repeat
       { "a_p211", new string[] { "a_r14_r40_p209" } }, // Reached Raven
       { "a_r16_r41_all", new string[] { "a_p252" } }, // Reached Rex
       { "a_r41_r42_all", new string[] { "a_p257" } }, // Supply Route Rex > Liquid
@@ -699,26 +697,13 @@ update {
     };
     D.Watch.Add("a_p6", WatDock);
     
-    // PAL key (rat)
-    Func<int> WatRat = () => {
-      D.Info("current.ItemData[33] = " + current.ItemData[33], 600, 1);
-      return ( (current.ItemData[33] == 0) && (D.old.ItemData[33] == 255) ) ? 1 : -1;
-    };
-    //Func<int> WatRat = () => ( (current.ItemData[33] == 0) && (D.old.ItemData[33] == 255) ) ? 1 : -1;
-    D.Watch.Add("a_p237", WatRat);
-    
     // VE final split
     Func<int> ExcVEResults = () => (current.Difficulty == -1) ? 1 : -1;
     D.Except.Add("a_p290", ExcVEResults); 
     
     // Results
-    Func<int> WatResults = delegate() {
-      if ( (current.RoomCode != D.old.RoomCode) || (current.ScoreDone != D.old.ScoreDone) || (current.ScoreDone2 != old.ScoreDone2) ) {
-        D.Debug("RoomCode="+current.RoomCode+" Difficulty="+current.Difficulty+" ScoreDone="+current.ScoreDone+" ScoreDone2="+current.ScoreDone2+" old.ScoreDone="+D.old.ScoreDone);
-      }
-      return ( (current.RoomCode != -1) && ((current.ScoreDone % 4) == current.Difficulty)
+    Func<int> WatResults = () => ( (current.RoomCode != -1) && ((current.ScoreDone % 4) == current.Difficulty)
       && (current.ScoreDone == current.ScoreDone2) && (D.old.ScoreDone != current.ScoreDone) ) ? 1 : -1;
-    };
     D.Watch.Add("a_p294", WatResults);
     
     
@@ -979,6 +964,8 @@ update {
     }
   }
   
+  refreshRate = settings["o_halfframerate"] ? 30 : 60;
+  
   if ( (!current.InMenu) && (old.InMenu) ) D.InitVars();
   return true;
 }
@@ -1056,9 +1043,8 @@ split {
         string LocationProgress = Location + "_p" + Progress;
         foreach ( string Code in D.SameSplit(LocationProgress) ) {
           bool SettingExists = settings.ContainsKey(Code);
-          bool SettingValue = settings[Code];
-          D.Debug(Code + " (setting " + (SettingExists ? "= " + SettingValue.ToString() : "doesn't exist") + ")");
-          if ( SettingExists && SettingValue )
+          D.Debug(Code + " (setting " + (SettingExists ? "= " + settings[Code].ToString() : "doesn't exist") + ")");
+          if ( SettingExists && settings[Code] )
             return D.Split(LocationProgress, Code + " (room change)");
         }
       }
