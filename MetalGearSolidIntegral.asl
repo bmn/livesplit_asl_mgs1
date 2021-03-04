@@ -622,6 +622,7 @@ update {
       new ushort[] { 149, 150 },
       new ushort[] { 163, 173 }, // After torture
       new ushort[] { 181, 183 }, // Otacon in CTB
+      new ushort[] { 188, 190 }, // Beating Hind
       new ushort[] { 198, 202, 204 }, // Beating Wolf 2
       new ushort[] { 208, 209, 210 }, // Entering Raven
       new ushort[] { 212, 213, 217 }, // Beating Raven
