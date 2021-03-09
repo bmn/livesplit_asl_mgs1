@@ -87,6 +87,8 @@ startup {
   dynamic D = vars.D;
   D.Except = new Dictionary< string, Func<int> >();
   D.Watch = new Dictionary< string, Func<int> >();
+  D.DebugFileList = new List<string>();
+  D.Iteration = 0;
   D.Initialised = false;
   
   D.Weapons = new Dictionary<sbyte, string> {
@@ -556,7 +558,6 @@ update {
   if (!D.Initialised) {
     
     // Debug message handler
-    string DebugPath = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + "\\mgsi.log";
     D.DebugTimer = 0;
     D.InfoTimer = 0;
     D.InfoPriority = -1;
@@ -566,12 +567,7 @@ update {
     vars.Info = "";
     Action<string> Debug = delegate(string message) {
       message = "[" + current.GameTime + "] " + message;
-      if (settings["debug_file"]) {
-        using(System.IO.StreamWriter stream = new System.IO.StreamWriter(DebugPath, true)) {
-          stream.WriteLine(message);
-          stream.Close();
-        }
-      }
+      if (settings["debug_file"]) vars.D.DebugFileList.Add(message);
       if (settings["debug_stdout"]) print("[MGSIAS] " + message);
       vars.DebugMessage = message;
       // also overwrite the previous message if we're already showing the "splitting now" message
@@ -966,6 +962,15 @@ update {
   }
   
   refreshRate = settings["o_halfframerate"] ? 30 : 60;
+  
+  if ( (settings["debug_file"]) && ((vars.D.Iteration++ % 64) == 0) && (vars.D.DebugFileList.Count > 0) ) {
+    string DebugPath = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + "\\mgsi.log";
+    using(System.IO.StreamWriter stream = new System.IO.StreamWriter(DebugPath, true)) {
+      stream.WriteLine(string.Join("\n", vars.D.DebugFileList));
+      stream.Close();
+      vars.D.DebugFileList.Clear();
+    }
+  }
   
   if ( (!current.InMenu) && (old.InMenu) ) D.InitVars();
   return true;
