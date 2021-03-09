@@ -1018,17 +1018,18 @@ split {
   
   // Progress changes
   if ( ( (settings["advanced_evt"]) || (settings["advanced_minevt"]) ) && (current.Progress != old.Progress) ) {
-    string ProgressCode = Codes["Progress"];
-    foreach ( string Code in D.SameSplit(ProgressCode) ) {
-      bool SettingExists = settings.ContainsKey(Code);
-      bool SettingValue = settings[Code];
-      D.Debug(Code + " (setting " + (SettingExists ? "= " + SettingValue.ToString() : "doesn't exist") + ")");
-      if (SettingExists && SettingValue) {
-        if (D.Except.ContainsKey(ProgressCode)) {
-          if (D.Except[ProgressCode]() == 1) return D.Split(ProgressCode, Code + " (except)");
+    foreach ( int Progress in D.SameProgress(current.Progress) ) {
+      string ProgressCode = "a_p" + Progress;
+      foreach ( string Code in D.SameSplit(ProgressCode) ) {
+        bool SettingExists = settings.ContainsKey(Code);
+        D.Debug(Code + " (setting " + (SettingExists ? "= " + settings[Code].ToString() : "doesn't exist") + ")");
+        if (SettingExists && settings[Code]) {
+          if (D.Except.ContainsKey(ProgressCode)) {
+            if (D.Except[ProgressCode]() == 1) return D.Split(ProgressCode, Code + " (except)");
+          }
+          else return D.Split(ProgressCode, "Reached " + Code);
+          break;
         }
-        else return D.Split(ProgressCode, "Reached " + Code);
-        break;
       }
     }
   }
