@@ -43,6 +43,7 @@ state("mgsi") {
   ushort    DockTimer:      0x4F56AC;
   ushort    ScoreDone:      0x38E7EA;
   byte      ScoreDone2:     0x5942EC;
+  byte      EscapeRadar:    0x2FC839;
 }
 
 isLoading {
@@ -130,6 +131,7 @@ startup {
   D.CurrentRank = 0;
   D.SplitTimes = new Dictionary<string, uint> {};
   Action InitVars = delegate() {
+    D.EscapeRadarTimes = 0;
     D.CurrentRank = 0;
     D.PrevInfo = "";
     D.ShotsFired = 0;
@@ -222,8 +224,9 @@ startup {
       settings.Add("a_p257", true, "Metal Gear REX", "advanced_evt");
       settings.Add("a_p278", true, "Liquid Snake", "advanced_evt");
       settings.Add("a_p286", true, "Escape", "advanced_evt");
+      settings.Add("a_s19b", true, "Escape (Very Easy)", "advanced_evt");
+      settings.SetToolTip("a_s19b", "Splits when the escape timer disappears.\nOnly splits on Very Easy");
       settings.Add("a_p294", true, "Score", "advanced_evt");
-      settings.SetToolTip("a_p294", "On Very Easy, this will split at the final codec instead");
     settings.Add("advanced_minevt", false, "Other Event Splits", "advanced");
     settings.SetToolTip("advanced_minevt", "For more options, see the Area Movement Splits section");
       settings.Add("a_p7", false, "[Dock] Reached elevator", "advanced_minevt");
@@ -622,8 +625,7 @@ update {
       new ushort[] { 198, 202, 204 }, // Beating Wolf 2
       new ushort[] { 208, 209, 210 }, // Entering Raven
       new ushort[] { 212, 213, 217 }, // Beating Raven
-      new ushort[] { 242, 244, 246 }, // After cold key
-      new ushort[] { 290, 294 } // VE and regular final split
+      new ushort[] { 242, 244, 246 } // After cold key
     };
     D.SameProgressData = new Dictionary<ushort, ushort[]>();
     foreach (ushort[] i in SameProgressData) {
@@ -695,8 +697,14 @@ update {
     D.Watch.Add("a_p6", WatDock);
     
     // VE final split
-    Func<int> ExcVEResults = () => (current.Difficulty == -1) ? 1 : -1;
-    D.Except.Add("a_p290", ExcVEResults); 
+    Func<int> WatVEResults = delegate() {
+      if (current.Difficulty != -1) return 0;
+      if ( (current.EscapeRadar == 2) && (D.old.EscapeRadar == 0) ) {
+        if (++D.EscapeRadarTimes == 2) return 1;
+      }
+      return 0;
+    };
+    D.Watch.Add("a_s19b", WatVEResults);
     
     // Results
     Func<int> WatResults = () => ( (current.RoomCode != -1) && ((current.ScoreDone % 4) == current.Difficulty)
@@ -996,7 +1004,9 @@ split {
   var Codes = new Dictionary<string, string> {
     { "Progress",     "a_p" + current.Progress },
     { "Room",         "a_r" + current.RoomCode },
-    { "RoomProgress", "a_r" + current.RoomCode + "_p" + current.Progress }
+    { "RoomProgress", "a_r" + current.RoomCode + "_p" + current.Progress },
+    { "Area",         "a_" + current.RoomString },
+    { "AreaProgress", "a_" + current.RoomString + "_p" + current.Progress }
   };
   int WatchSplit = 0;
   string WatchSplitCode = "";
