@@ -617,7 +617,10 @@ update {
   
     // List possible progress values at essentially the same point in the game
     var SameProgressData = new List<ushort[]> {
+      new ushort[] { 9, 12 }, // Dock > Heliport
       new ushort[] { 52, 58, 64 }, // After Ocelot (includes hangar door opening)
+      new ushort[] { 75, 76, 77 }, // Entering Ninja
+      new ushort[] { 137, 138, 139 }, // After Mantis
       new ushort[] { 149, 150 },
       new ushort[] { 163, 173 }, // After torture
       new ushort[] { 181, 183 }, // Otacon in CTB
