@@ -693,9 +693,11 @@ update {
   
     // Dock elevator timer
     Func<int> WatDock = delegate() {
-      if ( (settings["asl_info_dock"]) && (current.DockTimer < D.old.DockTimer) &&
-        (current.DockTimer > 0) && (current.DockTimer <= 3600) )
-        D.Info("Elevator appears in " + D.FramesToSeconds(current.DockTimer), 15, 1);
+      if ( (settings["asl_info_dock"]) && (current.DockTimer > 0) && (current.DockTimer <= 3600) ) {
+        int Delta = (D.old.DockTimer - current.DockTimer);
+        if ( (Delta > 0) && (Delta < 5) )
+          D.Info("Elevator appears in " + D.FramesToSeconds(current.DockTimer), 15, 1);
+      }
       return 0;
     };
     D.Watch.Add("a_p6", WatDock);
