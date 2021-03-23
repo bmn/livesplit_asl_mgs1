@@ -1,4 +1,9 @@
+/****************************************************/
 /* Autosplitter for Metal Gear Solid: Integral (PC) */
+/*                                                  */
+/* Created by bmn for Metal Gear Solid Speedrunners */
+/* Testing by dlimes13 & plywood_                   */
+/****************************************************/
 
 state("mgsi") {
   bool      _STATS:         0x000000;
