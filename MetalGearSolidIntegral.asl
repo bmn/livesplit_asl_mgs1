@@ -1,4 +1,9 @@
+/****************************************************/
 /* Autosplitter for Metal Gear Solid: Integral (PC) */
+/*                                                  */
+/* Created by bmn for Metal Gear Solid Speedrunners */
+/* Testing by dlimes13 & plywood_                   */
+/****************************************************/
 
 state("mgsi") {
   bool      _STATS:         0x000000;
@@ -43,6 +48,7 @@ state("mgsi") {
   ushort    DockTimer:      0x4F56AC;
   ushort    ScoreDone:      0x38E7EA;
   byte      ScoreDone2:     0x5942EC;
+  byte      EscapeRadar:    0x2FC839;
 }
 
 isLoading {
@@ -87,6 +93,8 @@ startup {
   dynamic D = vars.D;
   D.Except = new Dictionary< string, Func<int> >();
   D.Watch = new Dictionary< string, Func<int> >();
+  D.DebugFileList = new List<string>();
+  D.Iteration = 0;
   D.Initialised = false;
   
   D.Weapons = new Dictionary<sbyte, string> {
@@ -128,6 +136,7 @@ startup {
   D.CurrentRank = 0;
   D.SplitTimes = new Dictionary<string, uint> {};
   Action InitVars = delegate() {
+    D.EscapeRadarTimes = 0;
     D.CurrentRank = 0;
     D.PrevInfo = "";
     D.ShotsFired = 0;
@@ -220,8 +229,9 @@ startup {
       settings.Add("a_p257", true, "Metal Gear REX", "advanced_evt");
       settings.Add("a_p278", true, "Liquid Snake", "advanced_evt");
       settings.Add("a_p286", true, "Escape", "advanced_evt");
+      settings.Add("a_s19b", true, "Escape (Very Easy)", "advanced_evt");
+      settings.SetToolTip("a_s19b", "Splits when the escape timer disappears.\nOnly splits on Very Easy");
       settings.Add("a_p294", true, "Score", "advanced_evt");
-      settings.SetToolTip("a_p294", "On Very Easy, this will split at the final codec instead");
     settings.Add("advanced_minevt", false, "Other Event Splits", "advanced");
     settings.SetToolTip("advanced_minevt", "For more options, see the Area Movement Splits section");
       settings.Add("a_p7", false, "[Dock] Reached elevator", "advanced_minevt");
@@ -556,7 +566,6 @@ update {
   if (!D.Initialised) {
     
     // Debug message handler
-    string DebugPath = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + "\\mgsi.log";
     D.DebugTimer = 0;
     D.InfoTimer = 0;
     D.InfoPriority = -1;
@@ -566,12 +575,7 @@ update {
     vars.Info = "";
     Action<string> Debug = delegate(string message) {
       message = "[" + current.GameTime + "] " + message;
-      if (settings["debug_file"]) {
-        using(System.IO.StreamWriter stream = new System.IO.StreamWriter(DebugPath, true)) {
-          stream.WriteLine(message);
-          stream.Close();
-        }
-      }
+      if (settings["debug_file"]) vars.D.DebugFileList.Add(message);
       if (settings["debug_stdout"]) print("[MGSIAS] " + message);
       vars.DebugMessage = message;
       // also overwrite the previous message if we're already showing the "splitting now" message
@@ -618,15 +622,19 @@ update {
   
     // List possible progress values at essentially the same point in the game
     var SameProgressData = new List<ushort[]> {
+      new ushort[] { 9, 12 }, // Dock > Heliport
       new ushort[] { 52, 58, 64 }, // After Ocelot (includes hangar door opening)
+      new ushort[] { 75, 76, 77 }, // Entering Ninja
+      new ushort[] { 137, 138, 139 }, // After Mantis
+      new ushort[] { 141, 143 }, // Cave after Mantis
       new ushort[] { 149, 150 },
       new ushort[] { 163, 173 }, // After torture
       new ushort[] { 181, 183 }, // Otacon in CTB
+      new ushort[] { 188, 190 }, // Beating Hind
       new ushort[] { 198, 202, 204 }, // Beating Wolf 2
       new ushort[] { 208, 209, 210 }, // Entering Raven
       new ushort[] { 212, 213, 217 }, // Beating Raven
-      new ushort[] { 242, 244, 246 }, // After cold key
-      new ushort[] { 290, 294 } // VE and regular final split
+      new ushort[] { 242, 244, 246 } // After cold key
     };
     D.SameProgressData = new Dictionary<ushort, ushort[]>();
     foreach (ushort[] i in SameProgressData) {
@@ -690,16 +698,24 @@ update {
   
     // Dock elevator timer
     Func<int> WatDock = delegate() {
-      if ( (settings["asl_info_dock"]) && (current.DockTimer < D.old.DockTimer) &&
-        (current.DockTimer > 0) && (current.DockTimer <= 3600) )
-        D.Info("Elevator appears in " + D.FramesToSeconds(current.DockTimer), 15, 1);
+      if ( (settings["asl_info_dock"]) && (current.DockTimer > 0) && (current.DockTimer <= 3600) ) {
+        int Delta = (D.old.DockTimer - current.DockTimer);
+        if ( (Delta > 0) && (Delta < 5) )
+          D.Info("Elevator appears in " + D.FramesToSeconds(current.DockTimer), 15, 1);
+      }
       return 0;
     };
     D.Watch.Add("a_p6", WatDock);
     
     // VE final split
-    Func<int> ExcVEResults = () => (current.Difficulty == -1) ? 1 : -1;
-    D.Except.Add("a_p290", ExcVEResults); 
+    Func<int> WatVEResults = delegate() {
+      if (current.Difficulty != -1) return 0;
+      if ( (current.EscapeRadar == 2) && (D.old.EscapeRadar == 0) ) {
+        if (++D.EscapeRadarTimes == 2) return 1;
+      }
+      return 0;
+    };
+    D.Watch.Add("a_s19b", WatVEResults);
     
     // Results
     Func<int> WatResults = () => ( (current.RoomCode != -1) && ((current.ScoreDone % 4) == current.Difficulty)
@@ -966,6 +982,15 @@ update {
   
   refreshRate = settings["o_halfframerate"] ? 30 : 60;
   
+  if ( (settings["debug_file"]) && ((vars.D.Iteration++ % 64) == 0) && (vars.D.DebugFileList.Count > 0) ) {
+    string DebugPath = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + "\\mgsi.log";
+    using(System.IO.StreamWriter stream = new System.IO.StreamWriter(DebugPath, true)) {
+      stream.WriteLine(string.Join("\n", vars.D.DebugFileList));
+      stream.Close();
+      vars.D.DebugFileList.Clear();
+    }
+  }
+  
   if ( (!current.InMenu) && (old.InMenu) ) D.InitVars();
   return true;
 }
@@ -990,7 +1015,9 @@ split {
   var Codes = new Dictionary<string, string> {
     { "Progress",     "a_p" + current.Progress },
     { "Room",         "a_r" + current.RoomCode },
-    { "RoomProgress", "a_r" + current.RoomCode + "_p" + current.Progress }
+    { "RoomProgress", "a_r" + current.RoomCode + "_p" + current.Progress },
+    { "Area",         "a_" + current.RoomString },
+    { "AreaProgress", "a_" + current.RoomString + "_p" + current.Progress }
   };
   int WatchSplit = 0;
   string WatchSplitCode = "";
@@ -1012,17 +1039,18 @@ split {
   
   // Progress changes
   if ( ( (settings["advanced_evt"]) || (settings["advanced_minevt"]) ) && (current.Progress != old.Progress) ) {
-    string ProgressCode = Codes["Progress"];
-    foreach ( string Code in D.SameSplit(ProgressCode) ) {
-      bool SettingExists = settings.ContainsKey(Code);
-      bool SettingValue = settings[Code];
-      D.Debug(Code + " (setting " + (SettingExists ? "= " + SettingValue.ToString() : "doesn't exist") + ")");
-      if (SettingExists && SettingValue) {
-        if (D.Except.ContainsKey(ProgressCode)) {
-          if (D.Except[ProgressCode]() == 1) return D.Split(ProgressCode, Code + " (except)");
+    foreach ( int Progress in D.SameProgress(current.Progress) ) {
+      string ProgressCode = "a_p" + Progress;
+      foreach ( string Code in D.SameSplit(ProgressCode) ) {
+        bool SettingExists = settings.ContainsKey(Code);
+        D.Debug(Code + " (setting " + (SettingExists ? "= " + settings[Code].ToString() : "doesn't exist") + ")");
+        if (SettingExists && settings[Code]) {
+          if (D.Except.ContainsKey(ProgressCode)) {
+            if (D.Except[ProgressCode]() == 1) return D.Split(ProgressCode, Code + " (except)");
+          }
+          else return D.Split(ProgressCode, "Reached " + Code);
+          break;
         }
-        else return D.Split(ProgressCode, "Reached " + Code);
-        break;
       }
     }
   }
