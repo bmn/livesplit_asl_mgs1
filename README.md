@@ -1,68 +1,98 @@
-# livesplit_asl_mgsi
-A LiveSplit autosplitter for Metal Gear Solid Integral on PC
+# livesplit_asl_mgs1
+A LiveSplit autosplitter for Metal Gear Solid on PC and emulator
+
+⚠ This is version 2 of the autosplitter. [Click here for version 1 (pre-May 2021).](https://github.com/bmn/livesplit_asl_mgs1/tree/v1)
+
+⚠ **Do not** use a *Scriptable Auto Splitter* and an activated *Splits Editor autosplitter* at the same time - this will cause repeated splits.
+
+⚠ If using a Split File labelled *Subsplits*, you should have a *Subsplits* component in your layout, **not** the default *Splits* layout.
+
+# Versions Supported
+## Games
+* Metal Gear Solid (PSX JP)
+* Metal Gear Solid (PSX US)
+* Metal Gear Solid (PSX EU)
+* Metal Gear Solid Integral (PC)
+* Metal Gear Solid Integral (PSX JP)
+* Metal Gear Solid Integral VR-Disc (PC)
+* Metal Gear Solid Integral VR-Disc (PSX JP)
+* Metal Gear Solid VR Missions (PSX US)
+* Metal Gear Solid Special Missions (PSX EU)
+## Emulators
+* BizHawk
+* DuckStation
+* ePSXe
+* Mednafen
+* RetroArch (Beetle PSX core)
+
+# Getting Started
 
 ## Installation
+* Click the green button above and select `Download ZIP`, and extract `MetalGearSolid.asl` anywhere.
+* In LiveSplit's Layout Editor, add a new `Control > Scriptable Auto Splitter`.
+* Double click on the Scriptable Auto Splitter, and browse to `MetalGearSolid.asl`.
 
-### Automatic
-* In LiveSplit's Splits Editor, select `Metal Gear Solid` as your game name. Below this, an autosplitter entry should appear automatically.
-* Click the `Activate` button to have LiveSplit download the autosplitter.
-* Click the `Settings` button and tweak the settings to your liking.
-  * A set of split files is provided that match common setups. You can customise these further if you like.
+## Setting the Default set of Splits
+* The first time you run the autosplitter, the `Default Settings Template` window will appear.
+  * Selecting one of the templates will define your default splits for every layout you add the autosplitter to in the future.
+  * The first three templates offer sensible split sets, depending on how often you want to split.
+  * Choose one of the `For Old v1 Split Files` templates if you want to use your old v1 split files without having to add or remove splits.
 
-### Manual (or for pre-made Splits/Layouts)
-* Extract the autosplitter to a convenient location.
-  * Your LiveSplit folder is recommended (e.g. `LiveSplit\livesplit_asl_mgsi\MetalGearSolidIntegral.asl` etc.).
-* In LiveSplit's Layout Editor, add a `Scriptable Auto Splitter` component, open it and point it at the splitter of your choice.
-  * Alternatively, open one of the provided layouts, which will include a component with a appropriate set of defaults.
-    * You might still need to point the Scriptable Auto Splitter to the correct file, depending on your install location.
-* Tweak the autosplitter settings to your liking.
-  * A set of split files is provided that match common setups. You can customise these further if you like.
+## Customising your Splits
+* In the Scriptable Auto Splitter settings, find the `Split Points` category and open it if necessary.
+* Every split supported by the autosplitter is listed here in order.
+* Check any split you want to include, and uncheck those you don't.
+* You don't need to uncheck splits that aren't in your run - the autosplitter will keep track of which route you're on, and avoid splitting in places that aren't on that route.
+
+## Building Split Files
+* No `split files` (`.lss` files for LiveSplit containing the list of splits for each run) are provided.
+* To build a set of split files that matches the selected splits in your settings:
+  * Make sure the game, or any of the supported emulators (it's not necessary to launch the game), is already open.
+  * In the Scriptable Auto Splitter settings, toggle the top setting `MGS Autosplitter Toolbox` on or off, to open the toolbox.
+  * Click the button for `Build Split File for current settings`, to open the split file builder.
+  * Change any of the settings if needed, click `Save To Folder`, and select the target folder.
+* Split files will be created for the following categories:
+  * Any% (PC)
+  * All Bosses (PC)
+  * Glitchless (PC)
+  * Any% (Console)
+  * All Bosses (Console)
+
+# ASL Var Viewer ("Variables") Support
+* MGS Autosplitter provides a set of data variables about the game and run, that you can add to your LiveSplit layout.
+* You must install the [ASL Var Viewer](https://github.com/hawkerm/LiveSplit.ASLVarViewer) component by hawkerm first, and restart LiveSplit.
+
+## Adding Variables
+* Make sure the game is open before starting.
+* For each variable, in the Layout Editor, add an `Info > ASL Var Viewer` component and double click it.
+* Select either `Current State` or `Variables`, and select a variable from the dropdown box below.
+
+## Current State
+* The `Current State` variables are raw data taken from the game, usually simple strings and numbers.
+* These variables are provided:
+  * `Alerts`: The number of times you've entered an Alert state when seen by the enemy.
+  * `Continues`: The number of Continues you've taken.
+  * `Difficulty`: A number representing the difficulty, where `-1` is Very Easy, `0` is Normal, etc.
+  * `GameTime`: The number of frames elapsed since you started a run. Timed at 30 per second.
+  * `Kills`: The number of guards you've killed.
+  * `Location`: A string representing the current game area, e.g. `s00a` is Dock.
+  * `Progress`: A number representing your progress through the game. The end of the game is at `294`.
+  * `RationsUsed`: The number of Rations you've eaten.
+  * `Saves`: The number of times you've saved the game.
+
+## Variables
+* The `Variables` variables are calculated by the autosplitter using game and run data, and are usually "friendlier" than the Current State variables.
+* These variables are provided:
+  * `D`: This is a data store for the autosplitter. It doesn't provide any information and shouldn't be used.
+  * `FPS`: A constantly-updating display of the game's rendered frame rate. By default 1-second, 5-second and 15-second periods are displayed.
+  * `Info`: A general-purpose variable that shows contextual information whenever it becomes available. These are provided:
+    * HP for the current boss
+    * Countdown timer for Chaff Grenade
+    * Countdown timer for O2 when in water/gas
+    * Countdown timer for Diazepam
+    * Countdown timer for the elevator in Dock
+  * `Location`: The name of the area you're currently in.
+  * `Platform`: The name of the emulator currently in use, or `PC` if using the PC version of the game.
+  * `Stats`: A single line showing every game stat (e.g. Alerts) that is 1 or higher.
+  * `Version`: The name of the current version of Metal Gear Solid.
   
-### Notes
-* To use `Bosses, Locations` split files, enable the `Area Movement Splits` category. No other change should be needed from the default settings.
-* The Automatic and Manual installation methods create two separate autosplitters and it is possible to have both enabled at the same time.
-  * If you experience double-splits, make sure you do **not** have both an activated Automatic splitter in your splits editor and a Manual splitter in your layout!
-
-## Variants
-### Autosplitter Lite
-`MetalGearSolidIntegral-Lite.asl` is a simple autosplitter that provides in-game-time (IGT), automatic start and reset, and a core set of splits (primarily bosses) which can be individually disabled. If you need more than this, consider:
-### Full Autosplitter
-`MetalGearSolidIntegral.asl` is a more complex autosplitter that includes everything Autosplitter Lite does, and adds more powerful and flexibile split options and information.
-
-The information below pertains to the Full Autosplitter only.
-
-## ASL Var Viewer support
-[ASL Var Viewer](https://github.com/hawkerm/LiveSplit.ASLVarViewer) integration is provided (ASLVV must be installed first), offering:
-
-* Core stats such as Alerts, Kills etc. (in the Current State section)
-* The current difficulty and area (in the Variables section)
-* A `Stats` variable, which shows your current stats along with your current codename (Big Boss etc.)
-* An `Info` variable, which shows contextual information including Chaff/O2 timers and Boss health data
-
-See the settings for customisability options.
-
-## Split Points
-The Split Points settings are a list of every possible point that the Full Autosplitter can trigger a split at. Each can be enabled or disabled so you can fully customise your list of splits - remove splits you don't care about, or add new ones you consider important.
-
-There are five categories of Split Points. By default only the Boss Completion splits are enabled (offering a similar selection to Autosplitter Lite), but you can enable multiple categories if desired. If two categories have splits that occur at the same time, or in the same cutscene sequence, only the first of these splits will occur.
-
-You can enable/disable all splits, or return to default settings, by right-clicking a category and selecting one of those options.
-
-* Boss Completion Splits
-  * *Enabled by default*
-  * These occur when you defeat a major boss.
-  * There is also a split at the Score screen. If on Very Easy, this will split instead on the first codec in the ending, as per speedrun.com rules.
-* Other Event Splits
-  * *Disabled by default. Recommended to only enable specific entries here and add those to your split list.*
-  * These occur at other notable occasions, such as when you arrive at a boss or complete minor set pieces. Of particular note are:
-    * Breaking into prison with the vent clip.
-    * Retrieving the PAL Key from the rat, and the use of each key in the control room.
-* Weapon/Item Unlock Splits
-  * *Disabled by default. Recommended to only enable specific entries here and add those to your split list.*
-  * These occur the first time you collect a weapon or item.
-* Area Movement Splits
-  * *Disabled by default, but enabled in the example layouts that include "Locations".*
-  * These occur when you move from one area to another.
-  * They're organised by *Departure Area > Destination Area > Game Progress*, offering fine control of when you want to split.
-  * The default settings will split once only, on each movement that occurs during a typical speedrun. You can disable specific settings to remove them from your splits.
-  * Movements that don't occur in a typical speedrun will not have any child settings for game progress. In this case, enabling that movement is equivalent to selecting the "always" setting.
