@@ -219,6 +219,8 @@ startup {
       { "O2Timer",          0xACA8C },
       { "ChaffTimer",       0xBE968 },
       { "DiazepamTimer",    0xB5812 },
+      { "Life",             0xB5796 },
+      { "MaxLife",          0xB5798 },
     } },
     // JP Integral
     { "SLPM-86247", new Dictionary<string, int>() {
@@ -257,6 +259,8 @@ startup {
       { "O2Timer",          0xABA34 },
       { "ChaffTimer",       0xBDFA0 },
       { "DiazepamTimer",    0xB4E2A },
+      { "Life",             0xB4DAE },
+      { "MaxLife",          0xB4DB0 },
     } },
     // JP VR
     { "SLPM-86249", new Dictionary<string, int>() {
@@ -302,6 +306,8 @@ startup {
       { "O2Timer",          0xAE1B4 },
       { "ChaffTimer",       0xC0710 },
       { "DiazepamTimer",    0xB75AA },
+      { "Life",             0xB752E },
+      { "MaxLife",          0xB7530 },
     } },
     // US VR
     { "SLUS-00957", new Dictionary<string, int>() {
@@ -347,6 +353,8 @@ startup {
       { "O2Timer",          0xACA8C },
       { "ChaffTimer",       0xBEFE8 },
       { "DiazepamTimer",    0xB5E82 },
+      { "Life",             0xB5E06 },
+      { "MaxLife",          0xB5E08 },
     } },
     // EU VR
     { "SLES-02136", new Dictionary<string, int>() {
@@ -1287,7 +1295,9 @@ startup {
         F.AddChildSetting(F.SettingParent("Alt", "Opt.ASL.Info"), true, "Show another variable when Info is empty");
           F.AddChildSetting(F.SettingParent("FPS", "Opt.ASL.Info.Alt"), false, "FPS");
           F.AddChildSetting("Location", false, "Location");
-          F.AddChildSetting("Stats", false, "Stats");        F.AddChildSetting(F.SettingParent("Boss", "Opt.ASL.Info"), true, "Include Boss Health");
+          F.AddChildSetting("Stats", false, "Stats");
+        F.AddChildSetting(F.SettingParent("Boss", "Opt.ASL.Info"), true, "Include Boss Health");
+        F.AddChildSetting("Life", true, "Include Snake Health");
         F.AddChildSetting("Chaff", true, "Include Chaff timer");
         F.AddChildSetting("O2", true, "Include O2 timer");
         F.AddChildSetting("Diazepam", true, "Include Diazepam timer");
@@ -1473,8 +1483,10 @@ init {
     };
     
     // Updates [vars.Info] with current boss health data
-    F.BossHealth = (Func<string, int, int, int>)((name, curHP, maxHP) => {
+    F.BossHealth = (Func<string, int, int>)((name, maxHP) => {
       if (!settings["Opt.ASL.Info.Boss"]) return 0;
+      
+      int curHP = M["BossHP"].Current;
       if ( (maxHP <= 0) || (curHP > maxHP) ) return 0;
       if (curHP < 0) curHP = 0;
       
@@ -1485,11 +1497,11 @@ init {
       
       string output = string.Format("{0} | {1} ({2}/{3} HP)",
         name, F.Percentage(curHP, maxHP), curHP, maxHP);
-      F.Info(output, 2000, 50);
+      F.Info(output, 2000, M["BossHP"].Changed ? 50 : 10);
       return 0;
     });
-    F.ShowBossHealth = (Action<string, int, int>)((name, curHP, maxHP) =>
-      F.BossHealth(name, curHP, maxHP));
+    F.ShowBossHealth = (Action<string, int>)((name, maxHP) =>
+      F.BossHealth(name, maxHP));
 
     // TRUE if <key> exists in the settings array and is true
     F.SettingEnabled = (Func<string, bool>)((key) => 
@@ -1568,13 +1580,21 @@ init {
       var diaz = M["DiazepamTimer"];
       var chaff = M["ChaffTimer"];
       var o2 = M["O2Timer"];
+      var life = M["Life"];
+      var maxLife = M["MaxLife"];
       
-      if ( (settings["Opt.ASL.Info.O2"]) && (o2.Current > 0) && (o2.Current < 1024) ) {
+      if ( (settings["Opt.ASL.Info.Life"]) && (life.Changed) && (M["GameTime"].Current > 300) ) {
+        string lifePercent = F.Percentage(life.Current, maxLife.Current);
+        string lifeCurrent = string.Format("{0} ({1}/{2})",
+          lifePercent, life.Current, maxLife.Current);
+        F.Info("Life: " + lifeCurrent, 5000, 50);
+      }
+      else if ( (settings["Opt.ASL.Info.O2"]) && (o2.Current > 0) && (o2.Current < 1024) ) {
         decimal o2PerSec = ((decimal)F.CurrentO2Rate() / 4096 * F.FramesPerSecond());
         string o2Percent = F.Percentage(o2.Current, 1024);
         string o2Current = (o2PerSec == 0) ? o2Percent :
           string.Format("{0} ({1:0.0} left)", o2Percent, ((decimal)o2.Current / o2PerSec));
-        F.Info("O2: " + o2Current, 200, 20);
+        F.Info("O2: " + o2Current, 200, 40);
       }
       else if ( (settings["Opt.ASL.Info.Chaff"]) && (chaff.Changed) && (chaff.Current > 0) ) {
         string chaffCurrent = F.FramesToSeconds(chaff.Current);
@@ -2095,6 +2115,8 @@ init {
             new MemoryWatcher<uint>(F.Addr(addrs["GameTime"])) { Name = "GameTime" },
             new MemoryWatcher<sbyte>(F.Addr(addrs["Difficulty"])) { Name = "Difficulty" },
             new MemoryWatcher<short>(F.Addr(addrs["Progress"])) { Name = "Progress" },
+            new MemoryWatcher<short>(F.Addr(addrs["Life"])) { Name = "Life" },
+            new MemoryWatcher<short>(F.Addr(addrs["MaxLife"])) { Name = "MaxLife" },
             new StringWatcher(F.Addr(addrs["Location"]), 8) { Name = "Location" },
           };
 
@@ -2331,11 +2353,10 @@ init {
     F.Watch.Add("W.CP-255", (Func<int>)(() => {
       var cur = M["VsRex"].Current;
       var prev = M["VsRex"].Old;
-      int currentHP = M["BossHP"].Current;
       int maxHP = G.JP ? 1500 : M["BossMaxHP"].Current;
 
       if (cur == 1)
-        F.BossHealth("Metal Gear REX", currentHP, maxHP);
+        F.BossHealth("Metal Gear REX", maxHP);
       
       if (G.Emulator)
         return ( ((cur == -1) || (cur == 0) || (cur == 2)) && (prev == 1) ) ? 1 : 0;
@@ -2346,11 +2367,10 @@ init {
     F.Watch.Add("W.CP-257", (Func<int>)(() => {
       var cur = M["VsRex"].Current;
       var prev = M["VsRex"].Old;
-      int currentHP = (int)M["BossHP"].Current;
       int maxHP = G.JP ? 1500 : M["BossMaxHP"].Current;
 
       if (cur == 1)
-        F.BossHealth("Metal Gear REX", currentHP, maxHP);
+        F.BossHealth("Metal Gear REX", maxHP);
       
       if (G.Emulator)
         return ( ((cur == -1) || (cur == 0)) && (prev == 3) ) ? 1 : 0;
@@ -2402,14 +2422,14 @@ init {
       return ( (score.Changed) && ((score.Current % 4) == M["Difficulty"].Current) && (score.Current == score2) ) ? 1 : 0;
     }));
     
-    F.Watch.Add("W.CP-38", (Func<int>)(() => F.BossHealth("Revolver Ocelot", M["BossHP"].Current, 1024)));
-    F.Watch.Add("W.CP-77", (Func<int>)(() => F.BossHealth("Ninja", M["BossHP"].Current, 255)));
-    F.Watch.Add("W.CP-129", (Func<int>)(() => F.BossHealth("Psycho Mantis", M["BossHP"].Current, G.JP ? 904 : M["BossMaxHP"].Current)));
-    F.Watch.Add("W.CL-s10a.CP-150", (Func<int>)(() => F.BossHealth("Sniper Wolf", M["BossHP"].Current, 1024)));
-    F.Watch.Add("W.CP-186", (Func<int>)(() => F.BossHealth("Hind D", M["BossHP"].Current, 1024)));
-    F.Watch.Add("W.CP-197", (Func<int>)(() => F.BossHealth("Sniper Wolf", M["BossHP"].Current, 1024)));
-    F.Watch.Add("W.CP-211", (Func<int>)(() => F.BossHealth("Vulcan Raven", M["BossHP"].Current, G.JP ? 600 : M["BossMaxHP"].Current)));
-    F.Watch.Add("W.CP-277", (Func<int>)(() => F.BossHealth("Liquid Snake", M["BossHP"].Current, 255)));
+    F.Watch.Add("W.CP-38", (Func<int>)(() => F.BossHealth("Revolver Ocelot", 1024)));
+    F.Watch.Add("W.CP-77", (Func<int>)(() => F.BossHealth("Ninja", 255)));
+    F.Watch.Add("W.CP-129", (Func<int>)(() => F.BossHealth("Psycho Mantis", G.JP ? 904 : M["BossMaxHP"].Current)));
+    F.Watch.Add("W.CL-s10a.CP-150", (Func<int>)(() => F.BossHealth("Sniper Wolf", 1024)));
+    F.Watch.Add("W.CP-186", (Func<int>)(() => F.BossHealth("Hind D", 1024)));
+    F.Watch.Add("W.CP-197", (Func<int>)(() => F.BossHealth("Sniper Wolf", 1024)));
+    F.Watch.Add("W.CP-211", (Func<int>)(() => F.BossHealth("Vulcan Raven", G.JP ? 600 : M["BossMaxHP"].Current)));
+    F.Watch.Add("W.CP-277", (Func<int>)(() => F.BossHealth("Liquid Snake", 255)));
     // init: Split Checkers and Watchers END
 
   }
@@ -2506,6 +2526,8 @@ init {
       new MemoryWatcher<uint>(F.Addr(0x595344)) { Name = "GameTime" },
       new MemoryWatcher<sbyte>(F.Addr(0x38E7E2)) { Name = "Difficulty" },
       new MemoryWatcher<short>(F.Addr(0x38D7CA)) { Name = "Progress" },
+      new MemoryWatcher<short>(F.Addr(0x38E7F6)) { Name = "Life" },
+      new MemoryWatcher<short>(F.Addr(0x38E7F8)) { Name = "MaxLife" },
       new StringWatcher(F.Addr(0x2504CE), 8) { Name = "Location" },
     };
 
