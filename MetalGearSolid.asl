@@ -1253,7 +1253,7 @@ startup {
   F.AddSetting(F.SettingParent("Opt", null), true, "Settings");
 
     F.AddChildSetting(F.SettingParent("Debug", "Opt"), true, "Debug Logging");
-      F.AddChildSettingToolTip(F.SettingParent("File", "Opt.Debug"), true, "Save debug information to LiveSplit program directory", "Log location: " + V.DebugLogPath);
+      F.AddChildSettingToolTip(F.SettingParent("File", "Opt.Debug"), true, "Save debug information to AppData directory", "Log location: " + V.DebugLogPath);
       F.AddChildSettingToolTip("StdOut", false, "Log debug information to Windows debug log", "This can be viewed in a tool such as DebugView.");
 
     F.AddChildSetting(F.SettingParent("Behaviour", "Opt"), true, "Autosplitter Behaviour");
