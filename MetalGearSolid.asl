@@ -1106,55 +1106,56 @@ startup {
   F.ShowFirstRunForm = (Action<bool>)((isFirstRun) => {
     int width = 415;
     
-    var firstRunForm = new Form() {
+    using (var firstRunForm = new Form() {
       Size = new System.Drawing.Size(width, 308),
       FormBorderStyle = FormBorderStyle.FixedSingle,
       MaximizeBox = false,
       Text = isFirstRun ? "Metal Gear Solid Autosplitter 2.0 First Run" :
         "Default Settings Template"
-    };
+    }) {
     
-    string introCustom = isFirstRun ? " used the MGS Autosplitter on this system." :
-      "- wait, you opened the window yourself?";
-    
-    var lblIntro = new Label() {
-      Text = string.Format("This seems to be the first time you've{0}\n\nPlease select a default settings template.\nThis will define the default settings for this autosplitter in all your layouts.\nYou can tweak settings in the Layout Editor later.\n\nProtip: You can customise the default for every setting later by opening\n\"Tools\" > \"Change Default Settings Template\" from the settings.", introCustom),
-      Location = new System.Drawing.Point(10, 10),
-      Size = new System.Drawing.Size(width - (18*2), 110)
-    };
-    
-    var lstTemplate = new ListBox() {
-      Location = new System.Drawing.Point(10, 128),
-      Size = new System.Drawing.Size(width - (18*2), 100)
-    };
-    
-    lstTemplate.Items.Add("Major Splits only");
-    lstTemplate.Items.Add("Major Splits, plus pre-boss Splits");
-    lstTemplate.Items.Add("Major Splits, plus most Other Splits");
-    lstTemplate.Items.Add("[For Old v1 Split Files] Major Splits only");
-    lstTemplate.Items.Add("[For Old v1 Split Files] Major Splits plus Area Movement");
-    lstTemplate.Items.Add("Enable all available Splits");
-    
-    lstTemplate.SelectedIndex = 2;
-    if (!isFirstRun) {
-      lstTemplate.Items.Add("Use my current customised settings");
-      lstTemplate.SelectedIndex = 6;
+      string introCustom = isFirstRun ? " used the MGS Autosplitter on this system." :
+        "- wait, you opened the window yourself?";
+      
+      var lblIntro = new Label() {
+        Text = string.Format("This seems to be the first time you've{0}\n\nPlease select a default settings template.\nThis will define the default settings for this autosplitter in all your layouts.\nYou can tweak settings in the Layout Editor later.\n\nProtip: You can customise the default for every setting later by opening\n\"Tools\" > \"Change Default Settings Template\" from the settings.", introCustom),
+        Location = new System.Drawing.Point(10, 10),
+        Size = new System.Drawing.Size(width - (18*2), 110)
+      };
+      
+      var lstTemplate = new ListBox() {
+        Location = new System.Drawing.Point(10, 128),
+        Size = new System.Drawing.Size(width - (18*2), 100)
+      };
+      
+      lstTemplate.Items.Add("Major Splits only");
+      lstTemplate.Items.Add("Major Splits, plus pre-boss Splits");
+      lstTemplate.Items.Add("Major Splits, plus most Other Splits");
+      lstTemplate.Items.Add("[For Old v1 Split Files] Major Splits only");
+      lstTemplate.Items.Add("[For Old v1 Split Files] Major Splits plus Area Movement");
+      lstTemplate.Items.Add("Enable all available Splits");
+      
+      lstTemplate.SelectedIndex = 2;
+      if (!isFirstRun) {
+        lstTemplate.Items.Add("Use my current customised settings");
+        lstTemplate.SelectedIndex = 6;
+      }
+
+      var btnConfirm = new Button() {
+        Text = "Let's Go",
+        Location = new System.Drawing.Point(width - 101, 234)
+      };
+      btnConfirm.Click += (EventHandler)((sender, e) => {
+        F.ProcessFirstRun(lstTemplate.SelectedIndex, isFirstRun);
+        firstRunForm.Close();
+      });
+
+      firstRunForm.Controls.Add(lblIntro);
+      firstRunForm.Controls.Add(lstTemplate);
+      firstRunForm.Controls.Add(btnConfirm);
+      
+      firstRunForm.ShowDialog();
     }
-
-    var btnConfirm = new Button() {
-      Text = "Let's Go",
-      Location = new System.Drawing.Point(width - 101, 234)
-    };
-    btnConfirm.Click += (EventHandler)((sender, e) => {
-      F.ProcessFirstRun(lstTemplate.SelectedIndex, isFirstRun);
-      firstRunForm.Close();
-    });
-
-    firstRunForm.Controls.Add(lblIntro);
-    firstRunForm.Controls.Add(lstTemplate);
-    firstRunForm.Controls.Add(btnConfirm);
-    
-    firstRunForm.ShowDialog();
   });
   
   F.ProcessFirstRun = (Action<int, bool>)((templateId, isFirstRun) => {
@@ -1583,11 +1584,12 @@ init {
       var life = M["Life"];
       var maxLife = M["MaxLife"];
       
-      if ( (settings["Opt.ASL.Info.Life"]) && (life.Changed) && (M["GameTime"].Current > 300) ) {
+      if ( (settings["Opt.ASL.Info.Life"]) && (life.Changed) ) {
         string lifePercent = F.Percentage(life.Current, maxLife.Current);
         string lifeCurrent = string.Format("{0} ({1}/{2})",
           lifePercent, life.Current, maxLife.Current);
-        F.Info("Life: " + lifeCurrent, 5000, 50);
+        if (M["GameTime"].Current > 300)
+          F.Info("Life: " + lifeCurrent, 5000, 50);
       }
       else if ( (settings["Opt.ASL.Info.O2"]) && (o2.Current > 0) && (o2.Current < 1024) ) {
         decimal o2PerSec = ((decimal)F.CurrentO2Rate() / 4096 * F.FramesPerSecond());
@@ -1717,126 +1719,127 @@ init {
       var leftRight = AnchorStyles.Left | AnchorStyles.Right;
       var stretch = leftRight | AnchorStyles.Top | AnchorStyles.Bottom;
       
-      var majorSplitsForm = new Form() {
+      using (var majorSplitsForm = new Form() {
         Size = new System.Drawing.Size(540, 500),
         FormBorderStyle = FormBorderStyle.FixedSingle,
         MaximizeBox = false,
         Text = "Build Split Files for Current Settings",
-      };
-      
-      var flp = new TableLayoutPanel() {
-        Width = majorSplitsForm.Width - 20,
-        Height = majorSplitsForm.Height - 20,
-        ColumnCount = 2,
-        RowCount = 6,
-        Padding = new Padding(10),
-      };
-      flp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 55));
-      flp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 45));
-      
-      var chkVeryEasy = new CheckBox() {
-        Text = "Build additional files for Very Easy difficulty",
-        Anchor = leftRight,
-      };
-
-      var chkTemplate = new CheckedListBox() {
-        Anchor = stretch,
-        Height = 300,
-        Enabled = false,
-      };
-
-      var lblSelected = new ListBox() {
-        Anchor = stretch,
-        Height = 300,
-        Enabled = false,
-      };
-      
-      var chkCreateSubsplits = new CheckBox() {
-        Text = @"Build additional ""Subsplits"" files (splits organised into sections, requires Subsplits layout component)",
-        Anchor = leftRight,
-      };
-      chkCreateSubsplits.CheckedChanged += (EventHandler)((sender, e) => {
-        chkTemplate.Enabled = lblSelected.Enabled = ((CheckBox)sender).Checked;
-      });
-      
-      var lblSubsplitsInfo = new Label() {
-        Text = "All new Split Files will only contain splits that are part of the category, even if they're enabled in settings.",
-        Anchor = stretch,
-      };
-      
-      var isChecked = new Dictionary<string, bool>();
-      if (File.Exists(V.MajorSplitsFile)) {
-        string[] majorSplits = File.ReadAllLines(V.MajorSplitsFile);
-        foreach (string line in majorSplits) {
-          isChecked[line] = true;
-        }
-      }
-      
-      chkTemplate.DisplayMember = "Value";
-      chkTemplate.ValueMember = "Key";
-      chkTemplate.CheckOnClick = true;
-
-      foreach (var split in D.Sets.AllSplits) {
-        if (F.SettingEnabled(split)) {
-          string splitName = D.Names.SplitSetting.ContainsKey(split) ?
-            D.Names.SplitSetting[split] : "Unknown splitname";
-          bool splitChecked = (F.DictIsTrue(isChecked, split));
-          chkTemplate.Items.Add(
-            new KeyValuePair<string, string>(split, splitName), splitChecked);
-        }
-      }
-      
-      var updateLblSelected = (Action)(() => {
-        lblSelected.Items.Clear();
-        foreach (KeyValuePair<string, string> checkedItem in chkTemplate.CheckedItems)
-          lblSelected.Items.Add(checkedItem.Value);
-      });
-      updateLblSelected();
-      chkTemplate.SelectedIndexChanged += (EventHandler)((sender, e) =>
-        updateLblSelected() );
-      
-      var btnConfirm = new Button() {
-        Text = "Save To Folder",
-        Width = 100,
-        Anchor = AnchorStyles.Top | AnchorStyles.Right,
-      };
-      btnConfirm.Click += (EventHandler)((sender, e) => {
-        var enabledMajors = new List<string>();
-        foreach (KeyValuePair<string, string> majorSplit in chkTemplate.CheckedItems)
-          enabledMajors.Add(majorSplit.Key);
+      }) {
         
-        F.GenerateSplitFiles(enabledMajors, chkCreateSubsplits.Checked, chkVeryEasy.Checked);
-      });
-      
-      var txtSelectHeader = new Label() {
-        Text = "Subsplits: Last split for each section",
-        TextAlign = System.Drawing.ContentAlignment.BottomCenter,
-        Anchor = leftRight,
-      };
-      txtSelectHeader.Font = new System.Drawing.Font(txtSelectHeader.Font, System.Drawing.FontStyle.Bold);
-      
-      var txtSelectedHeader = new Label() {
-        Text = "Selected sections",
-        TextAlign = System.Drawing.ContentAlignment.BottomCenter,
-        Anchor = leftRight,
-      };
-      txtSelectedHeader.Font = new System.Drawing.Font(txtSelectedHeader.Font, System.Drawing.FontStyle.Bold);
-      
-      flp.Controls.Add(lblSubsplitsInfo);
-      flp.SetColumnSpan(lblSubsplitsInfo, 2);
-      flp.Controls.Add(chkVeryEasy);
-      flp.SetColumnSpan(chkVeryEasy, 2);
-      flp.Controls.Add(chkCreateSubsplits);
-      flp.SetColumnSpan(chkCreateSubsplits, 2);
-      flp.Controls.Add(txtSelectHeader);
-      flp.Controls.Add(txtSelectedHeader);
-      flp.Controls.Add(chkTemplate);
-      flp.Controls.Add(lblSelected);
-      flp.Controls.Add(btnConfirm);
-      flp.SetColumnSpan(btnConfirm, 2);
-      
-      majorSplitsForm.Controls.Add(flp);
-      majorSplitsForm.ShowDialog();
+        var flp = new TableLayoutPanel() {
+          Width = majorSplitsForm.Width - 20,
+          Height = majorSplitsForm.Height - 20,
+          ColumnCount = 2,
+          RowCount = 6,
+          Padding = new Padding(10),
+        };
+        flp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 55));
+        flp.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 45));
+        
+        var chkVeryEasy = new CheckBox() {
+          Text = "Build additional files for Very Easy difficulty",
+          Anchor = leftRight,
+        };
+
+        var chkTemplate = new CheckedListBox() {
+          Anchor = stretch,
+          Height = 300,
+          Enabled = false,
+        };
+
+        var lblSelected = new ListBox() {
+          Anchor = stretch,
+          Height = 300,
+          Enabled = false,
+        };
+        
+        var chkCreateSubsplits = new CheckBox() {
+          Text = @"Build additional ""Subsplits"" files (splits organised into sections, requires Subsplits layout component)",
+          Anchor = leftRight,
+        };
+        chkCreateSubsplits.CheckedChanged += (EventHandler)((sender, e) => {
+          chkTemplate.Enabled = lblSelected.Enabled = ((CheckBox)sender).Checked;
+        });
+        
+        var lblSubsplitsInfo = new Label() {
+          Text = "All new Split Files will only contain splits that are part of the category, even if they're enabled in settings.",
+          Anchor = stretch,
+        };
+        
+        var isChecked = new Dictionary<string, bool>();
+        if (File.Exists(V.MajorSplitsFile)) {
+          string[] majorSplits = File.ReadAllLines(V.MajorSplitsFile);
+          foreach (string line in majorSplits) {
+            isChecked[line] = true;
+          }
+        }
+        
+        chkTemplate.DisplayMember = "Value";
+        chkTemplate.ValueMember = "Key";
+        chkTemplate.CheckOnClick = true;
+
+        foreach (var split in D.Sets.AllSplits) {
+          if (F.SettingEnabled(split)) {
+            string splitName = D.Names.SplitSetting.ContainsKey(split) ?
+              D.Names.SplitSetting[split] : "Unknown splitname";
+            bool splitChecked = (F.DictIsTrue(isChecked, split));
+            chkTemplate.Items.Add(
+              new KeyValuePair<string, string>(split, splitName), splitChecked);
+          }
+        }
+        
+        var updateLblSelected = (Action)(() => {
+          lblSelected.Items.Clear();
+          foreach (KeyValuePair<string, string> checkedItem in chkTemplate.CheckedItems)
+            lblSelected.Items.Add(checkedItem.Value);
+        });
+        updateLblSelected();
+        chkTemplate.SelectedIndexChanged += (EventHandler)((sender, e) =>
+          updateLblSelected() );
+        
+        var btnConfirm = new Button() {
+          Text = "Save To Folder",
+          Width = 100,
+          Anchor = AnchorStyles.Top | AnchorStyles.Right,
+        };
+        btnConfirm.Click += (EventHandler)((sender, e) => {
+          var enabledMajors = new List<string>();
+          foreach (KeyValuePair<string, string> majorSplit in chkTemplate.CheckedItems)
+            enabledMajors.Add(majorSplit.Key);
+          
+          F.GenerateSplitFiles(enabledMajors, chkCreateSubsplits.Checked, chkVeryEasy.Checked);
+        });
+        
+        var txtSelectHeader = new Label() {
+          Text = "Subsplits: Last split for each section",
+          TextAlign = System.Drawing.ContentAlignment.BottomCenter,
+          Anchor = leftRight,
+        };
+        txtSelectHeader.Font = new System.Drawing.Font(txtSelectHeader.Font, System.Drawing.FontStyle.Bold);
+        
+        var txtSelectedHeader = new Label() {
+          Text = "Selected sections",
+          TextAlign = System.Drawing.ContentAlignment.BottomCenter,
+          Anchor = leftRight,
+        };
+        txtSelectedHeader.Font = new System.Drawing.Font(txtSelectedHeader.Font, System.Drawing.FontStyle.Bold);
+        
+        flp.Controls.Add(lblSubsplitsInfo);
+        flp.SetColumnSpan(lblSubsplitsInfo, 2);
+        flp.Controls.Add(chkVeryEasy);
+        flp.SetColumnSpan(chkVeryEasy, 2);
+        flp.Controls.Add(chkCreateSubsplits);
+        flp.SetColumnSpan(chkCreateSubsplits, 2);
+        flp.Controls.Add(txtSelectHeader);
+        flp.Controls.Add(txtSelectedHeader);
+        flp.Controls.Add(chkTemplate);
+        flp.Controls.Add(lblSelected);
+        flp.Controls.Add(btnConfirm);
+        flp.SetColumnSpan(btnConfirm, 2);
+        
+        majorSplitsForm.Controls.Add(flp);
+        majorSplitsForm.ShowDialog();
+      }
     });
     
     // todo
