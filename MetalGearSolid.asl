@@ -2662,9 +2662,8 @@ start {
   var D = vars.D; var G = D.Game; var M = D.Mem;
 
   var Loc = M["Location"];
-
   if (G.VRMissions)
-    return ( (Loc.Changed) && (Loc.Current != "vrtitle") && (Loc.Old == "selectvr") );
+    return ( (Loc.Changed) && (!Loc.Current.Equals("vrtitle")) && (Loc.Old.Equals("selectvr")) );
   
   var Prog = M["Progress"]; var Menu = M["InMenu"];
   if ( (Prog.Current.Equals(1)) && (Prog.Changed) )
@@ -2684,14 +2683,11 @@ reset {
   var D = vars.D; var G = D.Game; var M = D.Mem;
 
   var Loc = M["Location"];
-
   if (G.VRMissions)
     return ( (Loc.Changed) && (Loc.Current.Equals("vrtitle")) );
-  
-  return (
-    ( (M["InMenu"].Current.Equals(1)) && (M["InMenu"].Changed) &&
-      (M["Progress"].Current != 294) ) || (Loc.Equals(String.Empty))
-  );
+
+  var Menu = M["InMenu"];
+  return ( (Menu.Changed) && (Menu.Current.Equals(1)) && (!M["Progress"].Current.Equals(294)) );
 }
 // reset END
 
@@ -2722,7 +2718,7 @@ split {
     else if ( (VrState.Current == 2) && (VrState.Old == 1) ) VrSplit = true;
     if (VrSplit) {
       if (settings["Opt.Behaviour.VR.InstaSplit"]) F.ManualSplit("VR Mission complete: " + Loc.Current);
-      R.VrSplitOnExit = true;
+      else R.VrSplitOnExit = true;
     }
     return false;
   }
@@ -2837,7 +2833,7 @@ gameTime {
   // Suspend this when the timer stops for an elevator on PC
   if ( (!G.Emulator) && (!M["TimerActive"].Current) ) return null;
   
-  int fps = vars.D.Game.EU ? 50 : 60;
+  int fps = G.EU ? 50 : 60;
   return TimeSpan.FromMilliseconds(M["GameTime"].Current * 1000 / fps);
 }
 // gameTime END
