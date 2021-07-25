@@ -135,6 +135,7 @@ startup {
     { "ReachHind",        new short[] { 185, 186 } },
     { "AfterHind",        new short[] { -1, 190, 194 } },
     { "ReachRaven",       new short[] { -1, 207, 211 } },
+    { "AfterRaven",       new short[] { -1, 217, 219 } },
     { "ReachCommandRoom", new short[] { -1, 225, 237 } },
     { "HeatingKey",       new short[] { -1, 242, 246 } },
   };
@@ -397,7 +398,7 @@ startup {
     } },
     { "DiscChange", new List<string>() { "OL-s12b.CL-change.CP-204" } },
     { "Disc2", new List<string>() {
-      "OL-Snowfield.CL-s13a.CP-204", "OL-s13a.CL-s14e.CP-204", "CP-206", "CP-207", "OL-s14e.CL-s15a.CP-ReachRaven", "OP-211", "OL-s15a.CL-s15b.CP-219", "OL-s15b.CL-s16a.CP-219", "OL-s16a.CL-s16b.CP-221", "OL-s16b.CL-s16c.CP-223", "OL-s16c.CL-s16d.CP-ReachCommandRoom", "OL-s16d.CL-s16c.CP-ReachCommandRoom", "OL-s16c.CL-s16b.CP-237", "OL-s16b.CL-s16a.CP-237", "OL-s16a.CL-s16b.CP-238", "OL-s16b.CL-s16c.CP-238",  "OL-s16c.CL-s16d.CP-238", "OP-238", "OL-s16d.CL-s16c.CP-240", "OL-s16c.CL-s16b.CP-240", "OL-s16b.CL-s16a.CP-240", "OL-s16a.CL-s15b.CP-240", "OL-s15b.CL-s15a.CP-240", "OL-s15a.CL-s15b.CP-240", "OL-s15b.CL-s16a.CP-240", "OL-s16a.CL-s16b.CP-240", "OL-s16b.CL-s16c.CP-240", "OL-s16c.CL-s16d.CP-240", "OP-240", "OL-s16d.CL-s16c.CP-242", "OL-s16c.CL-s16b.CP-242", "OL-s16b.CL-s16a.CP-242", "OL-s16a.CL-s15b.CP-242", "OL-s15b.CL-s15c.CP-242", "OL-s15c.CL-s14e.CP-242", "OL-s14e.CL-s13a.CP-HeatingKey", "OL-s13a.CL-s14e.CP-HeatingKey", "OL-s14e.CL-s15c.CP-HeatingKey", "OL-s15c.CL-s15b.CP-HeatingKey", "OL-s15b.CL-s16a.CP-HeatingKey", "OL-s16a.CL-s16b.CP-HeatingKey", "OL-s16b.CL-s16c.CP-HeatingKey", "OL-s16c.CL-s16d.CP-HeatingKey", "CP-247", "OL-s16d.CL-d16e", "CP-252", "W.CP-255", "W.CP-257", "OP-277", "OL-s19a.CL-s19b", "CP-286", "W.CP-294",
+      "OL-Snowfield.CL-s13a.CP-204", "OL-s13a.CL-s14e.CP-204", "CP-206", "CP-207", "OL-s14e.CL-s15a.CP-ReachRaven", "OP-211", "OL-s15a.CL-s15b.CP-AfterRaven", "OL-s15b.CL-s16a.CP-AfterRaven", "OL-s16a.CL-s16b.CP-221", "OL-s16b.CL-s16c.CP-223", "OL-s16c.CL-s16d.CP-ReachCommandRoom", "OL-s16d.CL-s16c.CP-ReachCommandRoom", "OL-s16c.CL-s16b.CP-237", "OL-s16b.CL-s16a.CP-237", "OL-s16a.CL-s16b.CP-238", "OL-s16b.CL-s16c.CP-238",  "OL-s16c.CL-s16d.CP-238", "OP-238", "OL-s16d.CL-s16c.CP-240", "OL-s16c.CL-s16b.CP-240", "OL-s16b.CL-s16a.CP-240", "OL-s16a.CL-s15b.CP-240", "OL-s15b.CL-s15a.CP-240", "OL-s15a.CL-s15b.CP-240", "OL-s15b.CL-s16a.CP-240", "OL-s16a.CL-s16b.CP-240", "OL-s16b.CL-s16c.CP-240", "OL-s16c.CL-s16d.CP-240", "OP-240", "OL-s16d.CL-s16c.CP-242", "OL-s16c.CL-s16b.CP-242", "OL-s16b.CL-s16a.CP-242", "OL-s16a.CL-s15b.CP-242", "OL-s15b.CL-s15c.CP-242", "OL-s15c.CL-s14e.CP-242", "OL-s14e.CL-s13a.CP-HeatingKey", "OL-s13a.CL-s14e.CP-HeatingKey", "OL-s14e.CL-s15c.CP-HeatingKey", "OL-s15c.CL-s15b.CP-HeatingKey", "OL-s15b.CL-s16a.CP-HeatingKey", "OL-s16a.CL-s16b.CP-HeatingKey", "OL-s16b.CL-s16c.CP-HeatingKey", "OL-s16c.CL-s16d.CP-HeatingKey", "CP-247", "OL-s16d.CL-d16e", "CP-252", "W.CP-255", "W.CP-257", "OP-277", "OL-s19a.CL-s19b", "CP-286", "W.CP-294",
     } },
   };
   
@@ -530,8 +531,8 @@ startup {
     { "CP-207", "Guard Encounter" },
     { "OL-s14e.CL-s15a.CP-ReachRaven", "Cargo Elevator" },
     { "OP-211", "Vulcan Raven" },
-    { "OL-s15a.CL-s15b.CP-219", "Warehouse" },
-    { "OL-s15b.CL-s16a.CP-219", "Warehouse North" },
+    { "OL-s15a.CL-s15b.CP-AfterRaven", "Warehouse" },
+    { "OL-s15b.CL-s16a.CP-AfterRaven", "Warehouse North" },
     { "OL-s16a.CL-s16b.CP-221", "Underground Base 1" },
     { "OL-s16b.CL-s16c.CP-223", "Underground Base 2" },
     { "OL-s16c.CL-s16d.CP-ReachCommandRoom", "Underground Base 3" },
@@ -1397,8 +1398,8 @@ startup {
     F.AddSetting("CP-207", true, "Guard Encounter");
     F.AddSetting("OL-s14e.CL-s15a.CP-ReachRaven", true, "Cargo Elevator ⮞ Warehouse (Vulcan Raven)"); // 207-211
     F.AddSetting("OP-211", true, "Vulcan Raven");
-    F.AddSetting("OL-s15a.CL-s15b.CP-219", true, "Warehouse ⮞ Warehouse North");
-    F.AddSetting("OL-s15b.CL-s16a.CP-219", true, "Warehouse North ⮞ Underground Base 1");
+    F.AddSetting("OL-s15a.CL-s15b.CP-AfterRaven", true, "Warehouse ⮞ Warehouse North");
+    F.AddSetting("OL-s15b.CL-s16a.CP-AfterRaven", true, "Warehouse North ⮞ Underground Base 1");
     F.AddSetting("OL-s16a.CL-s16b.CP-221", true, "Underground Base 1 ⮞ Underground Base 2");
     F.AddSetting("OL-s16b.CL-s16c.CP-223", true, "Underground Base 2 ⮞ Underground Base 3");
     F.AddSetting("OL-s16c.CL-s16d.CP-ReachCommandRoom", true, "Underground Base 3 ⮞ Command Room");
