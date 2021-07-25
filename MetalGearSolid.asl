@@ -2207,13 +2207,13 @@ init {
     }
     
     Func<string, bool> backtrackSplit = (undoKey) => {
-      if ( (settings[undoKey]) && (R.LatestSplits.Peek().Equals(undoKey)) ) {
-        F.UndoSplit("Undoing split for " + undoKey + " (backtrack)");
-        R.LatestSplits.Pop();
-        R.CompletedSplits.Remove(undoKey);
-        return false;
-      }
-      return true;
+      if ( (!settings["Opt.Behaviour.UndoPAL"]) || (!settings[undoKey]) ||
+        (!R.LatestSplits.Peek().Equals(undoKey)) )
+        return true;
+      F.UndoSplit("Undoing split for " + undoKey + " (backtrack)");
+      R.LatestSplits.Pop();
+      R.CompletedSplits.Remove(undoKey);
+      return false;
     };
     
     // Dock: Add elevator timer to [vars.Info]
