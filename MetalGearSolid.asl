@@ -1267,7 +1267,7 @@ startup {
       F.AddChildSettingToolTip("StdOut", false, "Log debug information to Windows debug log", "This can be viewed in a tool such as DebugView.");
 
     F.AddChildSetting(F.SettingParent("Behaviour", "Opt"), true, "Autosplitter Behaviour");
-      F.AddChildSettingToolTip(F.SettingParent("UndoPAL", "Opt.Behaviour"), true, "Undo splits in PAL sequence if forced to backtrack", "Triggers undo if you go back after failing to cool/heat the PAL Key correctly.\n\nIn practice:\n * Enabled: Very slow Warehouse/Blast Furnace split\n * Disabled: Very slow split at the point you decide to backtrack; potential false gold on Warehouse/Blast Furnace");
+      F.AddChildSettingToolTip(F.SettingParent("UndoPAL", "Opt.Behaviour"), true, "Undo certain splits to maintain split integrity", "Triggers undo if you go back after failing to cool/heat the PAL Key correctly. In practice:\n * Enabled: Very slow Warehouse/Blast Furnace split\n * Disabled: Very slow split at the point you decide to backtrack; potential false gold on Warehouse/Blast Furnace\n\nTriggers undo if you go to Nuke Building B2 without the Nikita (when F7 Area Reloading is available) then return to B1.");
       F.AddChildSetting("StartOnLoad", false, "Start timer when loading a save");
       F.AddChildSettingToolTip("HalfFrameRate", false, "Run splitter logic at 30 fps",  "Can improve performance on weaker systems, at the cost of some precision.");
       F.AddChildSettingToolTip("VR.InstaSplit", false, "In VR Missions, split instantly upon hitting the goal", "If disabled, this will split when leaving the level.\nVR Missions are currently only supported on PC.");
@@ -2240,9 +2240,20 @@ init {
     // Cell (vent clip): Undo the AB split if that happened accidentally
     F.Check.Add("OL-s03a.CL-s03c.CP-VentClip", (Func<bool>)(() =>
       backtrackSplit("W.CL-s03a.CP-18") || true ));
+
+    // Helpers for Nikita unlock status
+    Func<bool> hasNikita = () => F.HasWeapon(4);
+    Func<bool> hasNoNikita = () => !F.HasWeapon(4);
     
-    // Nuke Building B2: Must have Nikita
-    F.Check.Add("CL-s08a.CP-69", (Func<bool>)(() => F.HasWeapon(4)));
+    // Nuke Building B2: Must have Nikita (except if we're doing area reloading)
+    F.Check.Add("CL-s08a.CP-69", (Func<bool>)(() =>
+      ( (!G.Emulator) && (M["CheatsEnabled"].Current) ) ? true : hasNikita() ));
+
+    // Nuke Building B1: Undo any B2 split if we don't have Nikita yet
+    F.Check.Add("CL-s07a.CP-69", (Func<bool>)(() => {
+      if (hasNoNikita()) backtrackSplit("CL-s08a.CP-69");
+      return true;
+    }));
 
     // Helpers for PSG1 unlock status
     Func<bool> hasPSG1 = () => F.HasWeapon(10);
@@ -2547,6 +2558,7 @@ init {
       new MemoryWatcher<short>(F.Addr(0x595348)) { Name = "O2Timer" },
       new MemoryWatcher<byte>(F.Addr(0x38E7EA)) { Name = "ScoreState" },
       new MemoryWatcher<byte>(F.Addr(0x5942EC)) { Name = "ScoreState2" },
+      new MemoryWatcher<bool>(F.Addr(0x31687C)) { Name = "CheatsEnabled" },
     };
     
     MM.Clear();
