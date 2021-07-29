@@ -164,7 +164,7 @@ startup {
     { "Heliport",     new string[] { "d00a", "s01a", "d01a" } },
     { "TankHangar",   new string[] { "s02a", "s02c", "s02e", "s03a", "s04a" } },
     { "NukeBuilding", new string[] { "s06a", "s07a", "s08a" } },
-    { "Snowfield",    new string[] { "s12b", "change" } },
+    { "Snowfield",    new string[] { "s12b", "s12c", "change" } },
   };
   D.Sets.Location = new Dictionary<string, string>();
   foreach (var l in locationSets) {
@@ -394,7 +394,7 @@ startup {
       "OL-s11c.CL-s12a.CP-CommTowerB", "CP-197", "OP-197",
     } },
     { "Stinger-CAny", new List<string>() {
-      "OL-s12b.CL-s11c.CP-204", "OL-s11c.CL-s11h.CP-204", "OL-s11h.CL-s11c.CP-204", "OL-s11c.CL-s12b.CP-204",
+      "OL-Snowfield.CL-s11c.CP-204", "OL-s11c.CL-s11i.CP-204", "OL-s11i.CL-s11c.CP-204", "OL-s11c.CL-Snowfield.CP-204",
     } },
     { "DiscChange", new List<string>() { "OL-s12b.CL-change.CP-204" } },
     { "Disc2", new List<string>() {
@@ -520,10 +520,10 @@ startup {
     { "OL-s11c.CL-s12a.CP-CommTowerB", "Comms Tower B" },
     { "CP-197", "Snowfield" },
     { "OP-197", "Sniper Wolf 2" },
-    { "OL-s12b.CL-s11c.CP-204", "Snowfield" }, // to CTB (Console Any%)
-    { "OL-s11c.CL-s11h.CP-204", "Comms Tower B" },
-    { "OL-s11h.CL-s11c.CP-204", "Comms Tower B Roof" },
-    { "OL-s11c.CL-s12b.CP-204", "Comms Tower B" },
+    { "OL-Snowfield.CL-s11c.CP-204", "Snowfield" }, // to CTB (Console Any%)
+    { "OL-s11c.CL-s11i.CP-204", "Comms Tower B" },
+    { "OL-s11i.CL-s11c.CP-204", "Walkway" },
+    { "OL-s11c.CL-Snowfield.CP-204", "Comms Tower B" },
     { "OL-s12b.CL-change.CP-204", "Disc Change" }, // Console only
     { "OL-Snowfield.CL-s13a.CP-204", "Snowfield" },
     { "OL-s13a.CL-s14e.CP-204", "Blast Furnace" },
@@ -1386,10 +1386,10 @@ startup {
     F.AddSetting("OP-197", true, "Sniper Wolf 2");
 
     F.AddChildCategory("ConsoleAny", true, "[Console Any%]");
-      F.AddSetting(F.SettingParent("OL-s12b.CL-s11c.CP-204", "Splits.ConsoleAny"), true, "[C-Any%] Snowfield ⮞ Comms Tower B"); // no stinger
-      F.AddSetting("OL-s11c.CL-s11h.CP-204", true, "[C-Any%] Comms Tower B ⮞ Comms Tower B Roof"); // no stinger
-      F.AddSetting("OL-s11h.CL-s11c.CP-204", true, "[C-Any%] Comms Tower B Roof ⮞ Comms Tower B"); // also check stinger
-      F.AddSetting("OL-s11c.CL-s12b.CP-204", true, "[C-Any%] Comms Tower B ⮞ Snowfield"); // stinger
+      F.AddSetting(F.SettingParent("OL-Snowfield.CL-s11c.CP-204", "Splits.ConsoleAny"), true, "[C-Any%] Snowfield ⮞ Comms Tower B"); // no stinger
+      F.AddSetting("OL-s11c.CL-s11i.CP-204", true, "[C-Any%] Comms Tower B ⮞ Comms Tower B Roof"); // no stinger
+      F.AddSetting("OL-s11i.CL-s11c.CP-204", true, "[C-Any%] Comms Tower B Roof ⮞ Comms Tower B"); // also check stinger
+      F.AddSetting("OL-s11c.CL-Snowfield.CP-204", true, "[C-Any%] Comms Tower B ⮞ Snowfield"); // stinger
 
     F.AddSettingToolTip(F.SettingParent("OL-s12b.CL-change.CP-204", "Splits"), false, "[Console] Reach disc change", "If you want to split after disc change, select the following split instead."); // todo check loc for change; CP not needed?
     F.AddSetting("OL-Snowfield.CL-s13a.CP-204", true, "Snowfield ⮞ Blast Furnace");
@@ -2283,17 +2283,17 @@ init {
     // Helpers for Stinger unlock status
     Func<bool> hasStinger = () => F.HasWeapon(5);
     Func<bool> hasNoStinger = () => !F.HasWeapon(5);
-    Func<bool> hasStingerInConsoleAny = () => (R.CompletedSplits.ContainsKey("OL-s11h.CL-s11c.CP-204") && F.HasWeapon(5));
+    Func<bool> hasStingerInConsoleAny = () => (R.CompletedSplits.ContainsKey("OL-s11c.CL-s11i.CP-204") && F.HasWeapon(5));
 
     // CTB Roof -> CTB, before Hind: Only split in Console Any%
     F.Check.Add("OL-s11h.CL-s11c.CP-CommTowerB", (Func<bool>)(() => (
       (hasNoStinger()) || (M["Progress"].Current.Equals(190)) ) ));
 
     // Console Any% Stinger collection after Sniper Wolf 2
-    F.Check.Add("OL-s12b.CL-s11c.CP-204", hasNoStinger); // Snowfield -> CTB
-    F.Check.Add("OL-s11c.CL-s11h.CP-204", hasNoStinger); // CTB -> CTB Roof
-    F.Check.Add("OL-s11h.CL-s11c.CP-204", hasStingerInConsoleAny); // CTB Roof -> CTB
-    F.Check.Add("OL-s11c.CL-s12b.CP-204", hasStingerInConsoleAny); // CT -> Snowfield
+    F.Check.Add("OL-Snowfield.CL-s11c.CP-204", hasNoStinger); // Snowfield -> CTB
+    F.Check.Add("OL-s11c.CL-s11i.CP-204", hasNoStinger); // CTB -> CTB Roof
+    F.Check.Add("OL-s11i.CL-s11c.CP-204", hasStingerInConsoleAny); // CTB Roof -> CTB
+    F.Check.Add("OL-s11c.CL-Snowfield.CP-204", hasStingerInConsoleAny); // CT -> Snowfield
     
     // Helpers for PAL Card status
     Func<bool> wasInColdRoom = () => R.CompletedSplits.ContainsKey("OL-s15a.CL-s15b.CP-240");
