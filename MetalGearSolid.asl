@@ -2220,7 +2220,7 @@ init {
     F.Watch.Add("W.CP-6", (Func<int>)(() => {
       if (!settings["Opt.ASL.Info.Dock"]) return 0;
       var cur = M["ElevatorTimer"].Current;
-      int max = 3600; 
+      int max = G.JP ? 3150 : 3600; // TODO check jp max
       
       if (F.Between(cur, 1, max)) {
         int delta = (M["ElevatorTimer"].Old - cur);
