@@ -2781,8 +2781,8 @@ split {
     return false;
 
   // Stop splits from happening during loads
-  // Currently triggers at over 3 secs frames difference
-  if ( (Math.Abs(M["Frames"].Current - M["Frames"].Old)) > (3 * (G.EU ? 25 : 30)) ) {
+  // Currently triggers at over 5 secs game time difference from previous frame
+  if ( (Math.Abs(M["GameTime"].Current - M["GameTime"].Old)) > (5 * (G.EU ? 25 : 30)) ) {
     G.FpsLog.Clear();
     return false;
   }
