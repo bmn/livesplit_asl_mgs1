@@ -197,7 +197,7 @@ startup {
       { "Difficulty",       0xB577C },
       { "Progress",         0xB46BA },
       { "Location",         0xABCEC },
-      { "NoControl",        0xABCD7 }, // todo test
+      { "NoControl",        0xABCF7 },
       { "InMenu",           0xAC806 },
       { "VsRex",            0xC0EB8 },
       { "ControllerInput",  0xAC240 },
@@ -281,7 +281,7 @@ startup {
       { "Difficulty",       0xB751A },
       { "Progress",         0xB6452 },
       { "Location",         0xADB3C },
-      { "NoControl",        0xADB47 }, // todo test
+      { "NoControl",        0xADB47 },
       { "InMenu",           0xD2841 }, // maybe D2991, D2BD9, D2D89...
       { "VsRex",            0xC2C60 },
       { "ControllerInput",  0xAE0D0 },
@@ -328,7 +328,7 @@ startup {
       { "Difficulty",       0xB5DF2 },
       { "Progress",         0xB4D2A },
       { "Location",         0xAC430 },
-      { "NoControl",        0xAC43A }, // todo test
+      { "NoControl",        0xAC43B },
       { "InMenu",           0xD0F42 }, // todo test
       { "VsRex",            0xC1538 },
       { "ControllerInput",  0xAC9A8 },
