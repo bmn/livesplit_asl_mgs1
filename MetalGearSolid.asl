@@ -217,7 +217,7 @@ startup {
       { "LiquidHP",         0x17A424 },
       { "RadarState",       0xABCF5 },
       { "ScoreState",       0xADB12 },
-      { "O2Timer",          0xACA8C },
+      { "O2Timer",          0xAC324 },
       { "ChaffTimer",       0xBE968 },
       { "DiazepamTimer",    0xB5812 },
       { "Life",             0xB5796 },
