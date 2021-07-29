@@ -935,8 +935,10 @@ startup {
   F.FramesPerSecond = (Func<int>)(() => G.EU ? 25 : 30);
   
   // todo
-  F.Percentage = (Func<int, int, string>)((numerator, denominator) =>
-    (int)( ((decimal)numerator * 100) / denominator ) + "%" );
+  F.Percentage = (Func<int, int, string>)((numerator, denominator) => {
+    if (denominator == 0) return "0%";
+    return (int)( ((decimal)numerator * 100) / denominator ) + "%";
+  });
   
   // Return true if <val> is between <low> and <high> (inclusive)
   F.Between = (Func<int, int, int, bool>)((val, low, high) =>
