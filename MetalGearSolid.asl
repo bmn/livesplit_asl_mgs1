@@ -1589,10 +1589,10 @@ init {
       
       if ( (settings["Opt.ASL.Info.Life"]) && (life.Changed) ) {
         string lifePercent = F.Percentage(life.Current, maxLife.Current);
-        string lifeCurrent = string.Format("{0} ({1}/{2})",
+        string lifeCurrent = string.Format("{0} ({1}/{2} HP)",
           lifePercent, life.Current, maxLife.Current);
         if (M["GameTime"].Current > 300)
-          F.Info("Life: " + lifeCurrent, 5000, 50);
+          F.Info("Life: " + lifeCurrent, 3000, 50);
       }
       else if ( (settings["Opt.ASL.Info.O2"]) && (o2.Current > 0) && (o2.Current < 1024) ) {
         decimal o2PerSec = ((decimal)F.CurrentO2Rate() / 4096 * F.FramesPerSecond());
