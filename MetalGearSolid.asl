@@ -215,6 +215,7 @@ startup {
       { "Rex1HP",           0x15E10C },
       { "Rex2HP",           0x15F414 },
       { "LiquidHP",         0x17A424 },
+      { "EscapeHP",         0xB710E },
       { "RadarState",       0xABCF5 },
       { "ScoreState",       0xADB12 },
       { "O2Timer",          0xAC324 },
@@ -256,6 +257,7 @@ startup {
       { "RexMaxHP",         0xB40F6 },
       { "Rex2HP",           0x15F948 },
       { "LiquidHP",         0x179A54 },
+      { "EscapeHP",         0xB6746 },
       { "RadarState",       0xAB3CD },
       { "ScoreState",       0xAD22A },
       { "O2Timer",          0xABA34 },
@@ -304,6 +306,7 @@ startup {
       { "RexMaxHP",         0xB6876 },
       { "Rex2HP",           0x15F8B0 },
       { "LiquidHP",         0x17997C },
+      { "EscapeHP",         0xB8EAE },
       { "RadarState",       0xADB45 },
       { "ScoreState",       0xAF9AA },
       { "O2Timer",          0xAE1B4 },
@@ -352,6 +355,7 @@ startup {
       { "RexMaxHP",         0xB514E },
       { "Rex2HP",           0x15F8B0 },
       { "LiquidHP",         0x17997C },
+      { "EscapeHP",         0xB778E },
       { "RadarState",       0xAC439 },
       { "ScoreState",       0xAE282 },
       { "O2Timer",          0xACA8C },
@@ -2190,6 +2194,7 @@ init {
             { "CP-277", new MemoryWatcherList() { // Liquid
               new MemoryWatcher<short>(F.Addr(addrs["LiquidHP"])) { Name = "BossHP" } } },
             { "CL-s19b", new MemoryWatcherList() { // Escape 2
+              new MemoryWatcher<short>(F.Addr(addrs["EscapeHP"])) { Name = "BossHP" },
               new MemoryWatcher<byte>(F.Addr(addrs["RadarState"])) { Name = "RadarState" } } },
             { "CP-294", new MemoryWatcherList() { // Score
               new MemoryWatcher<byte>(F.Addr(addrs["ScoreState"])) { Name = "ScoreState" } } },
@@ -2437,9 +2442,24 @@ init {
     
     // VE Escape
     F.Watch.Add("W.CL-s19b", (Func<int>)(() => {
-      if ( (!settings["CP-286"]) || (M["Difficulty"].Current != -1) ) return -1;
+      if ( (settings["Opt.ASL.Info.Boss"]) && (R.EscapeRadarTimes == 1) ) {
+        int hp = M["BossHP"].Current;
+
+        int diff = M["Difficulty"].Current;
+        if (diff == -1) diff = 0;
+
+        int phase = 16 - (hp & 0xf);
+        int phaseRemain = 5 - phase;
+
+        int maxHP = 5 * (3 + diff);
+        int curHP = (phaseRemain == -1) ? 0 : ((3 * phaseRemain) + (hp >> 6) + 1);
+
+        F.BossHealthCurrent("Liquid Snake", curHP, maxHP);
+      }
+      
       if ( (M["RadarState"].Current == 0x20) && (M["RadarState"].Old == 0) ) {
         F.Debug("Escape timer disappeared (" + ++R.EscapeRadarTimes + ")");
+        if ( (!settings["CP-286"]) || (M["Difficulty"].Current != -1) ) return 0;
         if (R.EscapeRadarTimes == 2) return 1;
       }
       return 0;
@@ -2628,6 +2648,7 @@ init {
       { "CP-277", new MemoryWatcherList() { // Liquid
         new MemoryWatcher<short>(F.Addr(0x50B978)) { Name = "BossHP" } } },
       { "CL-s19b", new MemoryWatcherList() { // Escape 2
+        new MemoryWatcher<short>(F.Addr(0x3238BE)) { Name = "BossHP" },
         new MemoryWatcher<byte>(F.Addr(0x32279D)) { Name = "RadarState" } } },
     };
   }
