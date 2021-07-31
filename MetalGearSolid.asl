@@ -1501,7 +1501,7 @@ init {
       
       string output = string.Format("{0} | {1} ({2}/{3} HP)",
         name, F.Percentage(curHP, maxHP), curHP, maxHP);
-      F.Info(output, 2000, M["BossHP"].Changed ? 50 : 10);
+      F.Info(output, 2000, M["BossHP"].Changed ? 60 : 10);
       return 0;
     });
     F.ShowBossHealth = (Action<string, int>)((name, maxHP) =>
