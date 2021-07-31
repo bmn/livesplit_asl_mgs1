@@ -2251,17 +2251,24 @@ init {
     // Dock: Add elevator timer to [vars.Info]
     F.Watch.Add("W.CP-6", (Func<int>)(() => {
       if (!settings["Opt.ASL.Info.Dock"]) return 0;
+
       var cur = M["ElevatorTimer"].Current;
-      int max = G.JP ? 3150 : 3600; // TODO check jp max
-      
-      if (F.Between(cur, 1, max)) {
-        int delta = (M["ElevatorTimer"].Old - cur);
-        if (F.Between(delta, 1, 2)) {
-          string seconds = F.FramesToSeconds(cur);
-          string percent = F.Percentage((max - cur), max);
-          F.Info("Elevator: " + percent + " (" + seconds + " left)", 1000, 10);
-        }
-      }
+      int max = G.JP ? 3150 : 3600;
+      int delta = (M["ElevatorTimer"].Old - cur);
+
+      // When the timer goes up, check if it's near the max
+      // If so, set a variable to 1 to enable info (and vice versa)
+      if (delta < 0)
+        R.EscapeRadarTimes = (F.Between(cur, max - 30, max)) ? 1 : 0;
+      if (R.EscapeRadarTimes == 0) return 0;
+
+      string seconds = F.FramesToSeconds(cur);
+      string percent = F.Percentage((max - cur), max);
+      F.Info("Elevator: " + percent + " (" + seconds + " left)", 1000, 10);
+
+      // Show 100% for one iteration, then disable info
+      if (cur == 0) R.EscapeRadarTimes = 0;
+
       return 0;
     }));
     
