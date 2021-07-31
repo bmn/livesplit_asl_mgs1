@@ -737,13 +737,13 @@ startup {
   V.EventLog.EnableRaisingEvents = true;
   V.EventLog.EntryWritten += F.EventLogWritten;
   
-  // todo
+  // Reset all run-related variables when the LiveSplit timer is reset
   F.TimerOnReset = (LiveSplit.Model.Input.EventHandlerT<TimerPhase>)((sender, e) => {
     F.ResetRunVars();
   });
   timer.OnReset += F.TimerOnReset;
   
-  // todo
+  // Reinitialise the location/progress state and FPS log when the LiveSplit timer starts
   F.TimerOnStart = (EventHandler)((sender, e) => {
     if (!G.VRMissions) F.SetStateCodes();
     G.FpsLog.Clear();
@@ -762,8 +762,8 @@ startup {
     return name;
   });
   
-  // todo
-  F.ResetAllVars = (Action)(() => { // todo
+  // Resets the autosplitter and game/memory variables to an initial state
+  F.ResetAllVars = (Action)(() => {
     V.ThisSecond = DateTime.Now.Second;
     V.LastSecond = V.ThisSecond;
     V.SecondIncremented = false;
@@ -779,7 +779,7 @@ startup {
     F.ResetGameVars();
   });
   
-  // todo
+  // Resets the game variables and memory watchers to an initial state
   F.ResetGameVars = (Action)(() => {
     G.BaseAddress = IntPtr.Zero;
     G.OldBaseAddress = IntPtr.Zero;
@@ -795,7 +795,7 @@ startup {
     F.ResetMemoryVars();
   });
   
-  // todo
+  // Resets the run variables to an initial state
   F.ResetRunVars = (Action)(() => {
     R.CompletedSplits = new Dictionary<string, bool>();
     R.ActiveWatchCodes = new HashSet<string>();
@@ -809,7 +809,7 @@ startup {
     V.ExceptionCount.Clear();
   });
   
-  // todo
+  // Resets the memory watchers to the initial state for the current game
   F.ResetMemoryVars = (Action)(() => {
     M.Clear();
     M.AddRange(G.CurrentMemoryWatchers);
@@ -873,7 +873,7 @@ startup {
     return V.SecondIncremented;
   });
   
-  // todo
+  // Update the current set of check/watch codes for location/progress
   F.SetStateCodes = (Action)(() => {
     string CurLoc = (string)M["Location"].Current;
     string OldLoc = (string)M["Location"].Old;
@@ -940,30 +940,30 @@ startup {
     return ammo;
   });
 
-  // Return true if weapon <id> has 0 or more ammo
+  // Returns true if weapon <id> has 0 or more ammo
   F.HasWeapon = (Func<int, bool>)((id) => F.AmmoCount(id, false, false) != -1);
   
   // Ditto for item <id>
   F.HasItem = (Func<int, bool>)((id) => F.AmmoCount(id, true, false) != -1);
 
-  // Return a string-formatted number of seconds
+  // Returns a string-formatted number of seconds
   // given number of frames <frames>, at a rate of 30fps
   F.FramesToSeconds = (Func<int, string>)((frames) => string.Format("{0:F1}", (decimal) frames / F.FramesPerSecond()));
   
-  // todo
+  // Returns the current game's target FPS (25 for EU, 30 for others)
   F.FramesPerSecond = (Func<int>)(() => G.EU ? 25 : 30);
   
-  // todo
+  // Returns a formatted percentage "n%", given <numerator>/<denominator>
   F.Percentage = (Func<int, int, string>)((numerator, denominator) => {
     if (denominator == 0) return "0%";
     return (int)( ((decimal)numerator * 100) / denominator ) + "%";
   });
   
-  // Return true if <val> is between <low> and <high> (inclusive)
+  // Returns true if <val> is between <low> and <high> (inclusive)
   F.Between = (Func<int, int, int, bool>)((val, low, high) =>
     ((val >= low) && (val <= high)) );
   
-  // Wipe the main MemoryWatcher list
+  // Wipes the main MemoryWatcher list
   // and repopulate it using the current game's current and hidden lists
   F.ResetActiveWatchers = (Action)(() => {
     M.Clear();
@@ -971,13 +971,13 @@ startup {
     M.AddRange(G.HiddenMemoryWatchers);
   });
   
-  // Return true if any stat value (Alerts/Kills/Saves/Continues/Rations) has changed
+  // Returns true if any stat value (Alerts/Kills/Saves/Continues/Rations) has changed
   F.StatsChanged = (Func<bool>)(() => (
     (M["Alerts"].Changed) || (M["Kills"].Changed) || (M["Saves"].Changed) ||
     (M["Continues"].Changed) || (M["RationsUsed"].Changed)
   ));
   
-  // Write a text file
+  // Writes a text file
   F.WriteFile = (Action<string, string, bool>)((file, content, append) => {
     string dir = Path.GetDirectoryName(file);
     if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
@@ -988,7 +988,7 @@ startup {
     }
   });
   
-  // Open an Explorer window pointing at <target>.
+  // Opens an Explorer window pointing at <target>.
   // If <isFile> == true, <target> is a file that will be selected
   F.OpenExplorer = (Action<string, bool>)((target, isFile) => {
     string args = isFile ? string.Format("/e, /select, \"{0}\"", target) : target;
@@ -998,14 +998,14 @@ startup {
     Process.Start(info);
   });
   
-  // Return a split name with any subsplits formatting removed
+  // Returns a split name with any subsplits formatting removed
   F.StripSubsplitFormatting = (Func<string, string>)((name) => {
     if (name[0] == '-')
       name = name.Substring(1, name.Length - 1);
     return name;
   });
   
-  // Return the V.DefaultSettings default for <key>, otherwise <def>
+  // Returns the V.DefaultSettings default for <key>, otherwise <def>
   // Ignores parent if <cat> is true
   F.DefaultSetting = (Func<string, bool, bool, bool>)((key, def, cat) => {
     V.AllSettings.Add(key);
@@ -1025,7 +1025,7 @@ startup {
     return def;
   });
   
-  // Add a new setting <key> with default value <def>, description <desc>
+  // Adds a new setting <key> with default value <def>, description <desc>
   // and optional tooltip <tooltip>
   F.AddSettingToolTip = (Action<string, bool, string, string>)((key, def, desc, tooltip) => {
     settings.Add(key, F.DefaultSetting(key, def, false), " " + desc);
@@ -1039,7 +1039,7 @@ startup {
   F.AddSetting = (Action<string, bool, string>)((key, def, desc) =>
     F.AddSettingToolTip(key, def, desc, null) );
 
-  // Add a child setting <key>, prepending <key> with the current default parent,
+  // Adds a child setting <key>, prepending <key> with the current default parent,
   // with default value <def>, description <desc> and optional tooltip <tooltip>
   F.AddChildSettingToolTip = (Action<string, bool, string, string>)((key, def, desc, tooltip) => {
     string fullKey = settings.CurrentDefaultParent + "." + key;
@@ -1054,7 +1054,7 @@ startup {
     settings.Add(fullKey, F.DefaultSetting(fullKey, def, true), " " + desc);
   });
 
-  // Change the current default parent for settings to <parent>, and return <key>
+  // Changes the current default parent for settings to <parent>, and return <key>
   F.SettingParent = (Func<string, string, string>)((key, parent) => {
     settings.CurrentDefaultParent = parent;
     return key;
@@ -1542,7 +1542,7 @@ init {
       if (settings["Opt.Debug.StdOut"]) print("[MGS1] " + message);
     });
     
-    // todo
+    // On an exception, adds the error message to the buffer to be written to the debug log
     V.EventLog.EntryWritten -= F.EventLogWritten;
     F.EventLogWritten = new EntryWrittenEventHandler((Action<object, EntryWrittenEventArgs>)((sender, e) => {
       var entry = e.Entry;
@@ -1599,7 +1599,7 @@ init {
       F.SetVar("Stats", string.Join(", ", stats));
     });
     
-    // todo
+    // Updates [vars.Info] with common info for ASLVV
     F.UpdateASLInfo = (Action)(() => {
       var diaz = M["DiazepamTimer"];
       var chaff = M["ChaffTimer"];
@@ -1669,7 +1669,8 @@ init {
       }
     });
     
-    // todo
+    // Resets [vars.Info] to an empty string or to the fallback
+    // once the info timeout has elapsed
     F.CheckInfoTimeout = (Action)(() => {
       if (settings["Opt.ASL.Info"]) {
         if ( (V.InfoTimeout != null) && (V.InfoTimeout < DateTime.Now) ) {
@@ -1680,7 +1681,7 @@ init {
       }
     });
 
-    // todo
+    // Adds an entry to the FPS log and update the display of [vars.FPS]
     F.UpdateFPSCounter = (Action)(() => {
       var curTime = DateTime.UtcNow;
       var curFrames = M["Frames"].Current;
@@ -1722,7 +1723,7 @@ init {
       F.SetVar("FPS", string.Join(", ", fpsResults));
     });
     
-    // todo
+    // Returns true if the setting <key> has changed
     F.ToolSettingToggled = (Func<string, bool>)((key) => {
       string extra;
       if (key == null) {
@@ -1736,7 +1737,8 @@ init {
       return result;
     });
     
-    // todo
+    // Returns the contents for a new custom settings config file
+    // using the current list of settings as source
     F.CustomSettingTemplate = (Func<string>)(() => {
       string output = "";
       foreach (var s in V.AllSettings) {
@@ -1746,7 +1748,7 @@ init {
       return output;
     });
     
-    // todo
+    // Show the form for the split file generator
     F.ShowMajorSplitsForm = (Action)(() => {
       var leftRight = AnchorStyles.Left | AnchorStyles.Right;
       var stretch = leftRight | AnchorStyles.Top | AnchorStyles.Bottom;
@@ -1874,7 +1876,8 @@ init {
       }
     });
     
-    // todo
+    // Generates and save a set of split files for the current settings
+    // Called by F.ShowMajorSplitsForm
     F.GenerateSplitFiles = (Action<List<string>, bool, bool>)(
       (enabledMajors, createSubsplits, createVeryEasy) => {
       
@@ -2009,6 +2012,8 @@ init {
       }
     });
     
+    // Scans for a valid game within the current emulator process
+    // and set up the list of memory watchers for that game
     F.ScanForGameInEmulator = (Func<Process, Process, ProcessModuleWow64Safe[], bool>)((g, mem, mod) => {
       if (G.BaseAddress == IntPtr.Zero) {
 
@@ -2157,7 +2162,7 @@ init {
 
           G.HiddenMemoryWatchers = new MemoryWatcherList() {
             new MemoryWatcher<sbyte>(F.Addr(addrs["InMenu"])) { Name = "InMenu" },
-            new MemoryWatcher<sbyte>(F.Addr(addrs["VsRex"])) { Name = "VsRex" }, // todo better name?
+            new MemoryWatcher<sbyte>(F.Addr(addrs["VsRex"])) { Name = "VsRex" },
             new MemoryWatcher<uint>(F.Addr(addrs["ControllerInput"])) { Name = "ControllerInput" },
             new MemoryWatcher<uint>(F.Addr(addrs["Frames"])) { Name = "Frames" },
             new MemoryWatcher<byte>(F.Addr(addrs["NoControl"])) { Name = "NoControl" },
@@ -2651,7 +2656,7 @@ init {
           new DeepPointer(F.Addr(0x2BFDD0), new int[] { 0x5C4 }) ) { Name = "BossMaxHP" } } },
       { "CP-257", new MemoryWatcherList() { // Rex 2
         new MemoryWatcher<short>(F.Addr(0x323906)) { Name = "BossHP" },
-        new MemoryWatcher<short>(F.Addr(0x38DBEE)) { Name = "BossMaxHP" } } }, // todo check
+        new MemoryWatcher<short>(F.Addr(0x38DBEE)) { Name = "BossMaxHP" } } },
       { "CP-277", new MemoryWatcherList() { // Liquid
         new MemoryWatcher<short>(F.Addr(0x50B978)) { Name = "BossHP" } } },
       { "CL-s19b", new MemoryWatcherList() { // Escape 2
