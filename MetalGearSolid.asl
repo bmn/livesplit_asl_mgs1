@@ -1523,7 +1523,7 @@ init {
       return 0;
     });
     F.BossHealth = (Func<string, int, int>)((name, maxHP) =>
-      F.BossHealth(name, M["BossHP"].Current, maxHP));
+      F.BossHealthCurrent(name, M["BossHP"].Current, maxHP));
     F.ShowBossHealth = (Action<string, int>)((name, maxHP) =>
       F.BossHealth(name, maxHP));
 
