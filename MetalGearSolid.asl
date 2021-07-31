@@ -1502,10 +1502,9 @@ init {
     };
     
     // Updates [vars.Info] with current boss health data
-    F.BossHealth = (Func<string, int, int>)((name, maxHP) => {
+    F.BossHealthCurrent = (Func<string, int, int, int>)((name, curHP, maxHP) => {
       if (!settings["Opt.ASL.Info.Boss"]) return 0;
       
-      int curHP = M["BossHP"].Current;
       if ( (maxHP <= 0) || (curHP > maxHP) ) return 0;
       if (curHP < 0) curHP = 0;
       
@@ -1519,6 +1518,8 @@ init {
       F.Info(output, 2000, M["BossHP"].Changed ? 60 : 10);
       return 0;
     });
+    F.BossHealth = (Func<string, int, int>)((name, maxHP) =>
+      F.BossHealth(name, M["BossHP"].Current, maxHP));
     F.ShowBossHealth = (Action<string, int>)((name, maxHP) =>
       F.BossHealth(name, maxHP));
 
