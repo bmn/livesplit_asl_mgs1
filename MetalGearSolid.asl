@@ -222,6 +222,7 @@ startup {
       { "DiazepamTimer",    0xB5812 },
       { "Life",             0xB5796 },
       { "MaxLife",          0xB5798 },
+      { "EquippedItem",     0xB579E },
     } },
     // JP Integral
     { "SLPM-86247", new Dictionary<string, int>() {
@@ -262,6 +263,7 @@ startup {
       { "DiazepamTimer",    0xB4E2A },
       { "Life",             0xB4DAE },
       { "MaxLife",          0xB4DB0 },
+      { "EquippedItem",     0xB4DB6 },
     } },
     // JP VR
     { "SLPM-86249", new Dictionary<string, int>() {
@@ -309,6 +311,7 @@ startup {
       { "DiazepamTimer",    0xB75AA },
       { "Life",             0xB752E },
       { "MaxLife",          0xB7530 },
+      { "EquippedItem",     0xB7536 },
     } },
     // US VR
     { "SLUS-00957", new Dictionary<string, int>() {
@@ -356,6 +359,7 @@ startup {
       { "DiazepamTimer",    0xB5E82 },
       { "Life",             0xB5E06 },
       { "MaxLife",          0xB5E08 },
+      { "EquippedItem",     0xB5E0E },
     } },
     // EU VR
     { "SLES-02136", new Dictionary<string, int>() {
@@ -429,9 +433,20 @@ startup {
     { "s00a", 2048 },
     { "s02a", 8192 },
     { "s02c", 16384 }, // Technically you can backtrack to the rat poison, but for simplicity...
+    { "s06a", 19200 },
     { "s08a", 3072 },
     { "s16a", 2048 },
-    { "s16d", 3000 },
+    { "s16d", 8192 },
+    { "s16d-ambush", 3000 },
+  };
+
+  // How much (as a divisor) the Gas Mask slows O2 loss
+  D.Sets.O2MaskDivisors = new Dictionary<string, int>() {
+    { "s00a", 8 },
+    { "s02c", 8 },
+    { "s06a", 16 },
+    { "s08a", 4 },
+    { "s16d", 2 },
   };
 
   
@@ -1613,11 +1628,20 @@ init {
       }
     });
     
-    // todo
+    // Returns the current rate of O2 loss, where 4096 is equivalent to 1/frame
     F.CurrentO2Rate = (Func<int>)(() => {
       int result;
-      D.Sets.O2Rates.TryGetValue(M["Location"].Current, out result);
-      return (result == 0) ? 2048 : result;
+      if (M["Progress"].Current > 247) result = D.Sets.O2Rates["s16d-ambush"];
+      else D.Sets.O2Rates.TryGetValue(M["Location"].Current, out result);
+
+      int divisor = 1;
+      if (M["EquippedItem"].Current == 7)
+        D.Sets.O2MaskDivisors.TryGetValue(M["Location"].Current, out divisor);
+
+      if (result == 0) result = 2048;
+      if (divisor == 0) divisor = 1;
+
+      return (int)((decimal)result / divisor);
     });
     
     // Sets [vars.Info] to <message> and starts a timer for <timeout> milliseconds
@@ -2561,6 +2585,7 @@ init {
       new MemoryWatcher<byte>(F.Addr(0x38E7EA)) { Name = "ScoreState" },
       new MemoryWatcher<byte>(F.Addr(0x5942EC)) { Name = "ScoreState2" },
       new MemoryWatcher<bool>(F.Addr(0x31687C)) { Name = "CheatsEnabled" },
+      new MemoryWatcher<byte>(F.Addr(0x38E7FE)) { Name = "EquippedItem" }, // equipped weapon 2B earlier
     };
     
     MM.Clear();
