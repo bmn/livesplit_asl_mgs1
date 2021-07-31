@@ -2169,6 +2169,7 @@ init {
             new MemoryWatcher<short>(F.Addr(addrs["DiazepamTimer"])) { Name = "DiazepamTimer" },
             new MemoryWatcher<short>(F.Addr(addrs["ChaffTimer"])) { Name = "ChaffTimer" },
             new MemoryWatcher<short>(F.Addr(addrs["O2Timer"])) { Name = "O2Timer" },
+            new MemoryWatcher<byte>(F.Addr(addrs["EquippedItem"])) { Name = "EquippedItem" },
           };
           
           MM.Clear();
