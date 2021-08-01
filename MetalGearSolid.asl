@@ -2460,12 +2460,13 @@ init {
 
         int diff = M["Difficulty"].Current;
         if (diff == -1) diff = 0;
+        int hpPerPhase = (3 + diff);
 
         int phase = 16 - (hp & 0xf);
         int phaseRemain = 5 - phase;
 
-        int maxHP = 5 * (3 + diff);
-        int curHP = (phaseRemain == -1) ? 0 : ((3 * phaseRemain) + (hp >> 6) + 1);
+        int maxHP = 5 * hpPerPhase;
+        int curHP = (phaseRemain == -1) ? 0 : ((hpPerPhase * phaseRemain) + (hp >> 6) + 1);
 
         F.BossHealthCurrent("Liquid Snake", curHP, maxHP);
       }
