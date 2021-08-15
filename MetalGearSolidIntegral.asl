@@ -432,6 +432,9 @@ startup {
           settings.Add("a_r20_r3_all", false, "always", "a_r20_r3");
       settings.Add("a_s11a", true, "Communications Tower A", "advanced_loc");
         settings.Add("a_r10_r37_all", false, "to Underground Passage", "a_s11a");
+        settings.Add("a_s11a_s11i", true, "to Walkway", "a_s11a");
+          settings.Add("a_s11a_s11i_p173", true, "after torture", "a_s11a_s11i");
+          settings.Add("a_s11a_s11i_all", false, "always", "a_s11a_s11i");
         settings.Add("a_s11a_s11b", true, "to Comms Tower A Roof", "a_s11a");
           settings.Add("a_s11a_s11b_p173", true, "after stairs chase", "a_s11a_s11b");
           settings.Add("a_s11a_s11b_all", false, "always", "a_s11a_s11b");
