@@ -386,8 +386,12 @@ startup {
       "W.CL-s03a.CP-18", "CP-ReachDarpaChief", "OP-26", "OP-28", "CL-s04a.CP-36", "CL-s04b.CP-36", "OP-36", "OP-38", "OL-s04c.CL-s04a.CP-52", "OL-TankHangar.CL-s02c.CP-AfterOcelot", "CL-s05a.CP-AfterOcelot", "CP-65", "OP-66", "CL-s07a.CP-69", "CL-s08a.CP-69", "CL-s08c.CP-69", "CL-s08b.CP-ReachNinja", "OP-77", "OL-s08b.CL-s08c.CP-111", "OL-s08c.CL-s08a.CP-111", "CL-s07a.CP-111", "CP-112", "OL-s07c.CL-s07b.CP-119", "OP-125", "CP-133", "OL-s07b.CL-s09a.CP-137", "OL-s09a.CL-s10a.CP-ReachUgPassage", "CP-146", "OL-s10a.CL-s09a.CP-149", "OL-s09a.CL-s07b.CP-149", "OL-s07b.CL-s07a.CP-150", "OL-NukeBuilding.CL-s06a.CP-150", "OL-s06a.CL-s05a.CP-150", "OL-s05a.CL-s02e.CP-150", "OL-TankHangar.CL-s04a.CP-150", "OL-TankHangar.CL-s02e.CP-150", "OL-s02e.CL-s05a.CP-150", "OL-s05a.CL-s06a.CP-150", "OL-NukeBuilding.CL-s07a.CP-150", "OL-s07a.CL-s07b.CP-150", "OL-s07b.CL-s09a.CP-150", "OL-s09a.CL-s10a.CP-150", "OP-150", "CP-157", "OL-s03b.CL-s03c", "OL-s03c.CL-s03a.CP-163", "OL-TankHangar.CL-s02e.CP-ABEscape",
     } },
     { "ToCommsTowers", new List<string>() {
-      "OL-s02e.CL-s05a.CP-163", "OL-s05a.CL-s06a.CP-163", "OL-NukeBuilding.CL-s07a.CP-163", "OL-s07a.CL-s07b.CP-163", "OL-s07b.CL-s09a.CP-163", "OL-s09a.CL-s10a.CP-163", "OL-s10a.CL-s11a.CP-AfterEscape", "OL-s11a.CL-s11b.CP-DefeatCTAChase", "OL-s11g.CL-s11d", "OL-s11d.CL-s11i", "OL-s11i.CL-s11c.CP-180",
+      "OL-s02e.CL-s05a.CP-163", "OL-s05a.CL-s06a.CP-163", "OL-NukeBuilding.CL-s07a.CP-163", "OL-s07a.CL-s07b.CP-163", "OL-s07b.CL-s09a.CP-163", "OL-s09a.CL-s10a.CP-163", "OL-s10a.CL-s11a.CP-AfterEscape", "OL-s11a.CL-s11b.CP-DefeatCTAChase"
     } },
+    { "CommTowerA-Rappel", new List<string>() {
+      "OL-s11g.CL-s11d", "OL-s11d.CL-s11i"
+    } },
+    { "Walkway", new List<string>() { "OL-s11i.CL-s11c.CP-180" } },
     { "CommTowerB-CAny", new List<string>() {
       "OL-s11c.CL-s11h.CP-BeforeHind", "OL-s11h.CL-s11c.CP-CommTowerB",
     } },
@@ -397,7 +401,6 @@ startup {
     { "CommTowerB-Glitchless", new List<string>() {
       "OL-s11c.CL-s11e.CP-AfterHind", "CP-195"
     } },
-
     { "ToWolf2", new List<string>() {
       "OL-s11c.CL-s12a.CP-CommTowerB", "CP-197", "OP-197",
     } },
@@ -416,19 +419,19 @@ startup {
   // These are used when building split files from current settings
   D.Sets.Category = new Dictionary<string, List<string>>() {
     { "PC All Bosses", new List<string>() {
-      "EarlyGame", "AllBosses", "ToCommsTowers", "CommTowerB-AB", "ToWolf2", "Disc2"
+      "EarlyGame", "AllBosses", "ToCommsTowers", "CommTowerA", "Walkway", "CommTowerB-AB", "ToWolf2", "Disc2"
     } },
     { "Console All Bosses", new List<string>() {
-      "EarlyGame", "AllBosses", "ToCommsTowers", "CommTowerB-AB", "CommTowerB-Glitchless", "ToWolf2", "DiscChange", "Disc2"
+      "EarlyGame", "AllBosses", "ToCommsTowers", "CommTowerA", "Walkway", "CommTowerB-AB", "CommTowerB-Glitchless", "ToWolf2", "DiscChange", "Disc2"
     } },
     { "PC Any%", new List<string>() {
-      "EarlyGame", "Any", "ToCommsTowers", "ToWolf2", "Disc2"
+      "EarlyGame", "Any", "ToCommsTowers", "CommTowerA", "Walkway", "ToWolf2", "Disc2"
     } },
     { "Console Any%", new List<string>() {
-      "EarlyGame", "Any", "ToCommsTowers", "CommTowerB-CAny", "ToWolf2", "DiscChange", "Stinger-CAny", "Disc2",
+      "EarlyGame", "Any", "ToCommsTowers", "CommTowerA", "Walkway", "CommTowerB-CAny", "ToWolf2", "DiscChange", "Stinger-CAny", "Disc2",
     } },
     { "PC Glitchless", new List<string>() {
-      "EarlyGame", "AllBosses", "ToCommsTowers", "CommTowerB-AB", "CommTowerB-Glitchless", "ToWolf2", "Disc2"
+      "EarlyGame", "AllBosses", "ToCommsTowers", "CommTowerA", "Walkway", "CommTowerB-AB", "CommTowerB-Glitchless", "ToWolf2", "Disc2"
     } },
   };
   
@@ -852,6 +855,13 @@ startup {
     if (message != null) F.Debug(message);
     return false;
   });
+
+  // Trigger a split skip in liveSplit and send <message> to debug
+  F.SkipSplit = (Func<string, bool>)((message) => {
+    V.TimerModel.SkipSplit();
+    if (message != null) F.Debug(message);
+    return false;
+  });
   
   // Return true if a controller button (or combination) is newly-pressed
   // Buttons: (0x1) L2 R2 L1 R1 T C X S Sel L3 R3 St U R D L (0x8000)
@@ -1129,7 +1139,7 @@ startup {
     int width = 415;
     
     using (var firstRunForm = new Form() {
-      Size = new System.Drawing.Size(width, 308),
+      Size = new System.Drawing.Size(width, 322),
       FormBorderStyle = FormBorderStyle.FixedSingle,
       MaximizeBox = false,
       Text = isFirstRun ? "Metal Gear Solid Autosplitter 2.0 First Run" :
@@ -1147,12 +1157,13 @@ startup {
       
       var lstTemplate = new ListBox() {
         Location = new System.Drawing.Point(10, 128),
-        Size = new System.Drawing.Size(width - (18*2), 100)
+        Size = new System.Drawing.Size(width - (18*2), 114)
       };
       
       lstTemplate.Items.Add("Major Splits only");
       lstTemplate.Items.Add("Major Splits, plus pre-boss Splits");
       lstTemplate.Items.Add("Major Splits, plus most Other Splits");
+      lstTemplate.Items.Add("Major Splits, plus most Other Splits (with Boba skip)");
       lstTemplate.Items.Add("[For Old v1 Split Files] Major Splits only");
       lstTemplate.Items.Add("[For Old v1 Split Files] Major Splits plus Area Movement");
       lstTemplate.Items.Add("Enable all available Splits");
@@ -1160,7 +1171,7 @@ startup {
       lstTemplate.SelectedIndex = 2;
       if (!isFirstRun) {
         lstTemplate.Items.Add("Use my current customised settings");
-        lstTemplate.SelectedIndex = 6;
+        lstTemplate.SelectedIndex = 7;
       }
 
       var btnConfirm = new Button() {
@@ -1182,11 +1193,12 @@ startup {
   
   F.ProcessFirstRun = (Action<int, bool>)((templateId, isFirstRun) => {
     string content;
-    if ( isFirstRun || (templateId != 6) ) {
+    if ( isFirstRun || (templateId != 7) ) {
       var settingTemplates = new List<string>() {
         "+-Splits\n+OL-s03a.CL-s03c.CP-VentClip\n+OP-28\n+OP-38\n+OP-66\n+OP-77\n+CP-133\n+OL-TankHangar.CL-s02e.CP-150\n+OP-150\n+OL-s11d.CL-s11i\n+OP-186\n+OP-197\n+OP-211\n+OL-s15b.CL-s15a.CP-240\n+OL-s14e.CL-s13a.CP-HeatingKey\n+W.CP-257\n+OP-277\n+CP-286\n+W.CP-294", // Majors only
         "+-Splits\n+OL-s03a.CL-s03c.CP-VentClip\n+OP-26\n+OP-28\n+OP-36\n+OP-38\n+CP-65\n+OP-66\n+CL-s08b.CP-ReachNinja\n+OP-77\n+OP-125\n+CP-133\n+OL-TankHangar.CL-s02e.CP-150\n+OL-s09a.CL-s10a.CP-150\n+OP-150\n+OL-s11d.CL-s11i\n+CP-ReachHind\n+OP-186\n+CP-197\n+OP-197\n+OL-s14e.CL-s15a.CP-ReachRaven\n+OP-211\n+OL-s15b.CL-s15a.CP-240\n+OL-s14e.CL-s13a.CP-HeatingKey\n+CP-252\n+W.CP-257\n+OP-277\n+CP-286\n+W.CP-294", // Majors + pre-boss
         "", // Defaults
+        "-OL-s11g.CL-s11d\n-OL-s11d.CL-s11i", // Boba skip
         "+-Splits\n+OP-28\n+OP-38\n+OP-66\n+OP-77\n+CP-133\n+OP-150\n+OP-186\n+OP-197\n+OP-211\n+W.CP-257\n+OP-277\n+CP-286\n+W.CP-294", // Old Major
         "-W.CL-s03a.CP-18\n-CP-ReachDarpaChief\n-OP-26\n-OP-36\n-CP-65\n-CP-112\n-OP-125\n-CP-146\n+OL-s03b.CL-s03c\n-CP-ReachHind\n-CP-197\n-OL-s12b.CL-change.CP-204\n-CP-206\n-CP-207\n+OL-s16d.CL-s16c.CP-ReachCommandRoom\n-OP-238\n-OP-240\n-CP-247\n-W.CP-255", // Old Area Movement
         "++Splits", // E V E R Y T H I N G
@@ -1289,6 +1301,7 @@ startup {
 
     F.AddChildSetting(F.SettingParent("Behaviour", "Opt"), true, "Autosplitter Behaviour");
       F.AddChildSettingToolTip(F.SettingParent("UndoPAL", "Opt.Behaviour"), true, "Undo certain splits to maintain split integrity", "Triggers undo if you go back after failing to cool/heat the PAL Key correctly. In practice:\n * Enabled: Very slow Warehouse/Blast Furnace split\n * Disabled: Very slow split at the point you decide to backtrack; potential false gold on Warehouse/Blast Furnace\n\nTriggers undo if you go to Nuke Building B2 without the Nikita (when F7 Area Reloading is available) then return to B1.");
+      F.AddChildSettingToolTip("KevinSkipSplits", true, "Skip splits to stay on route after Comm Tower A's Boba skip", "Skips the splits for:\n* Comms Tower A\n* Comms Tower A Roof\n\nSplits for:\n* Comms Tower A Rappel");
       F.AddChildSetting("StartOnLoad", false, "Start timer when loading a save");
       F.AddChildSettingToolTip("HalfFrameRate", false, "Run splitter logic at 30 fps",  "Can improve performance on weaker systems, at the cost of some precision.");
       F.AddChildSettingToolTip("VR.InstaSplit", false, "In VR Missions, split instantly upon hitting the goal", "If disabled, this will split when leaving the level.\nVR Missions are currently only supported on PC.");
@@ -1392,7 +1405,7 @@ startup {
     F.AddSetting("OL-s07b.CL-s09a.CP-163", true, "Commander's Room ⮞ Cave");
     F.AddSetting("OL-s09a.CL-s10a.CP-163", true, "Cave ⮞ Underground Passage");
     F.AddSetting("OL-s10a.CL-s11a.CP-AfterEscape", true, "Underground Passage ⮞ Comms Tower A"); // CP not needed?
-    F.AddSetting("OL-s11a.CL-s11b.CP-DefeatCTAChase", true, "Comms Tower A ⮞ Comms Tower A Roof"); // CP not needed?
+    F.AddSetting("OL-s11a.CL-s11b.CP-DefeatCTAChase", true, "Comms Tower A ⮞ Comms Tower A Roof or Walkway"); // CP not needed?
     F.AddSetting("OL-s11g.CL-s11d", true, "Comms Tower A Roof ⮞ Comms Tower A Wall");
     F.AddSetting("OL-s11d.CL-s11i", true, "Rappel");
     F.AddSetting("OL-s11i.CL-s11c.CP-180", true, "Walkway ⮞ Comms Tower B");
@@ -2324,6 +2337,32 @@ init {
     // Cell/Armory -> Tank Hangar: All Bosses version
     F.Check.Add("OL-TankHangar.CL-s02e.CP-ABEscape", (Func<bool>)(() =>
       ( hasPSG1() && (!R.CompletedSplits.ContainsKey("OL-TankHangar.CL-s04a.CP-163")) ) ));
+
+    // CTA Boba skip: Skip the splits for CTA Roof and Rappel if necessary
+    F.Check.Add("OL-s11a.CL-s11i.CP-AfterEscape", (Func<bool>)(() => {
+      string name;
+
+      if (settings["Opt.Behaviour.KevinSkipSplits"]) {
+  
+        foreach (var split in D.Sets.Split["CommTowerA-Rappel"]) {
+          if (F.SettingEnabled(split)) {
+            name = (D.Names.Split.ContainsKey(split)) ?
+              " (" + F.StripSubsplitFormatting(D.Names.Split[split]) + ")" : "";
+            F.SkipSplit("Skipping split for " + split + name + " (Boba skip)");
+          }
+        }
+
+      }
+
+      string originalCode = "OL-s11a.CL-s11b.CP-DefeatCTAChase";
+      if (F.SettingEnabled(originalCode)) {
+        name = (D.Names.Split.ContainsKey(originalCode)) ?
+          " (" + F.StripSubsplitFormatting(D.Names.Split[originalCode]) + ")" : "";
+        F.ManualSplit("Splitting for " + originalCode + name + " (Boba skip)");
+      }
+
+      return false;
+    }));
     
     // Helpers for Stinger unlock status
     Func<bool> hasStinger = () => F.HasWeapon(5);
