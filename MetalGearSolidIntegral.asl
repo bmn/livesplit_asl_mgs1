@@ -434,7 +434,7 @@ startup {
         settings.Add("a_r10_r37_all", false, "to Underground Passage", "a_s11a");
         settings.Add("a_s11a_s11b", true, "to Comms Tower A Roof", "a_s11a");
           settings.Add("a_s11a_s11b_p173", true, "after stairs chase", "a_s11a_s11b");
-          settings.Add("a_s11a_s11b_all", true, "always", "a_s11a_s11b");
+          settings.Add("a_s11a_s11b_all", false, "always", "a_s11a_s11b");
       settings.Add("a_s11b", true, "Comms Tower A Roof", "advanced_loc");
         settings.Add("a_s11b_s11a_all", false, "to Comms Tower A", "a_s11b");
         settings.Add("a_r44_r39_all", true, "to Comms Tower A Wall", "a_s11b");
