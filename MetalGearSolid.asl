@@ -72,6 +72,7 @@ startup {
   V.AllSettings = new HashSet<string>();
   V.DefaultSettings = new Dictionary<string, bool>();
   V.DefaultParentSettings = new Dictionary<string, bool>();
+  V.DefaultSettingsTemplateCount = 0;
   V.LiveSplitDir = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
   V.AppDataDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
     + "\\bmn\\MetalGearSolidAutosplitter";
@@ -1168,10 +1169,11 @@ startup {
       lstTemplate.Items.Add("[For Old v1 Split Files] Major Splits plus Area Movement");
       lstTemplate.Items.Add("Enable all available Splits");
       
+      V.DefaultSettingsTemplateCount = lstTemplate.Items.Count;
       lstTemplate.SelectedIndex = 2;
       if (!isFirstRun) {
         lstTemplate.Items.Add("Use my current customised settings");
-        lstTemplate.SelectedIndex = 7;
+        lstTemplate.SelectedIndex = V.DefaultSettingsTemplateCount;
       }
 
       var btnConfirm = new Button() {
@@ -1193,7 +1195,7 @@ startup {
   
   F.ProcessFirstRun = (Action<int, bool>)((templateId, isFirstRun) => {
     string content;
-    if ( isFirstRun || (templateId != 7) ) {
+    if ( isFirstRun || (templateId != V.DefaultSettingsTemplateCount) ) {
       var settingTemplates = new List<string>() {
         "+-Splits\n+OL-s03a.CL-s03c.CP-VentClip\n+OP-28\n+OP-38\n+OP-66\n+OP-77\n+CP-133\n+OL-TankHangar.CL-s02e.CP-150\n+OP-150\n+OL-s11d.CL-s11i\n+OP-186\n+OP-197\n+OP-211\n+OL-s15b.CL-s15a.CP-240\n+OL-s14e.CL-s13a.CP-HeatingKey\n+W.CP-257\n+OP-277\n+CP-286\n+W.CP-294", // Majors only
         "+-Splits\n+OL-s03a.CL-s03c.CP-VentClip\n+OP-26\n+OP-28\n+OP-36\n+OP-38\n+CP-65\n+OP-66\n+CL-s08b.CP-ReachNinja\n+OP-77\n+OP-125\n+CP-133\n+OL-TankHangar.CL-s02e.CP-150\n+OL-s09a.CL-s10a.CP-150\n+OP-150\n+OL-s11d.CL-s11i\n+CP-ReachHind\n+OP-186\n+CP-197\n+OP-197\n+OL-s14e.CL-s15a.CP-ReachRaven\n+OP-211\n+OL-s15b.CL-s15a.CP-240\n+OL-s14e.CL-s13a.CP-HeatingKey\n+CP-252\n+W.CP-257\n+OP-277\n+CP-286\n+W.CP-294", // Majors + pre-boss
@@ -1207,7 +1209,7 @@ startup {
     }
     else content = F.CustomSettingTemplate();
     
-    if (templateId != 6) {
+    if (templateId != V.DefaultSettingsTemplateCount) {
       string majorContent = "OL-s03a.CL-s03c.CP-VentClip\nOP-28\nOP-38\nOP-66\nOP-77\nCP-133\nOL-TankHangar.CL-s02e.CP-150\nOP-150\nOL-TankHangar.CL-s02e.CP-163\nOL-s11d.CL-s11i\nOP-186\nOP-197\nOP-211\nOL-s15b.CL-s15a.CP-240\nOL-s14e.CL-s13a.CP-HeatingKey\nW.CP-257\nOP-277\nCP-286\nW.CP-294";
       F.WriteFile(V.MajorSplitsFile, majorContent, false);
       F.Debug("Wrote MajorSplits file, content:\n" + majorContent);
@@ -1219,7 +1221,7 @@ startup {
     string successMsg = "Saved the default settings template to AppData.\n\n";
     if (isFirstRun)
       successMsg += "To access this window again, toggle \"MGS Autosplitter Toolbox\" in the layout component settings.\n\nYou can also create a new set of Split Files from the toolbox.";
-    else if (templateId != 6)
+    else if (templateId != V.DefaultSettingsTemplateCount)
       successMsg += "Your current settings have not been changed.\n\nTo use the \"Reset to Default\" button, please reload the autosplitter or restart LiveSplit first.";
     
     MessageBox.Show(successMsg, "Default Settings templates created", MessageBoxButtons.OK, MessageBoxIcon.Information);
