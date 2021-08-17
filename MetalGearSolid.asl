@@ -420,19 +420,19 @@ startup {
   // These are used when building split files from current settings
   D.Sets.Category = new Dictionary<string, List<string>>() {
     { "PC All Bosses", new List<string>() {
-      "EarlyGame", "AllBosses", "ToCommsTowers", "CommTowerA", "Walkway", "CommTowerB-AB", "ToWolf2", "Disc2"
+      "EarlyGame", "AllBosses", "ToCommsTowers", "CommTowerA-Rappel", "Walkway", "CommTowerB-AB", "ToWolf2", "Disc2"
     } },
     { "Console All Bosses", new List<string>() {
-      "EarlyGame", "AllBosses", "ToCommsTowers", "CommTowerA", "Walkway", "CommTowerB-AB", "CommTowerB-Glitchless", "ToWolf2", "DiscChange", "Disc2"
+      "EarlyGame", "AllBosses", "ToCommsTowers", "CommTowerA-Rappel", "Walkway", "CommTowerB-AB", "CommTowerB-Glitchless", "ToWolf2", "DiscChange", "Disc2"
     } },
     { "PC Any%", new List<string>() {
-      "EarlyGame", "Any", "ToCommsTowers", "CommTowerA", "Walkway", "ToWolf2", "Disc2"
+      "EarlyGame", "Any", "ToCommsTowers", "CommTowerA-Rappel", "Walkway", "ToWolf2", "Disc2"
     } },
     { "Console Any%", new List<string>() {
-      "EarlyGame", "Any", "ToCommsTowers", "CommTowerA", "Walkway", "CommTowerB-CAny", "ToWolf2", "DiscChange", "Stinger-CAny", "Disc2",
+      "EarlyGame", "Any", "ToCommsTowers", "CommTowerA-Rappel", "Walkway", "CommTowerB-CAny", "ToWolf2", "DiscChange", "Stinger-CAny", "Disc2",
     } },
     { "PC Glitchless", new List<string>() {
-      "EarlyGame", "AllBosses", "ToCommsTowers", "CommTowerA", "Walkway", "CommTowerB-AB", "CommTowerB-Glitchless", "ToWolf2", "Disc2"
+      "EarlyGame", "AllBosses", "ToCommsTowers", "CommTowerA-Rappel", "Walkway", "CommTowerB-AB", "CommTowerB-Glitchless", "ToWolf2", "Disc2"
     } },
   };
   
