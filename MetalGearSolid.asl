@@ -1248,7 +1248,7 @@ startup {
 
     F.AddChildSetting(F.SettingParent("Behaviour", "Opt"), true, "Autosplitter Behaviour");
       F.AddChildSettingToolTip(F.SettingParent("UndoPAL", "Opt.Behaviour"), true, "Undo certain splits to maintain split integrity", "Triggers undo if you go back after failing to cool/heat the PAL Key correctly. In practice:\n * Enabled: Very slow Warehouse/Blast Furnace split\n * Disabled: Very slow split at the point you decide to backtrack; potential false gold on Warehouse/Blast Furnace\n\nTriggers undo if you go to Nuke Building B2 without the Nikita (when F7 Area Reloading is available) then return to B1.");
-      F.AddChildSettingToolTip("KevinSkipSplits", true, "Skip splits to stay on route after Comm Tower A's Boba skip", "Skips the splits for:\n* Comms Tower A\n* Comms Tower A Roof\n\nSplits for:\n* Comms Tower A Rappel");
+      F.AddChildSettingToolTip("KevinSkipSplits", true, "Skip splits to stay on route after Comm Tower A's Boba skip", "Split skips will be inserted upon performing Boba skip,\nif either of these splits are enabled:\n* Comms Tower A Roof\n* Comms Tower A Rappel\n\nThe resulting splits will be:\n* [Skip] Comms Tower A\n* [Skip] Comms Tower A Roof\n* [Split] Comms Tower A Rappel");
       F.AddChildSetting("StartOnLoad", false, "Start timer when loading a save");
       F.AddChildSettingToolTip("HalfFrameRate", false, "Run splitter logic at 30 fps",  "Can improve performance on weaker systems, at the cost of some precision.");
       F.AddChildSettingToolTip("VR.InstaSplit", false, "In VR Missions, split instantly upon hitting the goal", "If disabled, this will split when leaving the level.\nVR Missions are currently only supported on PC.");
@@ -2347,7 +2347,6 @@ init {
       string name;
 
       if (settings["Opt.Behaviour.KevinSkipSplits"]) {
-  
         foreach (var split in D.Sets.Split["CommTowerA-Rappel"]) {
           if (F.SettingEnabled(split)) {
             name = (D.Names.Split.ContainsKey(split)) ?
@@ -2355,16 +2354,9 @@ init {
             F.SkipSplit("Skipping split for " + split + name + " (Boba skip)");
           }
         }
-
       }
 
-      string originalCode = "OL-s11a.CL-s11b.CP-DefeatCTAChase";
-      if (F.SettingEnabled(originalCode)) {
-        name = (D.Names.Split.ContainsKey(originalCode)) ?
-          " (" + F.StripSubsplitFormatting(D.Names.Split[originalCode]) + ")" : "";
-        F.ManualSplit("Splitting for " + originalCode + name + " (Boba skip)");
-      }
-
+      F.BackupSplitCheck(V.CurrentCheck, "OL-s11a.CL-s11b.CP-DefeatCTAChase");
       return false;
     }));
     
