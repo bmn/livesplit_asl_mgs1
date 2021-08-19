@@ -1275,7 +1275,8 @@ startup {
         F.AddChildSetting("Rations", true, "Include Rations");
         F.AddChildSetting("Saves", true, "Include Saves");
       F.AddChildSetting(F.SettingParent("Info", "Opt.ASL"), true, "Info (contextual information)");
-        F.AddChildSetting(F.SettingParent("Alt", "Opt.ASL.Info"), true, "Show another variable when Info is empty");
+        F.AddChildSetting(F.SettingParent("MaxHP", "Opt.ASL.Info"), false, "Include Max HP when showing raw HP values");
+        F.AddChildSetting("Alt", true, "Show another variable when Info is empty");
           F.AddChildSetting(F.SettingParent("FPS", "Opt.ASL.Info.Alt"), false, "FPS");
           F.AddChildSetting("Location", false, "Location");
           F.AddChildSetting("Stats", false, "Stats");
@@ -1626,7 +1627,8 @@ init {
       
       if ( (settings["Opt.ASL.Info.Life"]) && (life.Changed) ) {
         string lifePercent = F.Percentage(life.Current, maxLife.Current);
-        string lifeCurrent = string.Format("{0} ({1}/{2} HP)",
+        string lifeCurrent = string.Format(
+          (settings["Opt.ASL.Info.MaxHP"] ? "{0} ({1}/{2} HP)" : "{0} ({1} HP)"),
           lifePercent, life.Current, maxLife.Current);
         if (M["GameTime"].Current > 300)
           F.Info("Life: " + lifeCurrent, 3000, 50);
