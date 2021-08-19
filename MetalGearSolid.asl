@@ -2494,7 +2494,7 @@ init {
     
     // Backup for Rex 2 if split is missed
     // This comes after the cutscene afterwards, so it's not perfect
-    F.Check.Add("OP-257", (Func<bool>)(() => F.BackupSplitCheck("OP-257", "W.CP-257")));
+    F.Check.Add("OP-257", (Func<bool>)(() => F.BackupSplitCheck(V.CurrentCheck, "W.CP-257")));
     
     // VE Escape
     F.Watch.Add("W.CL-s19b", (Func<int>)(() => {
@@ -2898,6 +2898,7 @@ split {
   // But do nothing when dying (particularly to bosses) and going backwards
   if ( (validCodes.Any()) && (Prog.Current >= Prog.Old) ) {
     foreach (var code in validCodes) {
+      V.CurrentCheck = code;
       if ( (F.Check.ContainsKey(code)) && (!F.Check[code]()) ) continue;
       if (!settings.ContainsKey(code)) continue;
       if (F.Split(code)) return true;
