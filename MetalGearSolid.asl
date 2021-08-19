@@ -884,61 +884,6 @@ startup {
     return V.SecondIncremented;
   });
   
-  // Update the current set of check/watch codes for location/progress
-  F.SetStateCodes = (Action)(() => {
-    string CurLoc = (string)M["Location"].Current;
-    string OldLoc = (string)M["Location"].Old;
-    short CurProg = (short)M["Progress"].Current;
-    short OldProg = (short)M["Progress"].Old;
-    
-    R.CurrentLocations = new HashSet<string>() { CurLoc };
-    if (D.Sets.Location.ContainsKey(CurLoc))
-      R.CurrentLocations.Add( D.Sets.Location[CurLoc] );
-    
-    R.OldLocations = new HashSet<string>() { OldLoc };
-    if (D.Sets.Location.ContainsKey(OldLoc))
-      R.OldLocations.Add( D.Sets.Location[OldLoc] );
-
-    R.CurrentProgress = new HashSet<string>() { CurProg.ToString() };
-    if (D.Sets.Progress.ContainsKey(CurProg)) {
-      foreach (var p in D.Sets.Progress[CurProg])
-        R.CurrentProgress.UnionWith( D.Sets.Progress[CurProg] );
-    }
-    
-    R.OldProgress = new HashSet<string>() { OldProg.ToString() };
-    if (D.Sets.Progress.ContainsKey(OldProg)) {
-      foreach (var p in D.Sets.Progress[OldProg])
-        R.OldProgress.UnionWith( D.Sets.Progress[OldProg] );
-    }
-    
-    var watchCodes = new HashSet<string>();
-
-    foreach (var loc in R.CurrentLocations) {
-      foreach (var prog in R.CurrentProgress)
-        watchCodes.Add("CL-" + loc + ".CP-" + prog);
-      watchCodes.Add("CL-" + loc);
-    }
-    
-    foreach (var prog in R.CurrentProgress)
-      watchCodes.Add("CP-" + prog);
-
-    F.ResetActiveWatchers();
-    var activeCodes = new List<string>();
-    foreach (var c in watchCodes) {
-      if (G.CodeMemoryWatchers.ContainsKey(c))
-        M.AddRange(G.CodeMemoryWatchers[c]);
-      string code = "W." + c;
-      if (F.Watch.ContainsKey(code))
-        activeCodes.Add(code);
-    }
-
-    if (activeCodes.Count == 0) R.ActiveWatchCodes = null;
-    else {
-      F.Debug("Active watcher (" + string.Join(" ", activeCodes) + ")");
-      R.ActiveWatchCodes = activeCodes;
-    }
-  });
-  
   // Returns the current (old if <useOld> == true) ammo
   // for weapon (item if <useItems> == true) <id> 
   F.AmmoCount = (Func<int, bool, bool, short>)((id, useItems, useOld) => {
@@ -1574,6 +1519,63 @@ init {
     }));
     V.EventLog.EntryWritten += F.EventLogWritten;
     
+    // Update the current set of check/watch codes for location/progress
+    F.SetStateCodes = (Action)(() => {
+      string CurLoc = (string)M["Location"].Current;
+      string OldLoc = (string)M["Location"].Old;
+      short CurProg = (short)M["Progress"].Current;
+      short OldProg = (short)M["Progress"].Old;
+      
+      R.CurrentLocations = new HashSet<string>() { CurLoc };
+      if (D.Sets.Location.ContainsKey(CurLoc))
+        R.CurrentLocations.Add( D.Sets.Location[CurLoc] );
+      
+      R.OldLocations = new HashSet<string>() { OldLoc };
+      if (D.Sets.Location.ContainsKey(OldLoc))
+        R.OldLocations.Add( D.Sets.Location[OldLoc] );
+
+      R.CurrentProgress = new HashSet<string>() { CurProg.ToString() };
+      if (D.Sets.Progress.ContainsKey(CurProg)) {
+        foreach (var p in D.Sets.Progress[CurProg])
+          R.CurrentProgress.UnionWith( D.Sets.Progress[CurProg] );
+      }
+      
+      R.OldProgress = new HashSet<string>() { OldProg.ToString() };
+      if (D.Sets.Progress.ContainsKey(OldProg)) {
+        foreach (var p in D.Sets.Progress[OldProg])
+          R.OldProgress.UnionWith( D.Sets.Progress[OldProg] );
+      }
+      
+      var watchCodes = new HashSet<string>();
+
+      foreach (var loc in R.CurrentLocations) {
+        foreach (var prog in R.CurrentProgress)
+          watchCodes.Add("CL-" + loc + ".CP-" + prog);
+        watchCodes.Add("CL-" + loc);
+      }
+      
+      foreach (var prog in R.CurrentProgress)
+        watchCodes.Add("CP-" + prog);
+
+      F.ResetActiveWatchers();
+      var activeCodes = new List<string>();
+      foreach (var c in watchCodes) {
+        if (G.CodeMemoryWatchers.ContainsKey(c)) {
+          G.CodeMemoryWatchers[c].UpdateAll(game);
+          M.AddRange(G.CodeMemoryWatchers[c]);
+        }
+        string code = "W." + c;
+        if (F.Watch.ContainsKey(code))
+          activeCodes.Add(code);
+      }
+
+      if (activeCodes.Count == 0) R.ActiveWatchCodes = null;
+      else {
+        F.Debug("Active watcher (" + string.Join(" ", activeCodes) + ")");
+        R.ActiveWatchCodes = activeCodes;
+      }
+    });
+
     // Instructs all Manual Memory Watchers (MM) to update their value
     F.UpdateMM = (Action<Process>)((g) => {
       foreach (var m in MM)
