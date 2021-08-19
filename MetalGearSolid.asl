@@ -307,6 +307,7 @@ startup {
       { "RexMaxHP",         0xB6876 },
       { "Rex2HP",           0x15F8B0 },
       { "LiquidHP",         0x17997C },
+      { "LiquidPhase",      0x179A28 },
       { "EscapeHP",         0xB8EAE },
       { "RadarState",       0xADB45 },
       { "O2Timer",          0xAE1B4 },
@@ -810,6 +811,9 @@ startup {
     R.EscapeRadarTimes = 0;
     R.VrSplitOnExit = false;
     R.LastBoss = String.Empty;
+    R.ComboTimeout = DateTime.Now;
+    R.ComboHits = 0;
+    R.ComboStart = -1;
     V.ExceptionCount.Clear();
   });
   
@@ -1280,8 +1284,14 @@ startup {
           F.AddChildSetting(F.SettingParent("FPS", "Opt.ASL.Info.Alt"), false, "FPS");
           F.AddChildSetting("Location", false, "Location");
           F.AddChildSetting("Stats", false, "Stats");
-        F.AddChildSetting(F.SettingParent("Boss", "Opt.ASL.Info"), true, "Include Boss Health");
-        F.AddChildSetting("Life", true, "Include Snake Health");
+        F.AddChildSetting(F.SettingParent("Boss", "Opt.ASL.Info"), true, "Include Boss Information");
+          F.AddChildSetting(F.SettingParent("Name", "Opt.ASL.Info.Boss"), true, "Include Name of Boss");
+          F.AddChildSetting("Percent", true, "Include HP Percentage");
+          F.AddChildSetting("CurrentHP", true, "Include Raw HP");
+          F.AddChildSetting("ComboHits", true, "Include Combo Counter");
+          F.AddChildSetting("ComboDamage", true, "Include Damage Counter");
+          F.AddChildSettingToolTip("Phase", true, "Include Current Phase", "Only available for some bosses.");
+        F.AddChildSetting(F.SettingParent("Life", "Opt.ASL.Info"), true, "Include Snake Health");
         F.AddChildSetting("Chaff", true, "Include Chaff timer");
         F.AddChildSetting("O2", true, "Include O2 timer");
         F.AddChildSetting("Diazepam", true, "Include Diazepam timer");
@@ -1465,28 +1475,119 @@ init {
     V.LastToggleSetting = new Dictionary<string, bool>() {
       { "Tools", settings["Tools"] },
     };
-    
+
     // Updates [vars.Info] with current boss health data
-    F.BossHealthCurrent = (Func<string, int, int, int>)((name, curHP, maxHP) => {
+    F.BossHealth = (Func<string, int, int, int, Dictionary<string, object>, int>)
+      ((name, currentHP, maxHP, oldHP, data) => {
       if (!settings["Opt.ASL.Info.Boss"]) return 0;
-      
-      if ( (maxHP <= 0) || (curHP > maxHP) ) return 0;
-      if (curHP < 0) curHP = 0;
-      
+
+      if ( (maxHP <= 0) || (currentHP > maxHP) ) return 0;
+      if (currentHP < 0) currentHP = 0;
+      bool changedHP = (currentHP == oldHP);
+
       if (!R.LastBoss.Equals(name)) {
-        if (curHP == maxHP) R.LastBoss = name;
+        if (currentHP == maxHP) {
+          R.LastBoss = name;
+          changedHP = true;
+        }
         else return 0;
       }
-      
-      string output = string.Format("{0} | {1} ({2}/{3} HP)",
-        name, F.Percentage(curHP, maxHP), curHP, maxHP);
-      F.Info(output, 2000, M["BossHP"].Changed ? 60 : 10);
+
+      if ( (!changedHP) && (V.InfoTimeout != null) ) return 0;
+
+      if (data == null) data = new Dictionary<string, object>();
+
+      var formats = new Dictionary<string, string>() {
+        { "Separator", " | " },
+        { "HPPercent", "{0} HP" },
+        { "HPPercentRaw", "{0} ({1})" },
+        { "HPRaw", "{0} HP" },
+        { "HPRawCurrent", "{0}" },
+        { "HPRawCurrentMax", "{0}/{1}" },
+        { "Phase", "Phase {0}" },
+        { "ComboHits", "{0} hits" },
+        { "ComboDamage", "{0}" },
+        { "ComboHitsDamage", "{0} ({1})" }
+      };
+      foreach (var extra in data) {
+        if (extra.Key.Substring(0, 2).Equals("F."))
+          formats[extra.Key.Substring(2)] = (string)extra.Value;
+      }
+
+      string contentInfo = null;
+
+      if (DateTime.Now > R.ComboTimeout) {
+        R.ComboHits = 0;
+        R.ComboStart = -1;
+      }
+      if (changedHP) {
+        if ( (currentHP == maxHP) || (currentHP > oldHP) ) return 0;
+
+        R.ComboHits++;
+        R.ComboTimeout = DateTime.Now.AddMilliseconds(500);
+        if (R.ComboStart == -1) R.ComboStart = oldHP;
+
+        string hits = null;
+        if ( (settings["Opt.ASL.Info.Boss.ComboHits"]) && (R.ComboHits > 1) )
+          hits = string.Format(formats["ComboHits"], R.ComboHits);
+        if (settings["Opt.ASL.Info.Boss.ComboDamage"]) {
+          int damage = currentHP - R.ComboStart;
+          contentInfo = (hits == null) ?
+            string.Format(formats["ComboDamage"], damage) :
+            string.Format(formats["ComboHitsDamage"], hits, damage);
+        }
+        else if (hits != null) contentInfo = hits;
+      }
+
+      if ( (contentInfo == null) && settings["Opt.ASL.Info.Boss.Name"] && (name != null) )
+        contentInfo = name;
+
+      string contentPhase = null;
+      if ( settings["Opt.ASL.Info.Boss.Phase"] && data.ContainsKey("Phase") ) {
+        var phase = (int)data["Phase"];
+        contentPhase = string.Format(formats["Phase"], phase);
+      }
+
+      string contentHP = null;
+      string percent = null;
+      string rawHP = null;
+
+      if (settings["Opt.ASL.Info.Boss.CurrentHP"]) {
+        rawHP = (settings["Opt.ASL.Info.MaxHP"]) ?
+          string.Format(formats["HPRawCurrentMax"], currentHP, maxHP) :
+          string.Format(formats["HPRawCurrent"], currentHP);
+        rawHP = string.Format(formats["HPRaw"], rawHP);
+      }
+
+      if (settings["Opt.ASL.Info.Boss.Percent"]) {
+        percent = F.Percentage(currentHP, maxHP);
+        contentHP = (rawHP == null) ?
+          string.Format(formats["HPPercent"], percent) :
+          string.Format(formats["HPPercentRaw"], percent, rawHP);
+      }
+      else if (rawHP != null)
+        contentHP = rawHP;
+
+      var content = new List<string>();
+      if (contentInfo != null) content.Add(contentInfo);
+      if (contentPhase != null) content.Add(contentPhase);
+      if (contentHP != null) content.Add(contentHP);
+
+      string output = string.Join(formats["Separator"], content);
+
+      F.Info(output, 3000, (bool)changedHP ? 60 : 10);
       return 0;
     });
-    F.BossHealth = (Func<string, int, int>)((name, maxHP) =>
-      F.BossHealthCurrent(name, M["BossHP"].Current, maxHP));
-    F.ShowBossHealth = (Action<string, int>)((name, maxHP) =>
-      F.BossHealth(name, maxHP));
+
+    // Helper functions to call F.BossHealth using M["BossHP"] as current HP
+    F.BossHealthSimple = (Func<string, int, int>)((name, maxHP) =>
+      F.BossHealth(name, (int)M["BossHP"].Current, maxHP, (int)M["BossHP"].Old, null));
+    F.BossHealthPhase = (Func<string, int, int, int>)((name, maxHP, phase) =>
+      F.BossHealth(name, (int)M["BossHP"].Current, maxHP, (int)M["BossHP"].Old,
+        new Dictionary<string, object>() {
+          { "Phase", phase }
+        }
+      ));
 
     // TRUE if <key> exists in the settings array and is true
     F.SettingEnabled = (Func<string, bool>)((key) => 
@@ -2203,7 +2304,8 @@ init {
             { "CP-77", new MemoryWatcherList() { // Ninja
               new MemoryWatcher<short>(F.Addr(addrs["NinjaHP"])) { Name = "BossHP" } } },
             { "CP-129", new MemoryWatcherList() { // Mantis
-              new MemoryWatcher<short>(F.Addr(addrs["MantisHP"])) { Name = "BossHP" } } },
+              new MemoryWatcher<short>(F.Addr(addrs["MantisHP"])) { Name = "BossHP" },
+              new MemoryWatcher<short>(F.Addr(addrs["MantisMaxHP"])) { Name = "BossMaxHP" } } },
             { "CL-s10a.CP-150", new MemoryWatcherList() { // Wolf 1
               new MemoryWatcher<short>(F.Addr(addrs["Wolf1HP"])) { Name = "BossHP" } } },
             { "CP-186", new MemoryWatcherList() { // Hind
@@ -2211,11 +2313,14 @@ init {
             { "CP-197", new MemoryWatcherList() { // Wolf 2
               new MemoryWatcher<short>(F.Addr(addrs["Wolf2HP"])) { Name = "BossHP" } } },
             { "CP-211", new MemoryWatcherList() { // Raven
-              new MemoryWatcher<short>(F.Addr(addrs["RavenHP"])) { Name = "BossHP" } } },
+              new MemoryWatcher<short>(F.Addr(addrs["RavenHP"])) { Name = "BossHP" },
+              new MemoryWatcher<short>(F.Addr(addrs["RavenMaxHP"])) { Name = "BossMaxHP" } } },
             { "CP-255", new MemoryWatcherList() { // Rex 1
-              new MemoryWatcher<short>(F.Addr(addrs["Rex1HP"])) { Name = "BossHP" } } },
+              new MemoryWatcher<short>(F.Addr(addrs["Rex1HP"])) { Name = "BossHP" },
+              new MemoryWatcher<short>(F.Addr(addrs["RexMaxHP"])) { Name = "BossMaxHP" } } },
             { "CP-257", new MemoryWatcherList() { // Rex 2
-              new MemoryWatcher<short>(F.Addr(addrs["Rex2HP"])) { Name = "BossHP" } } },
+              new MemoryWatcher<short>(F.Addr(addrs["Rex2HP"])) { Name = "BossHP" },
+              new MemoryWatcher<short>(F.Addr(addrs["RexMaxHP"])) { Name = "BossMaxHP" } } },
             { "CP-277", new MemoryWatcherList() { // Liquid
               new MemoryWatcher<short>(F.Addr(addrs["LiquidHP"])) { Name = "BossHP" } } },
             { "CL-s19b", new MemoryWatcherList() { // Escape 2
@@ -2227,16 +2332,6 @@ init {
               new MemoryWatcher<int>(F.Addr(addrs["ScoreHours"] + 8)) { Name = "Seconds" } } },
           };
           
-          foreach (var boss in new Dictionary<string, string>() {
-            { "CP-129", "Mantis" }, { "CP-211", "Raven" }, { "CP-255", "Rex" },
-            { "CP-257", "Rex" }
-          }) {
-            string key = boss.Value + "MaxHP";
-            if (addrs.ContainsKey(key))
-              G.CodeMemoryWatchers[boss.Key].Add(
-                new MemoryWatcher<short>(F.Addr(addrs[key])) { Name = "BossMaxHP" }
-              );
-          }
         }
         
         F.ResetMemoryVars();
@@ -2455,7 +2550,7 @@ init {
       int maxHP = G.JP ? 1500 : M["BossMaxHP"].Current;
 
       if (cur == 1)
-        F.BossHealth("Metal Gear REX", maxHP);
+        F.BossHealthSimple("Metal Gear REX", maxHP);
       
       if (G.Emulator)
         return ( ((cur == -1) || (cur == 0) || (cur == 2)) && (prev == 1) ) ? 1 : 0;
@@ -2469,7 +2564,7 @@ init {
       int maxHP = G.JP ? 1500 : M["BossMaxHP"].Current;
 
       if (cur == 1)
-        F.BossHealth("Metal Gear REX", maxHP);
+        F.BossHealthSimple("Metal Gear REX", maxHP);
       
       if (G.Emulator)
         return ( ((cur == -1) || (cur == 0)) && (prev == 3) ) ? 1 : 0;
@@ -2491,6 +2586,14 @@ init {
     // Backup for Rex 2 if split is missed
     // This comes after the cutscene afterwards, so it's not perfect
     F.Check.Add("OP-257", (Func<bool>)(() => F.BackupSplitCheck(V.CurrentCheck, "W.CP-257")));
+
+    // Liquid
+    F.Watch.Add("W.CP-277", (Func<int>)(() => {
+      var phases = new Dictionary<byte, int> { { 0, 0 }, { 3, 1 }, { 2, 2 }, { 4, 3 } };
+      int phase = 0;
+      phases.TryGetValue(M["BossPhase"].Current, out phase);
+      return F.BossHealthPhase("Liquid Snake", 255, phase);
+    }));
     
     // VE Escape
     F.Watch.Add("W.CL-s19b", (Func<int>)(() => {
@@ -2507,7 +2610,10 @@ init {
         int maxHP = 5 * hpPerPhase;
         int curHP = (phaseRemain == -1) ? 0 : ((hpPerPhase * phaseRemain) + (hp >> 6) + 1);
 
-        F.BossHealthCurrent("Liquid Snake", curHP, maxHP);
+        var extra = new Dictionary<string, object>();
+        if (phase < 6) extra.Add("Phase", phase);
+
+        F.BossHealth("Liquid Snake", curHP, maxHP, curHP + 1, extra);
       }
       
       if ( (M["RadarState"].Current == 0x20) && (M["RadarState"].Old == 0) ) {
@@ -2541,15 +2647,14 @@ init {
       int frames = (s.Current + (m.Current * 60) + (h.Current * 3600)) * (F.FramesPerSecond() * 2);
       return ( (target > (frames - 120)) && (target < (frames + 120)) ) ? 1 : 0;
     }));
-    
-    F.Watch.Add("W.CP-38", (Func<int>)(() => F.BossHealth("Revolver Ocelot", 1024)));
-    F.Watch.Add("W.CP-77", (Func<int>)(() => F.BossHealth("Ninja", 255)));
-    F.Watch.Add("W.CP-129", (Func<int>)(() => F.BossHealth("Psycho Mantis", G.JP ? 904 : M["BossMaxHP"].Current)));
-    F.Watch.Add("W.CL-s10a.CP-150", (Func<int>)(() => F.BossHealth("Sniper Wolf", 1024)));
-    F.Watch.Add("W.CP-186", (Func<int>)(() => F.BossHealth("Hind D", 1024)));
-    F.Watch.Add("W.CP-197", (Func<int>)(() => F.BossHealth("Sniper Wolf", 1024)));
-    F.Watch.Add("W.CP-211", (Func<int>)(() => F.BossHealth("Vulcan Raven", G.JP ? 600 : M["BossMaxHP"].Current)));
-    F.Watch.Add("W.CP-277", (Func<int>)(() => F.BossHealth("Liquid Snake", 255)));
+
+    F.Watch.Add("W.CP-38", (Func<int>)(() => F.BossHealthSimple("Revolver Ocelot", 1024)));
+    F.Watch.Add("W.CP-77", (Func<int>)(() => F.BossHealthSimple("Ninja", 255)));
+    F.Watch.Add("W.CP-129", (Func<int>)(() => F.BossHealthSimple("Psycho Mantis", G.JP ? 904 : M["BossMaxHP"].Current)));
+    F.Watch.Add("W.CL-s10a.CP-150", (Func<int>)(() => F.BossHealthSimple("Sniper Wolf", 1024)));
+    F.Watch.Add("W.CP-186", (Func<int>)(() => F.BossHealthSimple("Hind D", 1024)));
+    F.Watch.Add("W.CP-197", (Func<int>)(() => F.BossHealthSimple("Sniper Wolf", 1024)));
+    F.Watch.Add("W.CP-211", (Func<int>)(() => F.BossHealthSimple("Vulcan Raven", G.JP ? 600 : M["BossMaxHP"].Current)));
     // init: Split Checkers and Watchers END
 
   }
@@ -2702,7 +2807,8 @@ init {
         new MemoryWatcher<short>(F.Addr(0x323906)) { Name = "BossHP" },
         new MemoryWatcher<short>(F.Addr(0x38DBEE)) { Name = "BossMaxHP" } } },
       { "CP-277", new MemoryWatcherList() { // Liquid
-        new MemoryWatcher<short>(F.Addr(0x50B978)) { Name = "BossHP" } } },
+        new MemoryWatcher<short>(F.Addr(0x50B978)) { Name = "BossHP" },
+        new MemoryWatcher<byte>(F.Addr(0x50B94C)) { Name = "BossPhase" } } },
       { "CL-s19b", new MemoryWatcherList() { // Escape 2
         new MemoryWatcher<short>(F.Addr(0x3238BE)) { Name = "BossHP" },
         new MemoryWatcher<byte>(F.Addr(0x32279D)) { Name = "RadarState" } } },
