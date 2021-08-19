@@ -218,13 +218,13 @@ startup {
       { "LiquidHP",         0x17A424 },
       { "EscapeHP",         0xB710E },
       { "RadarState",       0xABCF5 },
-      { "ScoreState",       0xADB12 },
       { "O2Timer",          0xAC324 },
       { "ChaffTimer",       0xBE968 },
       { "DiazepamTimer",    0xB5812 },
       { "Life",             0xB5796 },
       { "MaxLife",          0xB5798 },
       { "EquippedItem",     0xB579E },
+      { "ScoreHours",       0x11B084 },
     } },
     // JP Integral
     { "SLPM-86247", new Dictionary<string, int>() {
@@ -260,13 +260,13 @@ startup {
       { "LiquidHP",         0x179A54 },
       { "EscapeHP",         0xB6746 },
       { "RadarState",       0xAB3CD },
-      { "ScoreState",       0xAD22A },
       { "O2Timer",          0xABA34 },
       { "ChaffTimer",       0xBDFA0 },
       { "DiazepamTimer",    0xB4E2A },
       { "Life",             0xB4DAE },
       { "MaxLife",          0xB4DB0 },
       { "EquippedItem",     0xB4DB6 },
+      { "ScoreHours",       0x119434 },
     } },
     // JP VR
     { "SLPM-86249", new Dictionary<string, int>() {
@@ -309,13 +309,13 @@ startup {
       { "LiquidHP",         0x17997C },
       { "EscapeHP",         0xB8EAE },
       { "RadarState",       0xADB45 },
-      { "ScoreState",       0xAF9AA },
       { "O2Timer",          0xAE1B4 },
       { "ChaffTimer",       0xC0710 },
       { "DiazepamTimer",    0xB75AA },
       { "Life",             0xB752E },
       { "MaxLife",          0xB7530 },
       { "EquippedItem",     0xB7536 },
+      { "ScoreHours",       0x11845C },
     } },
     // US VR
     { "SLUS-00957", new Dictionary<string, int>() {
@@ -358,13 +358,13 @@ startup {
       { "LiquidHP",         0x17997C },
       { "EscapeHP",         0xB778E },
       { "RadarState",       0xAC439 },
-      { "ScoreState",       0xAE282 },
       { "O2Timer",          0xACA8C },
       { "ChaffTimer",       0xBEFE8 },
       { "DiazepamTimer",    0xB5E82 },
       { "Life",             0xB5E06 },
       { "MaxLife",          0xB5E08 },
       { "EquippedItem",     0xB5E0E },
+      { "ScoreHours",       0x11845C },
     } },
     // EU VR
     { "SLES-02136", new Dictionary<string, int>() {
@@ -2220,7 +2220,9 @@ init {
               new MemoryWatcher<short>(F.Addr(addrs["EscapeHP"])) { Name = "BossHP" },
               new MemoryWatcher<byte>(F.Addr(addrs["RadarState"])) { Name = "RadarState" } } },
             { "CP-294", new MemoryWatcherList() { // Score
-              new MemoryWatcher<byte>(F.Addr(addrs["ScoreState"])) { Name = "ScoreState" } } },
+              new MemoryWatcher<int>(F.Addr(addrs["ScoreHours"])) { Name = "Hours" },
+              new MemoryWatcher<int>(F.Addr(addrs["ScoreHours"] + 4)) { Name = "Minutes" },
+              new MemoryWatcher<int>(F.Addr(addrs["ScoreHours"] + 8)) { Name = "Seconds" } } },
           };
           
           foreach (var boss in new Dictionary<string, string>() {
@@ -2526,11 +2528,16 @@ init {
       
     // Score
     F.Watch.Add("W.CP-294", (Func<int>)(() => {
-      var score = M["ScoreState"];
-      if (G.Emulator)
-        return ((score.Current == 7) && (score.Old != 7)) ? 1 : 0;
-      var score2 = M["ScoreState2"].Current;
-      return ( (score.Changed) && ((score.Current % 4) == M["Difficulty"].Current) && (score.Current == score2) ) ? 1 : 0;
+      var h = M["Hours"];
+      var m = M["Minutes"];
+      var s = M["Seconds"];
+      var target = M["GameTime"].Current;
+
+      if ( (!h.Changed) && (!m.Changed) && (!s.Changed) ) return 0;
+      if ( (h.Current > 65535) || (m.Current > 59) || (s.Current > 59) ) return 0;
+
+      int frames = (s.Current + (m.Current * 60) + (h.Current * 3600)) * (F.FramesPerSecond() * 2);
+      return ( (target > (frames - 120)) && (target < (frames + 120)) ) ? 1 : 0;
     }));
     
     F.Watch.Add("W.CP-38", (Func<int>)(() => F.BossHealth("Revolver Ocelot", 1024)));
@@ -2652,8 +2659,6 @@ init {
       new MemoryWatcher<short>(F.Addr(0x38E872)) { Name = "DiazepamTimer" },
       new MemoryWatcher<short>(F.Addr(0x391A28)) { Name = "ChaffTimer" },
       new MemoryWatcher<short>(F.Addr(0x595348)) { Name = "O2Timer" },
-      new MemoryWatcher<byte>(F.Addr(0x38E7EA)) { Name = "ScoreState" },
-      new MemoryWatcher<byte>(F.Addr(0x5942EC)) { Name = "ScoreState2" },
       new MemoryWatcher<bool>(F.Addr(0x31687C)) { Name = "CheatsEnabled" },
       new MemoryWatcher<byte>(F.Addr(0x38E7FE)) { Name = "EquippedItem" }, // equipped weapon 2B earlier
     };
@@ -2699,6 +2704,10 @@ init {
       { "CL-s19b", new MemoryWatcherList() { // Escape 2
         new MemoryWatcher<short>(F.Addr(0x3238BE)) { Name = "BossHP" },
         new MemoryWatcher<byte>(F.Addr(0x32279D)) { Name = "RadarState" } } },
+      { "CP-294", new MemoryWatcherList() { // Score
+        new MemoryWatcher<int>(F.Addr(0x4AB2C8)) { Name = "Hours" },
+        new MemoryWatcher<int>(F.Addr(0x4AB2CC)) { Name = "Minutes" },
+        new MemoryWatcher<int>(F.Addr(0x4AB2D0)) { Name = "Seconds" } } },
     };
   }
   
