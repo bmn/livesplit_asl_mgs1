@@ -1588,14 +1588,15 @@ init {
         if (R.ComboStart == -1) R.ComboStart = oldHP;
 
         string hits = null;
+        int damage = currentHP - R.ComboStart;
+        if (R.ComboHits > -damage) R.ComboHits = -damage;
+
         if ( (settings["Opt.ASL.Info.Boss.ComboHits"]) && (R.ComboHits > 1) )
           hits = string.Format(formats["ComboHits"], R.ComboHits);
-        if (settings["Opt.ASL.Info.Boss.ComboDamage"]) {
-          int damage = currentHP - R.ComboStart;
+        if (settings["Opt.ASL.Info.Boss.ComboDamage"])
           contentInfo = (hits == null) ?
             string.Format(formats["ComboDamage"], damage) :
             string.Format(formats["ComboHitsDamage"], hits, damage);
-        }
         else if (hits != null) contentInfo = hits;
       }
 
