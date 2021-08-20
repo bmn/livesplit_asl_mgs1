@@ -80,6 +80,7 @@ startup {
   V.MajorSplitsFile = V.AppDataDir + "\\MetalGearSolid.MajorSplits";
   V.DebugLogPath = V.AppDataDir + "\\MetalGearSolid.Autosplitter.log";
   V.DebugLogBuffer = new List<string>();
+  V.DebugForm = null;
   V.TimerModel = new TimerModel { CurrentState = timer };
   V.BaseFPS = refreshRate;
   V.i = (int)0;
@@ -1025,7 +1026,7 @@ startup {
     int width2 = 225;
     
     var toolsForm = new Form() {
-      Size = new System.Drawing.Size(450, 128),
+      Size = new System.Drawing.Size(450, 157),
       Text = "Metal Gear Solid Autosplitter Toolbox",
       FormBorderStyle = FormBorderStyle.FixedSingle,
       MaximizeBox = false
@@ -1048,12 +1049,18 @@ startup {
       Dock = DockStyle.Fill
     };
     btnSplitFiles.Click += (EventHandler)((sender, e) => F.ShowMajorSplitsForm());
+
+    var btnDebug = new Button() {
+      Text = "Open Debug Window",
+      Dock = DockStyle.Fill
+    };
+    btnDebug.Click += (EventHandler)((sender, e) => F.ShowDebugForm());
     
     var binData = Convert.FromBase64String("R0lGODlhDwAaALMJANQyAG8BAVs8AJWVlc/Pz5SUlNDQ0P///wAAAP///wAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAAkALAAAAAAPABoAAASCMElpCJkYm1EKQRlVYMhghMYoIeWZbSCYDBfJJjdSuOsB2zIc6zbZ4VZDohA47B2CydwT8ZxEcdMqUknVrlIU5MQAIoyMCY+EVh7RJEZ0YpO+mE8FwHh0N8FrCQQDEgQChgIBehNmE4eGARiMIW9jgyFqGpYTfigqdSGLHZyghBYhEQA7");
     var stream = new MemoryStream(binData);
     
     var picClippit = new PictureBox() {
-      Location = new System.Drawing.Point(388, 22),
+      Location = new System.Drawing.Point(388, 36),
       Size = new System.Drawing.Size(30, 52),
       Image = new System.Drawing.Bitmap(stream),
       SizeMode = PictureBoxSizeMode.StretchImage
@@ -1063,19 +1070,20 @@ startup {
       BackColor = System.Drawing.Color.FromArgb(0xff, 0xfd, 0xd7),
       Text = "It looks like you're running a game.\n\nWould you like help?",
       Size = new System.Drawing.Size(114, 59),
-      Location = new System.Drawing.Point(260, 10),
+      Location = new System.Drawing.Point(260, 24),
       Padding = new Padding(2)
     };
     lblClippit.Font = new System.Drawing.Font("Tahoma", lblClippit.Font.Size);
     
     var flpPanel = new TableLayoutPanel() {
-      Size = new System.Drawing.Size(width, 88),
+      Size = new System.Drawing.Size(width, 117),
       Location = new System.Drawing.Point(3, 0)
     };
     
     flpPanel.Controls.Add(btnFirstRun, 0 ,0);
     flpPanel.Controls.Add(btnSplitFiles, 0, 1);
     flpPanel.Controls.Add(btnAppData, 0, 2);
+    flpPanel.Controls.Add(btnDebug, 0, 3);
     
     toolsForm.Controls.Add(flpPanel);
     
@@ -1084,7 +1092,58 @@ startup {
     
     toolsForm.Show();
   });
+
+  F.ShowDebugForm = (Action)(() => {
+    var debugForm = new Form() {
+      Size = new System.Drawing.Size(1000, 600),
+      Text = "Debug Information"
+    };
+    
+    var lblVariables = new Label() {
+      Text = "Active Variables",
+      Location = new System.Drawing.Point(10, 10),
+      Size = new System.Drawing.Size(200, 580)
+    };
+
+    var txtLog = new TextBox() {
+      Text = "Debug Log",
+      Location = new System.Drawing.Point(220, 10),
+      Size = new System.Drawing.Size(755, 520),
+      Multiline = true,
+      ScrollBars = System.Windows.Forms.ScrollBars.Vertical,
+      ReadOnly = true,
+      BorderStyle = 0
+    };
+
+    debugForm.Controls.Add(lblVariables);
+    debugForm.Controls.Add(txtLog);
+
+    debugForm.Closed += (EventHandler)((sender, e) => {
+      V.DebugForm = null;
+    });
+
+    V.DebugForm = debugForm;
+
+    debugForm.Show();
+  });
   
+  F.UpdateDebugVariables = (Action)(() => {
+    if (V.DebugForm != null) {
+
+      string variables = "ASL Variables:";
+      foreach (KeyValuePair<string, object> var in (IDictionary<string, object>)vars) {
+        if (!var.Key.Equals("D"))
+          variables += "\n" + var.Key + ": " + var.Value;
+      }
+
+      variables += "\n\nActive Memory Watchers:";
+      foreach (var mem in M)
+        variables += "\n" + mem.Name + ": " + mem.Current.ToString();
+
+      V.DebugForm.Controls[0].Text = variables;
+    }
+  });
+
   F.ShowFirstRunForm = (Action<bool>)((isFirstRun) => {
     int width = 415;
     
@@ -1602,6 +1661,7 @@ init {
       message = gameTime + message;
       if (settings["Opt.Debug.File"]) V.DebugLogBuffer.Add(message);
       if (settings["Opt.Debug.StdOut"]) print("[MGS1] " + message);
+      if (V.DebugForm != null) V.DebugForm.Controls[1].Text += Environment.NewLine + message;
     });
     
     // On an exception, adds the error message to the buffer to be written to the debug log
@@ -2857,6 +2917,7 @@ update {
   M.UpdateAll(game);
   F.UpdateMM(game);
   F.UpdateCurrent();
+  F.UpdateDebugVariables();
   
   if (G.VRMissions) return true;
   
@@ -3091,5 +3152,7 @@ shutdown {
   timer.OnStart -= F.TimerOnStart;
   
   V.EventLog.EntryWritten -= F.EventLogWritten;
+
+  if (V.DebugForm != null) V.DebugForm.Dispose();
 }
 // shutdown END
