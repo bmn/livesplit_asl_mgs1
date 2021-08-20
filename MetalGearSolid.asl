@@ -1310,6 +1310,7 @@ startup {
       F.AddChildSettingToolTip("StdOut", false, "Log debug information to Windows debug log", "This can be viewed in a tool such as DebugView.");
 
     F.AddChildSetting(F.SettingParent("Behaviour", "Opt"), true, "Autosplitter Behaviour");
+      F.AddChildSettingToolTip(F.SettingParent("NickitaSkipSplits", "Opt.Behaviour"), true, "Skip split to stay on route during Nick-ita skip", "Split skip will be inserted for Nuke Building B1 (if enabled) upon performing Nick-ita skip.\n\nDisable this setting if you have removed the split for Nuke Building B1 manually.");
       F.AddChildSettingToolTip("KevinSkipSplits", true, "Skip splits to stay on route during Boba skip", "Split skips will be inserted upon performing Boba skip, if either of these splits are enabled:\n* Comms Tower A Roof\n* Comms Tower A Rappel\nThe resulting splits will be:\n* [Skip] Comms Tower A\n* [Skip] Comms Tower A Roof\n* [Split] Comms Tower A Rappel");
       F.AddChildSettingToolTip("UndoPAL", true, "Undo certain splits to maintain split integrity", "Triggers undo if you go back after failing to cool/heat the PAL Key correctly. In practice:\n * Enabled: Very slow Warehouse/Blast Furnace split\n * Disabled: Very slow split at the point you decide to backtrack; potential false gold on Warehouse/Blast Furnace\n\nTriggers undo if you go to Nuke Building B2 without the Nikita (when F7 Area Reloading is available) then return to B1.");
       F.AddChildSetting("StartOnLoad", false, "Start timer when loading a save");
@@ -2469,13 +2470,20 @@ init {
     Func<bool> hasNikita = () => F.HasWeapon(4);
     Func<bool> hasNoNikita = () => !F.HasWeapon(4);
     
-    // Nuke Building B2: Must have Nikita (except if we're doing area reloading)
+    // Nuke Building B2 entry: Must have Nikita (except if we're doing area reloading)
     F.Check.Add("CL-s08a.CP-69", (Func<bool>)(() =>
       ( (!G.Emulator) && (M["CheatsEnabled"].Current) ) ? true : hasNikita() ));
 
-    // Nuke Building B1: Undo any B2 split if we don't have Nikita yet
+    // Nuke Building B1 entry: Undo any B2 split if we don't have Nikita yet
     F.Check.Add("CL-s07a.CP-69", (Func<bool>)(() => {
       if (hasNoNikita()) backtrackSplit("CL-s08a.CP-69");
+      return true;
+    }));
+
+    // Nuke Building B2: Skip Nuke Building B1 for Nickita skip
+    F.Check.Add("CL-s08c.CP-69", (Func<bool>)(() => {
+      if (F.SettingEnabled("Opt.Behaviour.NickitaSkipSplits"))
+        F.BackupSkipCheck(V.CurrentCheck, "CL-s07a.CP-69");
       return true;
     }));
 
