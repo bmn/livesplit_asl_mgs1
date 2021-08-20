@@ -1542,7 +1542,10 @@ init {
 
       if ( (maxHP <= 0) || (currentHP > maxHP) ) return 0;
       if (currentHP < 0) currentHP = 0;
-      bool changedHP = (currentHP == oldHP);
+
+      if (data == null) data = new Dictionary<string, object>();
+      bool changedHP = (currentHP != oldHP);
+      if (data.ContainsKey("ComboUp")) changedHP = (bool)data["ComboUp"];
 
       if (!R.LastBoss.Equals(name)) {
         if (currentHP == maxHP) {
@@ -1553,8 +1556,6 @@ init {
       }
 
       if ( (!changedHP) && (V.InfoTimeout != null) ) return 0;
-
-      if (data == null) data = new Dictionary<string, object>();
 
       var formats = new Dictionary<string, string>() {
         { "Separator", " | " },
@@ -2382,7 +2383,8 @@ init {
               new MemoryWatcher<short>(F.Addr(addrs["Rex2HP"])) { Name = "BossHP" },
               new MemoryWatcher<short>(F.Addr(addrs["RexMaxHP"])) { Name = "BossMaxHP" } } },
             { "CP-277", new MemoryWatcherList() { // Liquid
-              new MemoryWatcher<short>(F.Addr(addrs["LiquidHP"])) { Name = "BossHP" } } },
+              new MemoryWatcher<short>(F.Addr(addrs["LiquidHP"])) { Name = "BossHP" },
+              new MemoryWatcher<byte>(F.Addr(addrs["LiquidHP"] - 0x2C)) { Name = "BossPhase" } } },
             { "CL-s19b", new MemoryWatcherList() { // Escape 2
               new MemoryWatcher<short>(F.Addr(addrs["EscapeHP"])) { Name = "BossHP" },
               new MemoryWatcher<byte>(F.Addr(addrs["RadarState"])) { Name = "RadarState" } } },
@@ -2649,7 +2651,7 @@ init {
 
     // Liquid
     F.Watch.Add("W.CP-277", (Func<int>)(() => {
-      var phases = new Dictionary<byte, int> { { 0, 0 }, { 3, 1 }, { 2, 2 }, { 4, 3 } };
+      var phases = new Dictionary<byte, int> { { 3, 1 }, { 2, 2 }, { 4, 3 } };
       int phase = 0;
       phases.TryGetValue(M["BossPhase"].Current, out phase);
       return F.BossHealthPhase("Liquid Snake", 255, phase);
@@ -2673,7 +2675,7 @@ init {
         var extra = new Dictionary<string, object>();
         if (phase < 6) extra.Add("Phase", phase);
 
-        F.BossHealth("Liquid Snake", curHP, maxHP, curHP + 1, extra);
+        F.BossHealth("Liquid", curHP, maxHP, curHP + 1, extra);
       }
       
       if ( (M["RadarState"].Current == 0x20) && (M["RadarState"].Old == 0) ) {
@@ -2708,13 +2710,13 @@ init {
       return ( (target > (frames - 120)) && (target < (frames + 120)) ) ? 1 : 0;
     }));
 
-    F.Watch.Add("W.CP-38", (Func<int>)(() => F.BossHealthSimple("Revolver Ocelot", 1024)));
+    F.Watch.Add("W.CP-38", (Func<int>)(() => F.BossHealthSimple("Ocelot", 1024)));
     F.Watch.Add("W.CP-77", (Func<int>)(() => F.BossHealthSimple("Ninja", 255)));
-    F.Watch.Add("W.CP-129", (Func<int>)(() => F.BossHealthSimple("Psycho Mantis", G.JP ? 904 : M["BossMaxHP"].Current)));
-    F.Watch.Add("W.CL-s10a.CP-150", (Func<int>)(() => F.BossHealthSimple("Sniper Wolf", 1024)));
-    F.Watch.Add("W.CP-186", (Func<int>)(() => F.BossHealthSimple("Hind D", 1024)));
-    F.Watch.Add("W.CP-197", (Func<int>)(() => F.BossHealthSimple("Sniper Wolf", 1024)));
-    F.Watch.Add("W.CP-211", (Func<int>)(() => F.BossHealthSimple("Vulcan Raven", G.JP ? 600 : M["BossMaxHP"].Current)));
+    F.Watch.Add("W.CP-129", (Func<int>)(() => F.BossHealthSimple("Mantis", G.JP ? 904 : M["BossMaxHP"].Current)));
+    F.Watch.Add("W.CL-s10a.CP-150", (Func<int>)(() => F.BossHealthSimple("Wolf 1", 1024)));
+    F.Watch.Add("W.CP-186", (Func<int>)(() => F.BossHealthSimple("Hind", 1024)));
+    F.Watch.Add("W.CP-197", (Func<int>)(() => F.BossHealthSimple("Wolf 2", 1024)));
+    F.Watch.Add("W.CP-211", (Func<int>)(() => F.BossHealthSimple("Raven", G.JP ? 600 : M["BossMaxHP"].Current)));
     // init: Split Checkers and Watchers END
 
   }
