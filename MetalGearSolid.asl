@@ -2672,10 +2672,12 @@ init {
         int maxHP = 5 * hpPerPhase;
         int curHP = (phaseRemain == -1) ? 0 : ((hpPerPhase * phaseRemain) + (hp >> 6) + 1);
 
+        int prevHP = M["BossHP"].Changed ? curHP + 1 : curHP;
+
         var extra = new Dictionary<string, object>();
         if (phase < 6) extra.Add("Phase", phase);
 
-        F.BossHealth("Liquid", curHP, maxHP, curHP + 1, extra);
+        F.BossHealth("Liquid", curHP, maxHP, prevHP, extra);
       }
       
       if ( (M["RadarState"].Current == 0x20) && (M["RadarState"].Old == 0) ) {
