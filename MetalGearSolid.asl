@@ -2722,6 +2722,7 @@ init {
       if ( (h.Current > 65535) || (m.Current > 59) || (s.Current > 59) ) return 0;
 
       int frames = (s.Current + (m.Current * 60) + (h.Current * 3600)) * (F.FramesPerSecond() * 2);
+      F.Debug("True frames: " + target.ToString() + ", Calculated frames: " + frames.ToString());
       return ( (target > (frames - 120)) && (target < (frames + 120)) ) ? 1 : 0;
     }));
 
