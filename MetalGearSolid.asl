@@ -1664,7 +1664,7 @@ init {
       message = gameTime + message;
       if (settings["Opt.Debug.File"]) V.DebugLogBuffer.Add(message);
       if (settings["Opt.Debug.StdOut"]) print("[MGS1] " + message);
-      if (V.DebugForm != null) V.DebugForm.Controls[1].Text += Environment.NewLine + message;
+      if (V.DebugForm != null) V.DebugForm.Controls[1].AppendText(Environment.NewLine + message);
     });
     
     // On an exception, adds the error message to the buffer to be written to the debug log
