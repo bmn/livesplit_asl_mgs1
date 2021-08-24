@@ -2851,6 +2851,8 @@ init {
     MM.Clear();
     MM.Add("WeaponData", New.ByteArray(F.Addr(0x38E800), 22));
     MM.Add("ItemData", New.ByteArray(F.Addr(0x38E82A), 46));
+
+    IntPtr scorePointer = F.Addr(0x2BFCDC); // or 322764 or 390A00
     
     G.CodeMemoryWatchers = new Dictionary<string, MemoryWatcherList>() {
       { "CP-6", new MemoryWatcherList() { // Dock
@@ -2890,9 +2892,12 @@ init {
         new MemoryWatcher<short>(F.Addr(0x3238BE)) { Name = "BossHP" },
         new MemoryWatcher<byte>(F.Addr(0x32279D)) { Name = "RadarState" } } },
       { "CP-294", new MemoryWatcherList() { // Score
-        new MemoryWatcher<int>(F.Addr(0x4AB2C8)) { Name = "Hours" },
-        new MemoryWatcher<int>(F.Addr(0x4AB2CC)) { Name = "Minutes" },
-        new MemoryWatcher<int>(F.Addr(0x4AB2D0)) { Name = "Seconds" } } },
+        new MemoryWatcher<int>(
+          new DeepPointer(scorePointer, 0x488) ) { Name = "Hours" },
+        new MemoryWatcher<int>(
+          new DeepPointer(scorePointer, 0x48C) ) { Name = "Minutes" },
+        new MemoryWatcher<int>(
+          new DeepPointer(scorePointer, 0x490) ) { Name = "Seconds" } } },
     };
   }
   
