@@ -2866,8 +2866,7 @@ init {
           new DeepPointer(F.Addr(0x2BFE58), 0x900) ) { Name = "BossHP" },
         new MemoryWatcher<short>(F.Addr(0x283A58)) { Name = "BossMaxHP" } } },
       { "CL-s10a.CP-150", new MemoryWatcherList() { // Wolf 1
-        new MemoryWatcher<short>(
-          new DeepPointer(F.Addr(0x504464), 0xA40) ) { Name = "BossHP" } } },
+        new MemoryWatcher<short>(F.Addr(0x5059E0)) { Name = "BossHP" } } },
       { "CP-186", new MemoryWatcherList() { // Hind
         new MemoryWatcher<short>(
           new DeepPointer(F.Addr(0x390BB8), 0x654) ) { Name = "BossHP" } } },
