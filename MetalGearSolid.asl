@@ -1350,7 +1350,7 @@ startup {
           F.AddChildSetting("CurrentHP", true, "Include Raw HP");
           F.AddChildSetting("ComboHits", true, "Include Combo Counter");
           F.AddChildSetting("ComboDamage", true, "Include Damage Counter");
-          F.AddChildSettingToolTip("Phase", true, "Include Current Phase", "Only available for some bosses.");
+          F.AddChildSettingToolTip("Phase", false, "Include Current Phase", "Only available for some bosses.");
         F.AddChildSetting(F.SettingParent("Life", "Opt.ASL.Info"), true, "Include Snake Health");
         F.AddChildSetting("Chaff", true, "Include Chaff timer");
         F.AddChildSetting("O2", true, "Include O2 timer");
@@ -1607,7 +1607,7 @@ init {
       string contentPhase = null;
       if ( settings["Opt.ASL.Info.Boss.Phase"] && data.ContainsKey("Phase") ) {
         var phase = (int)data["Phase"];
-        contentPhase = string.Format(formats["Phase"], phase);
+        if (phase > 0) contentPhase = string.Format(formats["Phase"], phase);
       }
 
       string contentHP = null;
