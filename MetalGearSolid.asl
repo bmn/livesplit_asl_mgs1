@@ -1,5 +1,5 @@
 /****************************************************/
-/* Metal Gear Solid Autosplitter 2.0                */
+/* Metal Gear Solid Autosplitter 2.1                */
 /*                                                  */
 /* Emulator Compatibility:                          */
 /*  * BizHawk  * DuckStation  * ePSXe  * Mednafen   */
