@@ -1301,7 +1301,7 @@ startup {
   /****************************************************/
   /* startup: Settings definitions
   /****************************************************/
-  F.AddSettingToolTip("Tools", false, "MGS Autosplitter Toolbox (toggle setting with game open)", "You must have the game/emulator open to launch the toolbox.\nThis is due to technical limitations with the ASL framework.");
+  F.AddSettingToolTip("Tools", false, "MGS Autosplitter Toolbox (toggle off with game open)", "Toggle to the OFF position to open the toolbox.\n\nYou must have the game/emulator open to launch the toolbox.\nThis is due to technical limitations with the ASL framework.");
 
   F.AddSetting(F.SettingParent("Opt", null), true, "Settings");
 
@@ -1906,17 +1906,18 @@ init {
       F.SetVar("FPS", string.Join(", ", fpsResults));
     });
     
-    // Returns true if the setting <key> has changed
-    F.ToolSettingToggled = (Func<string, bool>)((key) => {
+    // Returns true if the setting <key> has changed to false
+    F.ToolSettingToggledFalse = (Func<string, bool>)((key) => {
       string extra;
       if (key == null) {
         extra = "";
         key = "Tools";
       }
       else extra = "." + key;
-      
-      bool result = ( (settings["Tools" + extra]) != V.LastToggleSetting[key] );
-      V.LastToggleSetting[key] = settings["Tools" + extra];
+
+      bool cur = settings["Tools" + extra];
+      bool result = ( (cur != V.LastToggleSetting[key]) && (cur == false) );
+      V.LastToggleSetting[key] = cur;
       return result;
     });
     
@@ -2914,7 +2915,7 @@ update {
   var D = vars.D; var F = D.Funcs; var G = D.Game; var M = D.Mem;
   var New = D.New; var R = D.Run;  var V = D.Vars; var MM = D.ManualMem;
   
-  if (F.ToolSettingToggled(null))
+  if (F.ToolSettingToggledFalse(null))
     F.ShowToolsForm();
 
   F.CheckInfoTimeout();
