@@ -2871,8 +2871,7 @@ init {
       { "CL-s10a.CP-150", new MemoryWatcherList() { // Wolf 1
         new MemoryWatcher<short>(F.Addr(0x5059E0)) { Name = "BossHP" } } },
       { "CP-186", new MemoryWatcherList() { // Hind
-        new MemoryWatcher<short>(
-          new DeepPointer(F.Addr(0x390BB8), 0x654) ) { Name = "BossHP" } } },
+        new MemoryWatcher<short>(F.Addr(0x4E6E14)) { Name = "BossHP" } } },
       { "CP-197", new MemoryWatcherList() { // Wolf 2
         new MemoryWatcher<short>(
           new DeepPointer(F.Addr(0x2BFD8C), 0xA40) ) { Name = "BossHP" } } },
