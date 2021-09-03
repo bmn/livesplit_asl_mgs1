@@ -1,6 +1,10 @@
 # livesplit_asl_mgsi
 A LiveSplit autosplitter for Metal Gear Solid Integral on PC
 
+⚠ This is version 1 of the autosplitter. [Click here for version 2 (post-May 2021), which also supports emulators.](https://github.com/bmn/livesplit_asl_mgs1/)
+
+⚠ If using a Split File labelled *Subsplits*, you should have a *Subsplits* component in your layout, **not** the default *Splits* layout.
+
 ## Installation
 
 ### Automatic
