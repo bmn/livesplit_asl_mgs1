@@ -459,6 +459,15 @@ startup {
     { "s16d", 2 },
   };
 
+  // Difficulty names
+  D.Sets.Difficulties = new Dictionary<sbyte, string>() {
+    { -1, "Very Easy" },
+    {  0, "Easy" },
+    {  1, "Normal" },
+    {  2, "Hard" },
+    {  3, "Extreme" },
+  };
+
   
   /****************************************************/
   /* startup: Friendly name definitions
@@ -776,12 +785,13 @@ startup {
     V.InfoTimeout = null;
     V.InfoPriority = -1;
     V.InfoFallback = String.Empty;
-    vars.Platform = "None";
-    vars.Version = "None";
+    vars.Difficulty = String.Empty;
     vars.FPS = String.Empty;
     vars.Info = String.Empty;
     vars.Location = String.Empty;
+    vars.Platform = "None";
     vars.Stats = String.Empty;
+    vars.Version = "None";
     F.ResetGameVars();
   });
   
@@ -1758,6 +1768,14 @@ init {
       var cur = current as IDictionary<string, object>;
       foreach (var w in G.CurrentMemoryWatchers)
         cur[w.Name] = w.Current;
+    });
+
+    // Updates other ASL variables
+    F.UpdateASL = (Action)(() => {
+      var diff = M["Difficulty"];
+      string name = "";
+      if ( (diff.Changed) && (D.Sets.Difficulties.TryGetValue(diff.Current, out name)) )
+        F.SetVar("Difficulty", name);
     });
     
     // Updates [vars.Stats] for ASLVV
@@ -2947,6 +2965,9 @@ update {
 
   if ( (settings["Opt.ASL.Stats"]) && (F.StatsChanged()) )
     F.UpdateASLStats();
+
+  if (settings["Opt.ASL"])
+    F.UpdateASL();
     
 }
 // update END
