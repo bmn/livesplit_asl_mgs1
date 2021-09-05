@@ -2386,8 +2386,7 @@ init {
             { "CP-77", new MemoryWatcherList() { // Ninja
               new MemoryWatcher<short>(F.Addr(addrs["NinjaHP"])) { Name = "BossHP" } } },
             { "CP-129", new MemoryWatcherList() { // Mantis
-              new MemoryWatcher<short>(F.Addr(addrs["MantisHP"])) { Name = "BossHP" },
-              new MemoryWatcher<short>(F.Addr(addrs["MantisMaxHP"])) { Name = "BossMaxHP" } } },
+              new MemoryWatcher<short>(F.Addr(addrs["MantisHP"])) { Name = "BossHP" } } },
             { "CL-s10a.CP-150", new MemoryWatcherList() { // Wolf 1
               new MemoryWatcher<short>(F.Addr(addrs["Wolf1HP"])) { Name = "BossHP" } } },
             { "CP-186", new MemoryWatcherList() { // Hind
@@ -2395,14 +2394,11 @@ init {
             { "CP-197", new MemoryWatcherList() { // Wolf 2
               new MemoryWatcher<short>(F.Addr(addrs["Wolf2HP"])) { Name = "BossHP" } } },
             { "CP-211", new MemoryWatcherList() { // Raven
-              new MemoryWatcher<short>(F.Addr(addrs["RavenHP"])) { Name = "BossHP" },
-              new MemoryWatcher<short>(F.Addr(addrs["RavenMaxHP"])) { Name = "BossMaxHP" } } },
+              new MemoryWatcher<short>(F.Addr(addrs["RavenHP"])) { Name = "BossHP" } } },
             { "CP-255", new MemoryWatcherList() { // Rex 1
-              new MemoryWatcher<short>(F.Addr(addrs["Rex1HP"])) { Name = "BossHP" },
-              new MemoryWatcher<short>(F.Addr(addrs["RexMaxHP"])) { Name = "BossMaxHP" } } },
+              new MemoryWatcher<short>(F.Addr(addrs["Rex1HP"])) { Name = "BossHP" } } },
             { "CP-257", new MemoryWatcherList() { // Rex 2
-              new MemoryWatcher<short>(F.Addr(addrs["Rex2HP"])) { Name = "BossHP" },
-              new MemoryWatcher<short>(F.Addr(addrs["RexMaxHP"])) { Name = "BossMaxHP" } } },
+              new MemoryWatcher<short>(F.Addr(addrs["Rex2HP"])) { Name = "BossHP" } } },
             { "CP-277", new MemoryWatcherList() { // Liquid
               new MemoryWatcher<short>(F.Addr(addrs["LiquidHP"])) { Name = "BossHP" },
               new MemoryWatcher<byte>(F.Addr(addrs["LiquidHP"] - 0x2C)) { Name = "BossPhase" } } },
@@ -2414,6 +2410,17 @@ init {
               new MemoryWatcher<int>(F.Addr(addrs["ScoreHours"] + 4)) { Name = "Minutes" },
               new MemoryWatcher<int>(F.Addr(addrs["ScoreHours"] + 8)) { Name = "Seconds" } } },
           };
+
+          if (!G.JP) {
+            G.CodeMemoryWatchers["CP-129"].Add(
+              new MemoryWatcher<short>(F.Addr(addrs["MantisMaxHP"])) { Name = "BossMaxHP" });
+            G.CodeMemoryWatchers["CP-211"].Add(
+              new MemoryWatcher<short>(F.Addr(addrs["RavenMaxHP"])) { Name = "BossMaxHP" });
+            G.CodeMemoryWatchers["CP-255"].Add(
+              new MemoryWatcher<short>(F.Addr(addrs["RexMaxHP"])) { Name = "BossMaxHP" });
+            G.CodeMemoryWatchers["CP-257"].Add(
+              new MemoryWatcher<short>(F.Addr(addrs["RexMaxHP"])) { Name = "BossMaxHP" });
+          }
           
         }
         
