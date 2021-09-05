@@ -300,7 +300,7 @@ startup {
       { "MantisHP",         0x16CFFC },
       { "MantisMaxHP",      0xC5AF0 },
       { "Wolf1HP",          0x173DEC },
-      { "HindHP",           0x154ECD4 },
+      { "HindHP",           0x154CD4 },
       { "Wolf2HP",          0x1701BC },
       { "RavenHP",          0x157408 },
       { "RavenMaxHP",       0xB6970 },
