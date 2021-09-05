@@ -75,7 +75,9 @@ A LiveSplit autosplitter for Metal Gear Solid on PC and emulator
   * `Difficulty`: A number representing the difficulty, where `-1` is Very Easy, `0` is Normal, etc.
   * `GameTime`: The number of frames elapsed since you started a run. Timed at 30 per second.
   * `Kills`: The number of guards you've killed.
+  * `Life`: Snake's current HP.
   * `Location`: A string representing the current game area, e.g. `s00a` is Dock.
+  * `MaxLife`: Snake's current maximum HP.
   * `Progress`: A number representing your progress through the game. The end of the game is at `294`.
   * `RationsUsed`: The number of Rations you've eaten.
   * `Saves`: The number of times you've saved the game.
@@ -86,6 +88,7 @@ A LiveSplit autosplitter for Metal Gear Solid on PC and emulator
   * `D`: This is a data store for the autosplitter. It doesn't provide any information and shouldn't be used.
   * `FPS`: A constantly-updating display of the game's rendered frame rate. By default 1-second, 5-second and 15-second periods are displayed.
   * `Info`: A general-purpose variable that shows contextual information whenever it becomes available. These are provided:
+    * HP for Snake
     * HP for the current boss
     * Countdown timer for Chaff Grenade
     * Countdown timer for O2 when in water/gas
