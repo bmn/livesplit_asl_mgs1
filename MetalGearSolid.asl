@@ -276,7 +276,7 @@ startup {
       { "LevelState",       0xE2FC8 },
       { "Frames",           0xA8F84 },
     } },
-    // US
+    // US 1.1
     { "SLUS-00594", new Dictionary<string, int>() {
       { "Alerts",           0xB75B4 },
       { "Kills",            0xB75B6 },
@@ -317,6 +317,49 @@ startup {
       { "Life",             0xB752E },
       { "MaxLife",          0xB7530 },
       { "EquippedItem",     0xB7536 },
+      { "ScoreHours",       0x11845C },
+    } },
+    // US 1.0
+    { "SLUS-00594-1.0", new Dictionary<string, int>() {
+      { "Alerts",           0xB75AC },
+      { "Kills",            0xB75AE },
+      { "RationsUsed",      0xB75BC },
+      { "Continues",        0xB75BE },
+      { "Saves",            0xB75C0 },
+      { "GameTime",         0xAE160 },
+      { "Difficulty",       0xB7512 },
+      { "Progress",         0xB644A },
+      { "Location",         0xADB34 },
+      { "NoControl",        0xADB3F },
+      { "InMenu",           0xD2839 },
+      { "VsRex",            0xC2C58 },
+      { "ControllerInput",  0xAE0C8 },
+      { "Frames",           0xADA48 },
+      { "WeaponData",       0xB7530 },
+      { "ItemData",         0xB755A },
+      { "ElevatorTimer",    0x1622AC },
+      { "OcelotHP",         0x168168 },
+      { "NinjaHP",          0x15B6BC },
+      { "MantisHP",         0x16CFEC },
+      { "MantisMaxHP",      0xC5AE8 },
+      { "Wolf1HP",          0x173DEC },
+      { "HindHP",           0x154CD4 },
+      { "Wolf2HP",          0x1701BC },
+      { "RavenHP",          0x157408 },
+      { "RavenMaxHP",       0xB6868 },
+      { "Rex1HP",           0x15E5A8 },
+      { "RexMaxHP",         0xB686E },
+      { "Rex2HP",           0x15F8B0 },
+      { "LiquidHP",         0x17997C },
+      { "LiquidPhase",      0x179A50 },
+      { "EscapeHP",         0xB8EAE },
+      { "RadarState",       0xADB3D },
+      { "O2Timer",          0xAE1AC },
+      { "ChaffTimer",       0xC0708 },
+      { "DiazepamTimer",    0xB75A2 },
+      { "Life",             0xB7526 },
+      { "MaxLife",          0xB7528 },
+      { "EquippedItem",     0xB752E },
       { "ScoreHours",       0x11845C },
     } },
     // US VR
@@ -627,7 +670,8 @@ startup {
     { "SLPM-86111", "Metal Gear Solid (JP)" },
     { "SLPM-86247", "MGS Integral (JP)" },
     { "SLPM-86249", "MGS Integral VR-Disc (JP)" },
-    { "SLUS-00594", "Metal Gear Solid (US)" },
+    { "SLUS-00594-1.0", "Metal Gear Solid (US 1.0)" },
+    { "SLUS-00594", "Metal Gear Solid (US 1.1)" },
     { "SLUS-00957", "MGS VR Missions (US)" },
     { "SLES-01370", "Metal Gear Solid (EU)" },
     { "SLES-02136", "MGS Special Missions (EU)" },
@@ -2312,6 +2356,14 @@ init {
         if (strHeader.Substring(0, 11).Equals("SLPM_862.49"))
           productCode = "SLPM-86249";
       }
+
+      // Check for PSX US v1.0 vs v1.1
+      else if (productCode.Equals("SLUS-00594")) {
+        byte[] memKetchup = mem.ReadBytes((IntPtr)F.Addr(0xADC98), 7);
+        string strKetchup = System.Text.Encoding.UTF8.GetString(memKetchup);
+        if (strKetchup.Equals("KETCHUP"))
+          productCode = "SLUS-00594-1.0";
+      }
       
       // We definitely have a supported game at this point
 
@@ -2324,7 +2376,7 @@ init {
           G.JP = true;
         
         // Check for an EU game (50Hz for timing adjustments)
-        if ( productCode.Equals("SLES-01370") || productCode.Equals("SLES-02136") )
+        else if ( productCode.Equals("SLES-01370") || productCode.Equals("SLES-02136") )
           G.EU = true;
         
         G.ProductCode = productCode;
