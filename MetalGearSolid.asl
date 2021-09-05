@@ -2650,14 +2650,24 @@ init {
     F.Watch.Add("W.CP-257", (Func<int>)(() => {
       var cur = M["VsRex"].Current;
       var prev = M["VsRex"].Old;
-      int maxHP = G.JP ? 1500 : M["BossMaxHP"].Current;
 
-      if (cur == 1)
+      bool split;
+      bool info;
+      if (G.Emulator) {
+        split = ( ((cur == -1) || (cur == 0)) && (prev == 3) );
+        info = (cur == 3);
+      }
+      else {
+        split = ( (cur == 0) && (prev == 1) );
+        info = (cur == 1);
+      }
+
+      if (info) {
+        int maxHP = G.JP ? 1500 : M["BossMaxHP"].Current;
         F.BossHealthSimple("Metal Gear REX", maxHP);
+      }
       
-      if (G.Emulator)
-        return ( ((cur == -1) || (cur == 0)) && (prev == 3) ) ? 1 : 0;
-      return ( (cur == 0) && (prev == 1) ) ? 1 : 0;
+      return split ? 1 : 0;
     }));
     
     // Helper to manually split at a different signature if a split was missed
