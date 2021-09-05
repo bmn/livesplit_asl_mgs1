@@ -205,7 +205,7 @@ startup {
       { "ControllerInput",  0xAC240 },
       { "Frames",           0xABC58 },
       { "WeaponData",       0xB57A0 },
-      { "ItemData",         0xB57CA }, // todo test
+      { "ItemData",         0xB57CA },
       { "ElevatorTimer",    0x163B28 },
       { "OcelotHP",         0x167910 },
       { "NinjaHP",          0x15AC8C },
@@ -2696,7 +2696,7 @@ init {
       return F.BossHealthPhase("Liquid Snake", 255, phase);
     }));
     
-    // VE Escape
+    // Escape vs Liquid
     F.Watch.Add("W.CL-s19b", (Func<int>)(() => {
       if ( (settings["Opt.ASL.Info.Boss"]) && (R.EscapeRadarTimes == 1) ) {
         int hp = M["BossHP"].Current;
@@ -2719,6 +2719,7 @@ init {
         F.BossHealth("Liquid", curHP, maxHP, prevHP, extra);
       }
       
+      // VE Escape split
       if ( (M["RadarState"].Current == 0x20) && (M["RadarState"].Old == 0) ) {
         F.Debug("Escape timer disappeared (" + ++R.EscapeRadarTimes + ")");
         if ( (!settings["CP-286"]) || (M["Difficulty"].Current != -1) ) return 0;
