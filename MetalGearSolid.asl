@@ -217,6 +217,7 @@ startup {
       { "Rex1HP",           0x15E10C },
       { "Rex2HP",           0x15F414 },
       { "LiquidHP",         0x17A424 },
+      { "LiquidPhase",      0x17A3F8 },
       { "EscapeHP",         0xB710E },
       { "RadarState",       0xABCF5 },
       { "O2Timer",          0xAC324 },
@@ -259,6 +260,7 @@ startup {
       { "RexMaxHP",         0xB40F6 },
       { "Rex2HP",           0x15F948 },
       { "LiquidHP",         0x179A54 },
+      { "LiquidPhase",      0x179A28 },
       { "EscapeHP",         0xB6746 },
       { "RadarState",       0xAB3CD },
       { "O2Timer",          0xABA34 },
@@ -401,6 +403,7 @@ startup {
       { "RexMaxHP",         0xB514E },
       { "Rex2HP",           0x15F8B0 },
       { "LiquidHP",         0x17997C },
+      { "LiquidPhase",      0x179950 },
       { "EscapeHP",         0xB778E },
       { "RadarState",       0xAC439 },
       { "O2Timer",          0xACA8C },
@@ -2464,14 +2467,13 @@ init {
           };
 
           if (!G.JP) {
+            var rexWatcher = new MemoryWatcher<short>(F.Addr(addrs["RexMaxHP"])) { Name = "BossMaxHP" };
             G.CodeMemoryWatchers["CP-129"].Add(
               new MemoryWatcher<short>(F.Addr(addrs["MantisMaxHP"])) { Name = "BossMaxHP" });
             G.CodeMemoryWatchers["CP-211"].Add(
               new MemoryWatcher<short>(F.Addr(addrs["RavenMaxHP"])) { Name = "BossMaxHP" });
-            G.CodeMemoryWatchers["CP-255"].Add(
-              new MemoryWatcher<short>(F.Addr(addrs["RexMaxHP"])) { Name = "BossMaxHP" });
-            G.CodeMemoryWatchers["CP-257"].Add(
-              new MemoryWatcher<short>(F.Addr(addrs["RexMaxHP"])) { Name = "BossMaxHP" });
+            G.CodeMemoryWatchers["CP-255"].Add(rexWatcher);
+            G.CodeMemoryWatchers["CP-257"].Add(rexWatcher);
           }
           
         }
