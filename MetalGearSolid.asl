@@ -2520,9 +2520,9 @@ init {
       int max = G.JP ? 3150 : 3600;
       int delta = (M["ElevatorTimer"].Old - cur);
 
-      // When the timer goes up, check if it's near the max
+      // When the timer changes significantly, check if it's near the max
       // If so, set a variable to 1 to enable info (and vice versa)
-      if (delta < 0)
+      if (Math.Abs(delta) > 300)
         R.EscapeRadarTimes = (F.Between(cur, max - 30, max)) ? 1 : 0;
       if (R.EscapeRadarTimes == 0) return 0;
 
