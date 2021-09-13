@@ -421,6 +421,49 @@ startup {
       { "LevelState",       0xB4CB0 },
       { "Frames",           0xAC3B0 },
     } },
+    // Spain
+    { "SLES-01734", new Dictionary<string, int>() {
+      { "Alerts",           0xB5FC4 },
+      { "Kills",            0xB5FC6 },
+      { "RationsUsed",      0xB5FD4 },
+      { "Continues",        0xB5FD6 },
+      { "Saves",            0xB5FD8 },
+      { "GameTime",         0xACB78 },
+      { "Difficulty",       0xB5F2A },
+      { "Progress",         0xB4E62 },
+      { "Location",         0xAC568 },
+      { "NoControl",        0xAC573 },
+      { "InMenu",           0x0 }, // todo fix
+      { "VsRex",            0xC1670 },
+      { "ControllerInput",  0xACAE0 }, // or ACAE4
+      { "Frames",           0xAC4D4 },
+      { "WeaponData",       0xB5F48 },
+      { "ItemData",         0xB5F72 },// todo test
+      { "ElevatorTimer",    0x1622F4 },
+      { "OcelotHP",         0x167B78 },
+      { "NinjaHP",          0x15BB8C },
+      { "MantisHP",         0x16D020 },
+      { "MantisMaxHP",      0xC4508 }, // or C4568
+      { "Wolf1HP",          0x1737A8 },
+      { "HindHP",           0x154CD4 },
+      { "Wolf2HP",          0x1701BC },
+      { "RavenHP",          0x157408 },
+      { "RavenMaxHP",       0xB5280 },
+      { "Rex1HP",           0x15FAB0 },
+      { "RexMaxHP",         0xB5286 },
+      { "Rex2HP",           0x15F8B0 },
+      { "LiquidHP",         0x17997C },
+      { "LiquidPhase",      0x179950 },
+      { "EscapeHP",         0xB78C6 },
+      { "RadarState",       0xAC571 },
+      { "O2Timer",          0xACBC4 },
+      { "ChaffTimer",       0xBF120 },
+      { "DiazepamTimer",    0xB5FBA },
+      { "Life",             0xB5F3E },
+      { "MaxLife",          0xB5F40 },
+      { "EquippedItem",     0xB5F46 },
+      { "ScoreHours",       0x118480 },
+    } },
   };
   
   // Split set fragments - will be used later to create split sets
@@ -676,8 +719,9 @@ startup {
     { "SLUS-00594-1.0", "Metal Gear Solid (US 1.0)" },
     { "SLUS-00594", "Metal Gear Solid (US 1.1)" },
     { "SLUS-00957", "MGS VR Missions (US)" },
-    { "SLES-01370", "Metal Gear Solid (EU)" },
-    { "SLES-02136", "MGS Special Missions (EU)" },
+    { "SLES-01370", "Metal Gear Solid (Eur-EN)" },
+    { "SLES-02136", "MGS Special Missions (Eur-EN)" },
+    { "SLES-01734", "Metal Gear Solid (Eur-ES)" },
   };
   
   // Location names for [vars.Location] according to the Location memory value
@@ -2379,7 +2423,7 @@ init {
           G.JP = true;
         
         // Check for an EU game (50Hz for timing adjustments)
-        else if ( productCode.Equals("SLES-01370") || productCode.Equals("SLES-02136") )
+        else if ( new string[] { "SLES-01370", "SLES-02136", "SLES-01734" }.Contains(productCode) )
           G.EU = true;
         
         G.ProductCode = productCode;
