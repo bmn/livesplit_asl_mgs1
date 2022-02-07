@@ -2668,7 +2668,7 @@ init {
     // Warehouse North -> Warehouse (PAL Key): Split on Warehouse start (later)
     // On Console with Split Modifier only
     F.Watch.Add("W.CL-s15a.CP-240", (Func<int>)(() => {
-      if ( (!G.Emulator) || (!F.SettingEnabled("OL-s15b.CL-s16a.CP-240") )) return -1;
+      if ( (!G.Emulator) || (!F.SettingEnabled("OL-s15b.CL-s15a.CP-240") )) return -1;
       return (M["VsRex"].Current == 1) ? 1 : 0;
     }));
     F.Check.Add("OL-s15b.CL-s15a.CP-240", (Func<bool>)(() => {
