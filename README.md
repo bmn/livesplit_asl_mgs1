@@ -11,13 +11,14 @@ A LiveSplit autosplitter for Metal Gear Solid on PC and emulator
 ## Games
 * Metal Gear Solid (PSX JP)
 * Metal Gear Solid (PSX US)
-* Metal Gear Solid (PSX EU)
+* Metal Gear Solid (PSX EU English)
+* Metal Gear Solid (PSX EU Spanish)
 * Metal Gear Solid Integral (PC)
 * Metal Gear Solid Integral (PSX JP)
 * Metal Gear Solid Integral VR-Disc (PC)
 * Metal Gear Solid Integral VR-Disc (PSX JP)
 * Metal Gear Solid VR Missions (PSX US)
-* Metal Gear Solid Special Missions (PSX EU)
+* Metal Gear Solid Special Missions (PSX EU English)
 ## Emulators
 * BizHawk
 * DuckStation
