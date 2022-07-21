@@ -1455,7 +1455,7 @@ startup {
         F.AddChildSetting(F.SettingParent("Life", "Opt.ASL.Info"), true, "Include Snake Health");
         F.AddChildSetting("Chaff", true, "Include Chaff timer");
         F.AddChildSetting("O2", true, "Include O2 timer");
-        F.AddChildSetting("Diazepam", true, "Include Diazepam timer");
+        F.AddChildSetting("Diazepam", false, "Include Diazepam timer");
           F.AddChildSetting(F.SettingParent("HideNoWolf", "Opt.ASL.Info.Diazepam"), true, "Hide when not fighting Sniper Wolf");
         F.AddChildSetting(F.SettingParent("Dock", "Opt.ASL.Info"), true, "Include Dock elevator countdown");
 
