@@ -1249,7 +1249,7 @@ startup {
     int width = 415;
     
     using (var firstRunForm = new Form() {
-      Size = new System.Drawing.Size(width, 322),
+      Size = new System.Drawing.Size(width, 402),
       FormBorderStyle = FormBorderStyle.FixedSingle,
       MaximizeBox = false,
       Text = isFirstRun ? "Metal Gear Solid Autosplitter 2.0 First Run" :
@@ -1260,23 +1260,23 @@ startup {
         "- wait, you opened the window yourself?";
       
       var lblIntro = new Label() {
-        Text = string.Format("This seems to be the first time you've{0}\n\nPlease select a default settings template.\nThis will define the default settings for this autosplitter in all your layouts.\nYou can tweak settings in the Layout Editor later.\n\nProtip: You can customise the default for every setting later by opening\n\"Tools\" > \"Change Default Settings Template\" from the settings.", introCustom),
+        Text = string.Format("This seems to be the first time you've{0}\n\nPlease select a default settings template.\nThis will define the default settings for this autosplitter in all your layouts.\nYou can tweak settings in the Layout Editor later.\n\nThe number in [brackets] is an approximate number of splits (taken from a glitchless run - other categories will have fewer splits).\n\nSelect [Old Splits] only if you used the old v1 (before August 2021) autosplitter and want to keep using your old split files.\n\nProtip: You can customise the default for every setting later by opening\n\"Tools\" > \"Change Default Settings Template\" from the settings.", introCustom),
         Location = new System.Drawing.Point(10, 10),
-        Size = new System.Drawing.Size(width - (18*2), 110)
+        Size = new System.Drawing.Size(width - (18*2), 190)
       };
       
       var lstTemplate = new ListBox() {
-        Location = new System.Drawing.Point(10, 128),
-        Size = new System.Drawing.Size(width - (18*2), 114)
+        Location = new System.Drawing.Point(10, 208),
+        Size = new System.Drawing.Size(width - (18*2), 194)
       };
       
-      lstTemplate.Items.Add("Major Splits only");
-      lstTemplate.Items.Add("Major Splits, plus pre-boss Splits");
-      lstTemplate.Items.Add("Major Splits, plus most Other Splits");
-      lstTemplate.Items.Add("Major Splits, plus most Other Splits (with Boba skip)");
-      lstTemplate.Items.Add("[For Old v1 Split Files] Major Splits only");
-      lstTemplate.Items.Add("[For Old v1 Split Files] Major Splits plus Area Movement");
-      lstTemplate.Items.Add("Enable all available Splits");
+      lstTemplate.Items.Add("[17] Major Splits only");
+      lstTemplate.Items.Add("[27] Major Splits, plus pre-boss Splits");
+      lstTemplate.Items.Add("[120] Major Splits, plus most Other Splits");
+      lstTemplate.Items.Add("[118] Major Splits, plus most Other Splits (with Boba skip)");
+      lstTemplate.Items.Add("[Old Splits] Major Splits only");
+      lstTemplate.Items.Add("[Old Splits] Major Splits plus Area Movement");
+      lstTemplate.Items.Add("[122] All available Splits");
       
       V.DefaultSettingsTemplateCount = lstTemplate.Items.Count;
       lstTemplate.SelectedIndex = 2;
@@ -1287,7 +1287,7 @@ startup {
 
       var btnConfirm = new Button() {
         Text = "Let's Go",
-        Location = new System.Drawing.Point(width - 101, 234)
+        Location = new System.Drawing.Point(width - 101, 314)
       };
       btnConfirm.Click += (EventHandler)((sender, e) => {
         F.ProcessFirstRun(lstTemplate.SelectedIndex, isFirstRun);
@@ -1331,7 +1331,7 @@ startup {
     if (isFirstRun)
       successMsg += "To access this window again, toggle \"MGS Autosplitter Toolbox\" in the layout component settings.\n\nYou can also create a new set of Split Files from the toolbox.";
     else if (templateId != V.DefaultSettingsTemplateCount)
-      successMsg += "Your current settings have not been changed.\n\nTo use the \"Reset to Default\" button, please reload the autosplitter or restart LiveSplit first.";
+      successMsg += "Your current settings have NOT been changed.\n\nIf you want to reset your settings, please reload the autosplitter or restart LiveSplit, then click the \"Reset to Default\" button.";
     
     MessageBox.Show(successMsg, "Default Settings templates created", MessageBoxButtons.OK, MessageBoxIcon.Information);
   });
@@ -2138,7 +2138,7 @@ init {
         });
         
         var txtSelectHeader = new Label() {
-          Text = "Subsplits: Last split for each section",
+          Text = "[Subsplits] Last split in each section",
           TextAlign = System.Drawing.ContentAlignment.BottomCenter,
           Anchor = leftRight,
         };
