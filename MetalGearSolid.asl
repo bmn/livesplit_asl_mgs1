@@ -433,12 +433,12 @@ startup {
       { "Progress",         0xB4E62 },
       { "Location",         0xAC568 },
       { "NoControl",        0xAC573 },
-      { "InMenu",           0x0 }, // todo fix
+      { "InMenu",           0xAD0A6 },
       { "VsRex",            0xC1670 },
       { "ControllerInput",  0xACAE0 }, // or ACAE4
       { "Frames",           0xAC4D4 },
       { "WeaponData",       0xB5F48 },
-      { "ItemData",         0xB5F72 },// todo test
+      { "ItemData",         0xB5F72 },
       { "ElevatorTimer",    0x1622F4 },
       { "OcelotHP",         0x167B78 },
       { "NinjaHP",          0x15BB8C },
