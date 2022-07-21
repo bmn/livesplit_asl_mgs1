@@ -1456,7 +1456,8 @@ startup {
         F.AddChildSetting("Chaff", true, "Include Chaff timer");
         F.AddChildSetting("O2", true, "Include O2 timer");
         F.AddChildSetting("Diazepam", true, "Include Diazepam timer");
-        F.AddChildSetting("Dock", true, "Include Dock elevator countdown");
+          F.AddChildSetting(F.SettingParent("HideNoWolf", "Opt.ASL.Info.Diazepam"), true, "Hide when not fighting Sniper Wolf");
+        F.AddChildSetting(F.SettingParent("Dock", "Opt.ASL.Info"), true, "Include Dock elevator countdown");
 
   F.AddSetting(F.SettingParent("Splits", null), true, "Split Points");
   
@@ -1897,6 +1898,7 @@ init {
       var o2 = M["O2Timer"];
       var life = M["Life"];
       var maxLife = M["MaxLife"];
+      var progress = M["Progress"].Current;
       
       if ( (settings["Opt.ASL.Info.Life"]) && (life.Changed) ) {
         string lifePercent = F.Percentage(life.Current, maxLife.Current);
@@ -1918,7 +1920,9 @@ init {
         string chaffPercent = F.Percentage(chaff.Current, 300);
         F.Info("Chaff: " + chaffPercent + " (" + chaffCurrent + " left)", 200, 30); 
       }
-      else if ( (settings["Opt.ASL.Info.Diazepam"]) && (diaz.Current > 0) ) {
+      else if ( (settings["Opt.ASL.Info.Diazepam"]) && (diaz.Current > 0) && (
+        (!settings["Opt.ASL.Info.Diazepam.HideNoWolf"]) || (progress == 197) || ((progress == 150) && (M["Location"].Current == "s10a"))
+      ) ) {
         string diazCurrent = F.FramesToSeconds(diaz.Current);
         string diazPercent = F.Percentage(diaz.Current, 1200);
         F.Info("Diazepam: " + diazPercent + " (" + diazCurrent + " left)", 200, 20);
