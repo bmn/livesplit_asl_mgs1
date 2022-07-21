@@ -44,8 +44,11 @@ A LiveSplit autosplitter for Metal Gear Solid on PC and emulator
 * Check any split you want to include, and uncheck those you don't.
 * You don't need to uncheck splits that aren't in your run - the autosplitter will keep track of which route you're on, and avoid splitting in places that aren't on that route.
 
+## Default Split Files
+* If you've customised any of your splits, see `Building Split Files` below.
+* Otherwise, prebuilt `split files` are available in the [Split Files](./Split%20Files) folder.
+
 ## Building Split Files
-* No `split files` (`.lss` files for LiveSplit containing the list of splits for each run) are provided.
 * To build a set of split files that matches the selected splits in your settings:
   * Make sure the game, or any of the supported emulators (it's not necessary to launch the game), is already open.
   * In the Scriptable Auto Splitter settings, toggle the top setting `MGS Autosplitter Toolbox` on or off, to open the toolbox.
