@@ -1267,7 +1267,7 @@ startup {
       
       var lstTemplate = new ListBox() {
         Location = new System.Drawing.Point(10, 208),
-        Size = new System.Drawing.Size(width - (18*2), 194)
+        Size = new System.Drawing.Size(width - (18*2), 114)
       };
       
       lstTemplate.Items.Add("[17] Major Splits only");
@@ -1287,7 +1287,7 @@ startup {
 
       var btnConfirm = new Button() {
         Text = "Let's Go",
-        Location = new System.Drawing.Point(width - 101, 314)
+        Location = new System.Drawing.Point(width - 101, 324)
       };
       btnConfirm.Click += (EventHandler)((sender, e) => {
         F.ProcessFirstRun(lstTemplate.SelectedIndex, isFirstRun);
