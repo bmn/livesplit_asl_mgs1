@@ -1958,7 +1958,7 @@ init {
     F.SetVar = (Action<string, object>)((key, val) => {
       var varsDict = vars as IDictionary<string, object>;
       varsDict[key] = val;
-      if (settings["Opt.ASL.Info.Alt." + key]) {
+      if (F.SettingEnabled("Opt.ASL.Info.Alt." + key)) {
         V.InfoFallback = val;
         if (V.InfoPriority == -1)
           vars.Info = val;
