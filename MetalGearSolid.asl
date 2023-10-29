@@ -1,5 +1,5 @@
 /****************************************************/
-/* Metal Gear Solid Autosplitter 2.2                */
+/* Metal Gear Solid Autosplitter 2.3                */
 /*                                                  */
 /* Emulator Compatibility:                          */
 /*  * BizHawk  * DuckStation  * ePSXe  * Mednafen   */
@@ -17,13 +17,15 @@
 /* Also compatible with MGS Master Collection       */
 /*   for all supported games                        */
 /*                                                  */
-/* Created by bmn for Metal Gear Solid Speedrunners */
-/*                                                  */
-/* Thanks to dlimes13, NickRPGreen and plywood_     */
-/*   for their input                                */
+/* Created by bmn                                   */
+/*   <https://mgs.w00ty.com/>                       */
+/*   <https://www.youtube.com/@gogobmn>             */
 /*                                                  */
 /* MGSR Clippy art modified from a piece by         */
 /*   https://www.deviantart.com/nnmushroom          */
+/*                                                  */
+/* Thanks to dlimes13, NickRPGreen and plywood_     */
+/*   for their feedback and suggestions             */
 /****************************************************/
 
 
