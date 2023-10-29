@@ -1425,7 +1425,7 @@ startup {
       F.AddChildSetting("SplitOnProgress", false, "Split whenever the progress code changes");
     
     F.AddChildSettingToolTip(F.SettingParent("ASL", "Opt"), true, "ASL Var Viewer integration", "Disabling this may slightly improve performance");
-      F.AddChildSetting(F.SettingParent("FPS", "Opt.ASL"), true, "FPS (framerate counter for console)");
+      F.AddChildSetting(F.SettingParent("FPS", "Opt.ASL"), false, "FPS (framerate counter for console)");
         F.AddChildSetting(F.SettingParent("2DP", "Opt.ASL.FPS"), false, "Display FPS to 2 decimal places");
         F.AddChildSetting("1", true, "Include 1 sec counter");
         F.AddChildSetting("5", true, "Include 5 sec counter");
