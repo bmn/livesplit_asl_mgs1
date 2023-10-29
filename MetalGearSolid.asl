@@ -1,18 +1,21 @@
 /****************************************************/
-/* Metal Gear Solid Autosplitter 2.1                */
+/* Metal Gear Solid Autosplitter 2.2                */
 /*                                                  */
 /* Emulator Compatibility:                          */
 /*  * BizHawk  * DuckStation  * ePSXe  * Mednafen   */
 /*  * Retroarch (Beetle PSX)                        */
 /*                                                  */
 /* Game Compatibility:                              */
-/*  * Metal Gear Solid (PSX EU/US/JP)               */
+/*  * Metal Gear Solid (PSX EN/ES/US/JP)            */
 /*  * Metal Gear Solid Integral (PSX JP)            */
 /*  * Metal Gear Solid Integral (PC)                */
-/*  * Metal Gear Solid Special Missions (PSX EU)    */
+/*  * Metal Gear Solid Special Missions (PSX EN)    */
 /*  * Metal Gear Solid VR Missions (PSX US)         */
 /*  * Metal Gear Solid Integral VR-Disc (PSX JP)    */
 /*  * Metal Gear Solid Integral VR-Disc (PC)        */
+/*                                                  */
+/* Also compatible with MGS Master Collection       */
+/*   for all supported games                        */
 /*                                                  */
 /* Created by bmn for Metal Gear Solid Speedrunners */
 /*                                                  */
@@ -37,6 +40,7 @@ state("mednafen") {} // Mednafen
 state("mgsi") {} // PC
 state("mgsvr") {} // PC (VR Missions)
 state("retroarch") {} // Retroarch (Beetle PSX only)
+state("METAL GEAR SOLID") {} // Master Collection PC
 
 
 /****************************************************/
@@ -1350,6 +1354,9 @@ startup {
     emu.SignatureOffset = 0;
     emu.DerefLevel = 0;
     emu.CheckMappedMemory = false;
+    emu.RegionSize = (uint)0x200000;
+    emu.RequireMapped = true;
+    emu.RegionHeaderPad = (uint)0;
     emu.ScanForMemory = false;
     return emu;
   });
@@ -2318,9 +2325,11 @@ init {
 
           if (emulator.CheckMappedMemory) {
             foreach (var page in g.MemoryPages(true)) {
-              if ((page.RegionSize != (UIntPtr)0x200000) || (page.Type != MemPageType.MEM_MAPPED))
+              if (page.RegionSize != (UIntPtr)emulator.RegionSize)
                 continue;
-              G.BaseAddress = page.BaseAddress;
+              if ((emulator.RequireMapped) && (page.Type != MemPageType.MEM_MAPPED))
+                continue;
+              G.BaseAddress = (IntPtr)((long)page.BaseAddress + emulator.RegionHeaderPad);
               break;
             }
 
@@ -2893,6 +2902,14 @@ init {
     vars.Platform = "DuckStation";
   }
   else switch (processName) {
+    case "metal gear solid":
+      G.Emulator = true;
+      emu.CheckMappedMemory = true;
+      emu.RequireMapped = false;
+      emu.RegionSize = (uint)0x211000;
+      emu.RegionHeaderPad = (uint)0x40;
+      vars.Platform = "MGS Master Collection (PC)";
+      break;
     case "mgsi":
       G.Emulator = false;
       G.BaseAddress = (IntPtr)0x400000;
