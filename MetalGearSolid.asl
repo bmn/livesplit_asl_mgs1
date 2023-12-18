@@ -2901,7 +2901,12 @@ init {
 
   if ((processName.Length > 10) && (processName.Substring(0, 11) == "duckstation")) {
     emu.CheckMappedMemory = true;
+    emu.RegionSize = (uint)0x800000;
     vars.Platform = "DuckStation";
+
+    var emu2 = New.EmulatorSpec();
+    emu2.CheckMappedMemory = true;
+    G.Emulators.Add(emu2);
   }
   else switch (processName) {
     case "metal gear solid":
