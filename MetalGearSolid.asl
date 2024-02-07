@@ -563,6 +563,11 @@ startup {
     {  3, "Extreme" },
   };
 
+  // Menu IDs
+  D.Sets.Menus = new HashSet<string>() {
+    "init", "opening", "brf", "title",
+  };
+
   
   /****************************************************/
   /* startup: Friendly name definitions
@@ -3145,11 +3150,14 @@ reset {
   var D = vars.D; var G = D.Game; var M = D.Mem;
 
   var Loc = M["Location"];
-  if (G.VRMissions)
-    return ( (Loc.Changed) && (Loc.Current.Equals("vrtitle")) );
+  if (!Loc.Changed) return false;
 
-  var Menu = M["InMenu"];
-  return ( (Menu.Changed) && (Menu.Current.Equals(1)) && (!M["Progress"].Current.Equals(294)) );
+  var Menus = D.Sets.Menus;
+  if (G.VRMissions)
+    return (Loc.Current.Equals("vrtitle"));
+
+  return ((Menus.Contains(Loc.Current)) && (!Menus.Contains(Loc.Old))
+    && (!M["Progress"].Current.Equals(294)) );
 }
 // reset END
 
