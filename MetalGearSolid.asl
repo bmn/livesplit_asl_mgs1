@@ -1882,6 +1882,11 @@ init {
       string name = "";
       if ( (diff.Changed) && (D.Sets.Difficulties.TryGetValue(diff.Current, out name)) )
         F.SetVar("Difficulty", name);
+
+      if (M["PALTimer"] != null) {
+        vars.PALTimerSecs = M["PALTimer"].Current / 30;
+        vars.FramesMod30 = M["Frames"].Current % 30;
+      }
     });
     
     // Updates [vars.Stats] for ASLVV
@@ -2458,8 +2463,6 @@ init {
           G.CurrentMemoryWatchers = new MemoryWatcherList() {
             new StringWatcher(F.Addr(addrs["Location"]), 8) { Name = "Location" },
             new MemoryWatcher<int>(F.Addr(addrs["Score"])) { Name = "Score" },
-          };
-          G.HiddenMemoryWatchers = new MemoryWatcherList() {
             new MemoryWatcher<uint>(F.Addr(addrs["Frames"])) { Name = "Frames" },
             new MemoryWatcher<byte>(F.Addr(addrs["LevelState"])) { Name = "LevelState" },
           };
@@ -2479,9 +2482,6 @@ init {
             new MemoryWatcher<short>(F.Addr(addrs["Life"])) { Name = "Life" },
             new MemoryWatcher<short>(F.Addr(addrs["MaxLife"])) { Name = "MaxLife" },
             new StringWatcher(F.Addr(addrs["Location"]), 8) { Name = "Location" },
-          };
-
-          G.HiddenMemoryWatchers = new MemoryWatcherList() {
             new MemoryWatcher<sbyte>(F.Addr(addrs["InMenu"])) { Name = "InMenu" },
             new MemoryWatcher<sbyte>(F.Addr(addrs["VsRex"])) { Name = "VsRex" },
             new MemoryWatcher<uint>(F.Addr(addrs["ControllerInput"])) { Name = "ControllerInput" },
@@ -3000,9 +3000,6 @@ init {
       new MemoryWatcher<short>(F.Addr(0x38E7F6)) { Name = "Life" },
       new MemoryWatcher<short>(F.Addr(0x38E7F8)) { Name = "MaxLife" },
       new StringWatcher(F.Addr(0x2504CE), 8) { Name = "Location" },
-    };
-
-    G.HiddenMemoryWatchers = new MemoryWatcherList() {
       new MemoryWatcher<sbyte>(F.Addr(0x31D180)) { Name = "InMenu" },
       new MemoryWatcher<sbyte>(F.Addr(0x388630)) { Name = "VsRex" },
       new MemoryWatcher<uint>(F.Addr(0x3919C0)) { Name = "ControllerInput" },
@@ -3014,6 +3011,8 @@ init {
       new MemoryWatcher<short>(F.Addr(0x595348)) { Name = "O2Timer" },
       new MemoryWatcher<bool>(F.Addr(0x31687C)) { Name = "CheatsEnabled" },
       new MemoryWatcher<byte>(F.Addr(0x38E7FE)) { Name = "EquippedItem" }, // equipped weapon 2B earlier
+
+      new MemoryWatcher<short>(F.Addr(0x38E864)) { Name = "PALTimer" },
     };
     
     MM.Clear();
