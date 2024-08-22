@@ -889,8 +889,10 @@ startup {
     V.InfoFallback = String.Empty;
     vars.Difficulty = String.Empty;
     vars.FPS = String.Empty;
+    vars.FramesMod30 = String.Empty;
     vars.Info = String.Empty;
     vars.Location = String.Empty;
+    vars.PALTimerSecs = String.Empty;
     vars.Platform = "None";
     vars.Stats = String.Empty;
     vars.Version = "None";
